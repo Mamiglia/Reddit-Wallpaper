@@ -1,4 +1,5 @@
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -69,24 +70,31 @@ public class Searcher {
     }
 
     public Map<String, String> getSearchResults() throws IOException {
+        URLConnection connect = initializeConnection();
+        String rawData = getRawData(connect);
+        return refineData(rawData);
+    }
+
+    private URLConnection initializeConnection() throws IOException {
         URLConnection connection = new URL(searchQuery).openConnection();
         connection.setRequestProperty("User-Agent", "wannabe wallpaper bot");
         connection.setRequestProperty("Accept-Charset", StandardCharsets.UTF_8.name());
-
+        return connection;
+    }
+    private String getRawData(URLConnection connection) throws IOException {
         Scanner s = new Scanner(connection.getInputStream()).useDelimiter("\\A");
-        String s1 = s.hasNext() ? s.next() : "";
-
+        return s.hasNext() ? s.next() : "";
+    }
+    private Map<String,String> refineData(String rawData) throws JsonProcessingException {
         Map<String,Object> result =
-                new ObjectMapper().readValue(s1, HashMap.class);
-        System.out.println(result.get("data").getClass());
+                new ObjectMapper().readValue(rawData, HashMap.class);
         ArrayList<Map> children = (ArrayList<Map>) ((Map<String, Object>) result.get("data")).get("children");
 
-        Map<String, String> res = new HashMap<String, String>();
+        Map<String, String> res = new HashMap<>();
         for (int i=0; i<children.size(); i++) {
             Map<String, Object> child = (Map<String, Object>) ( (Map<String, Object>) children.get(i)).get("data");
             res.put((String) child.get("id"), (String) child.get("url"));
         }
-
         return res;
     }
 
