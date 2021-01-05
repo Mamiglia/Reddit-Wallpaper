@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.util.Map;
 
 public class Main {
 
@@ -17,13 +16,6 @@ public class Main {
 
 
     }
-    public String convertWithIteration(Map<Integer, ?> map) {
-        StringBuilder mapAsString = new StringBuilder("{");
-        for (Integer key : map.keySet()) {
-            mapAsString.append(key + "=" + map.get(key) + ", ");
-        }
-        mapAsString.delete(mapAsString.length()-2, mapAsString.length()).append("}");
-        return mapAsString.toString();
-    }
+
 
 }
