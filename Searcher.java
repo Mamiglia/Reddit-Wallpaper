@@ -69,7 +69,7 @@ public class Searcher {
         return encodeURL(s);
     }
 
-    public Map<String, String> getSearchResults() throws IOException {
+    public Map<String, Wallpaper> getSearchResults() throws IOException {
         URLConnection connect = initializeConnection();
         String rawData = getRawData(connect);
         return refineData(rawData);
@@ -86,17 +86,23 @@ public class Searcher {
         Scanner s = new Scanner(connection.getInputStream()).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
     }
-    private Map<String,String> refineData(String rawData) throws JsonProcessingException {
+    private Map<String,Wallpaper> refineData(String rawData) throws JsonProcessingException {
         // converts the String JSON into a Map JSON, then selects the only things
         // we are interested in: the ID and the photo link
         Map<String,Object> result =
                 new ObjectMapper().readValue(rawData, HashMap.class);
         ArrayList<Map> children = (ArrayList<Map>) ((Map<String, Object>) result.get("data")).get("children");
 
-        Map<String, String> res = new HashMap<>();
+        Map<String, Wallpaper> res = new HashMap<>();
         for (int i=0; i<children.size(); i++) {
             Map<String, Object> child = (Map<String, Object>) ( (Map<String, Object>) children.get(i)).get("data");
-            res.put((String) child.get("id"), (String) child.get("url"));
+            Wallpaper wallpaper = new Wallpaper(
+                    (String) child.get("title"),
+                    (String) child.get("url"),
+                    (String) child.get("thumbnail"),
+                    (String) child.get("permalink")
+            );
+            res.put((String) child.get("id"), wallpaper);
         }
         return res;
     }
