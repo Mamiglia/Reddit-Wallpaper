@@ -20,6 +20,8 @@ public class Main {
         ArrayList<String> ids = new ArrayList<>();
         ids.addAll(wallpapers.keySet());
         Wallpaper test = wallpapers.get(ids.get(0));
+        test.download();
+        System.out.println(test.getHeight());
 
 
 

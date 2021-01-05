@@ -43,9 +43,22 @@ class Wallpaper {
         Graphics2D g2 = bi.createGraphics();
         g2.drawImage(img, 0, 0, null);
         g2.dispose();
-        ImageIO.write(bi, "jpg", new File(path + title +".jpg"));
+        File f = new File(path + title +".png");
+        f.mkdirs();
+        f.createNewFile();
+        ImageIO.write(bi, "png", f);
     }
+
     // GETTERS
+    public double getRatio() {
+        return (double) getWidth()/ (double) getHeight();
+    }
+    public int getWidth() {
+        return wallpaper.getWidth(null);
+    }
+    public int getHeight() {
+        return wallpaper.getHeight(null);
+    }
     public String getPath() {
         return "wallpapers/" + title + ".jpg";
     }
