@@ -18,7 +18,7 @@ class Wallpaper {
         this.title = title;
         this.url = url;
         this.thumbnailUrl = thumbnailUrl;
-        this.postUrl = postUrl;
+        this.postUrl = "https://www.reddit.com" + postUrl;
     }
 
     public void download() throws IOException {
@@ -30,7 +30,7 @@ class Wallpaper {
 
     public void saveImage(Image img, boolean thumbnail) throws IOException {
         String path;
-        if (thumbnail == true) {
+        if (thumbnail) {
             path = ".utility/thumbnails/";
         } else {
             path = "wallpapers/";
