@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Map;
 
 public class Main {
 
@@ -12,6 +14,12 @@ public class Main {
         s.generateSearchQuery();
         System.out.println(s.getSearchQuery());
         System.out.println(s.getSearchResults());
+        Map<String, Wallpaper> wallpapers = s.getSearchResults();
+
+        //SELECTOR
+        ArrayList<String> ids = new ArrayList<>();
+        ids.addAll(wallpapers.keySet());
+        Wallpaper test = wallpapers.get(ids.get(0));
 
 
 
