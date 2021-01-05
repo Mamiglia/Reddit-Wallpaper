@@ -46,11 +46,11 @@ public class Searcher {
                 "https://reddit.com/search.json?"
                 + "q="
                 + generateQuery()
-                + "&sort="
+                + "&sort=" //how to sort them (hot, new ...)
                 + searchBy
-                + "&limit=20"
-                + "&t=day"
-                + "&type=t3"
+                + "&limit=20" //how many posts
+                + "&t=day" //how old can a post be at most
+                + "&type=t3" //only link type posts, no text-only
                 // + "&restrict_sr=true" i don't think it's useful
         ;
         }
@@ -82,10 +82,13 @@ public class Searcher {
         return connection;
     }
     private String getRawData(URLConnection connection) throws IOException {
+        // gets the raw JSON file in String form
         Scanner s = new Scanner(connection.getInputStream()).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
     }
     private Map<String,String> refineData(String rawData) throws JsonProcessingException {
+        // converts the String JSON into a Map JSON, then selects the only things
+        // we are interested in: the ID and the photo link
         Map<String,Object> result =
                 new ObjectMapper().readValue(rawData, HashMap.class);
         ArrayList<Map> children = (ArrayList<Map>) ((Map<String, Object>) result.get("data")).get("children");
@@ -101,6 +104,7 @@ public class Searcher {
     private static String encodeURL(String value) {
         try {
             return URLEncoder.encode(value, StandardCharsets.UTF_8.toString()).replace("+", "%20");
+            //if you leave + as space sign it's counted as AND by reddit query, so you must use %20
         } catch (UnsupportedEncodingException ex) {
             throw new RuntimeException(ex.getCause());
         }
