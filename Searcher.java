@@ -9,7 +9,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 
@@ -69,7 +68,7 @@ public class Searcher {
         return encodeURL(s);
     }
 
-    public Map<String, Wallpaper> getSearchResults() throws IOException {
+    public HashMap<String, Wallpaper> getSearchResults() throws IOException {
         URLConnection connect = initializeConnection();
         String rawData = getRawData(connect);
         return refineData(rawData);
@@ -86,16 +85,16 @@ public class Searcher {
         Scanner s = new Scanner(connection.getInputStream()).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
     }
-    private Map<String,Wallpaper> refineData(String rawData) throws JsonProcessingException {
-        // converts the String JSON into a Map JSON, then selects the only things
+    private HashMap<String,Wallpaper> refineData(String rawData) throws JsonProcessingException {
+        // converts the String JSON into a HashMap JSON, then selects the only things
         // we are interested in: the ID and the photo link
-        Map<String,Object> result =
+        HashMap<String,Object> result =
                 new ObjectMapper().readValue(rawData, HashMap.class);
-        ArrayList<Map> children = (ArrayList<Map>) ((Map<String, Object>) result.get("data")).get("children");
+        ArrayList<HashMap> children = (ArrayList<HashMap>) ((HashMap<String, Object>) result.get("data")).get("children");
 
-        Map<String, Wallpaper> res = new HashMap<>();
+        HashMap<String, Wallpaper> res = new HashMap<>();
         for (int i=0; i<children.size(); i++) {
-            Map<String, Object> child = (Map<String, Object>) ( (Map<String, Object>) children.get(i)).get("data");
+            HashMap<String, Object> child = (HashMap<String, Object>) ( (HashMap<String, Object>) children.get(i)).get("data");
             Wallpaper wallpaper = new Wallpaper(
                     (String) child.get("title"),
                     (String) child.get("url"),

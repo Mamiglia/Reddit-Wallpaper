@@ -1,6 +1,5 @@
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.HashMap;
 
 public class Main {
 
@@ -14,15 +13,16 @@ public class Main {
         s.generateSearchQuery();
         System.out.println(s.getSearchQuery());
         System.out.println(s.getSearchResults());
-        Map<String, Wallpaper> wallpapers = s.getSearchResults();
+        HashMap<String, Wallpaper> wallpapers = s.getSearchResults();
 
         //SELECTOR
-        ArrayList<String> ids = new ArrayList<>();
-        ids.addAll(wallpapers.keySet());
-        Wallpaper test = wallpapers.get(ids.get(0));
-        test.download();
-        System.out.println(test.getHeight());
-
+        try {
+            Selector selector = new Selector(wallpapers);
+            Wallpaper w = selector.select();
+            System.out.println(w.toString());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
 
 
     }

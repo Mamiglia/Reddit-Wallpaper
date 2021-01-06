@@ -3,13 +3,12 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
-import java.time.Instant;
 import java.util.Date;
 
-class Wallpaper {
-    private static final Date NEVER_USED = new Date(Instant.MIN.toEpochMilli());
-    private static final Date BLACKLISTED = new Date(Instant.MAX.toEpochMilli());
+class Wallpaper implements Serializable {
+    private static final Date NEVER_USED = new Date(0);
     private final String title;
     private final String url;
     private final String thumbnailUrl;
@@ -117,7 +116,7 @@ class Wallpaper {
 
     @Override
     public String toString() {
-        return title + "\n" + url + "\n" + postUrl + "\n" + lastUsedDate;
+        return title + "\nimage url:" + url + "\npost url: " + postUrl + "\ndate:" + lastUsedDate + "\n";
     }
 
 }
