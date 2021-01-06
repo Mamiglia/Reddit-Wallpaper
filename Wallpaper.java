@@ -4,12 +4,17 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.time.Instant;
+import java.util.Date;
 
 class Wallpaper {
+    private static final Date NEVER_USED = new Date(Instant.MIN.toEpochMilli());
+    private static final Date BLACKLISTED = new Date(Instant.MAX.toEpochMilli());
     private final String title;
     private final String url;
     private final String thumbnailUrl;
     private final String postUrl;
+    private Date lastUsedDate;
     private Image wallpaper;
     private Image thumbnail;
 
@@ -19,6 +24,12 @@ class Wallpaper {
         this.url = url;
         this.thumbnailUrl = thumbnailUrl;
         this.postUrl = "https://www.reddit.com" + postUrl;
+        lastUsedDate = NEVER_USED;
+    }
+
+    public Wallpaper(String title, String url, String thumbnailUrl, String postUrl, int lastUsedDate) {
+        this(title, url, thumbnailUrl, postUrl);
+        this.lastUsedDate = new Date(lastUsedDate);
     }
 
     public void download() throws IOException {
@@ -26,6 +37,8 @@ class Wallpaper {
         thumbnail = ImageIO.read(new URL(thumbnailUrl));
         saveImage(wallpaper, false);
         saveImage(thumbnail, true);
+        // when an image is downloaded it's also used for the first time
+        updateDate();
     }
 
     public void saveImage(Image img, boolean thumbnail) throws IOException {
@@ -48,8 +61,14 @@ class Wallpaper {
         f.createNewFile();
         ImageIO.write(bi, "png", f);
     }
+    public void updateDate() {
+        lastUsedDate = new Date();
+    }
 
     // GETTERS
+    public void setDate() {
+        lastUsedDate = new Date();
+    }
     public double getRatio() {
         return (double) getWidth()/ (double) getHeight();
     }
@@ -62,8 +81,13 @@ class Wallpaper {
     public String getPath() {
         return "wallpapers/" + title + ".jpg";
     }
+
     public String getTitle() {
         return title;
+    }
+
+    public Date getLastUsedDate() {
+        return lastUsedDate;
     }
 
     public String getUrl() {
@@ -85,4 +109,15 @@ class Wallpaper {
     public Image getThumbnail() {
         return thumbnail;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o) && o.getClass().equals(getClass()) && url.equals(((Wallpaper) o).getUrl());
+    }
+
+    @Override
+    public String toString() {
+        return title + "\n" + url + "\n" + postUrl + "\n" + lastUsedDate;
+    }
+
 }
