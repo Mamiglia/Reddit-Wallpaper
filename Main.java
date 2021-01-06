@@ -12,7 +12,6 @@ public class Main {
         Searcher s = new Searcher(title, subreddits, length, height, nsfw, searchBy);
         s.generateSearchQuery();
         System.out.println(s.getSearchQuery());
-        System.out.println(s.getSearchResults());
         HashMap<String, Wallpaper> wallpapers = s.getSearchResults();
 
         //SELECTOR

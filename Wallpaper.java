@@ -19,11 +19,12 @@ class Wallpaper {
     public Wallpaper(String title, String url, String postUrl) {
         this.title = title;
         this.url = url;
-        this.postUrl = "https://www.reddit.com" + postUrl;
+        if (postUrl.contains("https://www.reddit.com")) this.postUrl = postUrl;
+        else this.postUrl = "https://www.reddit.com" + postUrl;
         lastUsedDate = NEVER_USED;
     }
 
-    public Wallpaper(String title, String url, String postUrl, int lastUsedDate) {
+    public Wallpaper(String title, String url, String postUrl, long lastUsedDate) {
         this(title, url,postUrl);
         this.lastUsedDate = new Date(lastUsedDate);
     }

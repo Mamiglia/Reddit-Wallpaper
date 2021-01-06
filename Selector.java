@@ -28,7 +28,7 @@ public class Selector {
             if (!alreadyUsedID.contains(propID)) {
                 res = proposal.get(propID);
                 res.updateDate();
-                updateDB(res, propID);
+                updateDB(propID, res);
                 return res;
                 // An unused wallpaper is found
             }
@@ -38,7 +38,7 @@ public class Selector {
         String id = findOldestWallpaper(db, listProposedID);
         res = db.get(id);
         res.updateDate();
-        updateDB(res, id);
+        updateDB(id, res);
         return res;
     }
     public ArrayList<String> getOldWallpapersID() {
@@ -55,19 +55,20 @@ public class Selector {
             // database is written in the file in the form of:
             // id(key),title,url,postUrl,ms_from_epoch
             String[] s = scan.nextLine().split(",");
-            Wallpaper w = new Wallpaper(s[1],s[2],s[3],Integer.parseInt(s[4]));
+            Wallpaper w = new Wallpaper(s[1],s[2],s[3], Long.parseLong(s[4]));
             d.put(s[0], w);
         }
 
         return d;
     }
-    private void updateDB(Wallpaper w, String id) {
+    private void updateDB(String id, Wallpaper w) {
         db.put(id, w);
         cleanDB();
         try{
             writeDB();
+            System.out.println("Database succesfully overwritten");
         } catch (IOException e) {
-            System.out.println("writing Database failed");
+            System.out.println("Database writing failed");
         }
 
 
@@ -81,6 +82,7 @@ public class Selector {
             String idOldestWalp = findOldestWallpaper(db);
             Wallpaper w = db.get(idOldestWalp);
             db.remove(idOldestWalp);
+            System.out.println("Cleaning of DB, removing " + idOldestWalp);
             boolean USERCHOICE = true;
             if (USERCHOICE) {
                 File f = new File(w.getPath());
@@ -98,9 +100,12 @@ public class Selector {
         for (String id: db.keySet()) {
             Wallpaper w = db.get(id);
             bw.write(id + "," +  w.getTitle() + "," + w.getUrl() + "," + w.getPostUrl() + "," + w.getLastUsedDate().getTime());
+            bw.newLine();
             // database is written in the file in the form of:
             // id(key),title,url,postUrl,ms_from_epoch
         }
+        bw.flush();
+        bw.close();
     }
     private static String findOldestWallpaper(HashMap<String, Wallpaper> map) {
         return findOldestWallpaper(map, new ArrayList<>(map.keySet()));
