@@ -3,39 +3,34 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.net.URL;
 import java.util.Date;
 
-class Wallpaper implements Serializable {
-    private static final Date NEVER_USED = new Date(0);
+class Wallpaper {
+    public static final Date NEVER_USED = new Date(0);
+    public static final String DEFAULT_PATH = "wallpapers/";
     private final String title;
     private final String url;
-    private final String thumbnailUrl;
     private final String postUrl;
     private Date lastUsedDate;
     private Image wallpaper;
-    private Image thumbnail;
 
 
-    public Wallpaper(String title, String url, String thumbnailUrl, String postUrl) {
+    public Wallpaper(String title, String url, String postUrl) {
         this.title = title;
         this.url = url;
-        this.thumbnailUrl = thumbnailUrl;
         this.postUrl = "https://www.reddit.com" + postUrl;
         lastUsedDate = NEVER_USED;
     }
 
-    public Wallpaper(String title, String url, String thumbnailUrl, String postUrl, int lastUsedDate) {
-        this(title, url, thumbnailUrl, postUrl);
+    public Wallpaper(String title, String url, String postUrl, int lastUsedDate) {
+        this(title, url,postUrl);
         this.lastUsedDate = new Date(lastUsedDate);
     }
 
     public void download() throws IOException {
         wallpaper = ImageIO.read(new URL(url));
-        thumbnail = ImageIO.read(new URL(thumbnailUrl));
         saveImage(wallpaper, false);
-        saveImage(thumbnail, true);
         // when an image is downloaded it's also used for the first time
         updateDate();
     }
@@ -45,7 +40,7 @@ class Wallpaper implements Serializable {
         if (thumbnail) {
             path = ".utility/thumbnails/";
         } else {
-            path = "wallpapers/";
+            path = DEFAULT_PATH;
         }
         BufferedImage bi = new BufferedImage(
                 img.getWidth(null),
@@ -78,7 +73,11 @@ class Wallpaper implements Serializable {
         return wallpaper.getHeight(null);
     }
     public String getPath() {
-        return "wallpapers/" + title + ".jpg";
+        return DEFAULT_PATH + title + ".png";
+    }
+    public boolean isDownloaded() {
+        File f = new File(getPath());
+        return f.exists();
     }
 
     public String getTitle() {
@@ -93,20 +92,17 @@ class Wallpaper implements Serializable {
         return url;
     }
 
-    public String getThumbnailUrl() {
-        return thumbnailUrl;
-    }
-
     public String getPostUrl() {
         return postUrl;
     }
 
-    public Image getWallpaper() {
+    public Image getWallpaper() throws IOException {
+        if (wallpaper == null && isDownloaded()) {
+            wallpaper = ImageIO.read(new File(getPath()));
+        } else if (wallpaper == null) {
+            wallpaper = ImageIO.read(new URL(url));
+        }
         return wallpaper;
-    }
-
-    public Image getThumbnail() {
-        return thumbnail;
     }
 
     @Override

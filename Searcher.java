@@ -98,7 +98,6 @@ public class Searcher {
             Wallpaper wallpaper = new Wallpaper(
                     (String) child.get("title"),
                     (String) child.get("url"),
-                    (String) child.get("thumbnail"),
                     (String) child.get("permalink")
             );
             res.put((String) child.get("id"), wallpaper);
