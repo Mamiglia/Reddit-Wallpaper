@@ -17,7 +17,8 @@ class Wallpaper {
 
 
     public Wallpaper(String title, String url, String postUrl) {
-        this.title = title;
+        this.title = title.replace(";", "");
+        // no ";" allowed for stability reasons
         this.url = url;
         if (postUrl.contains("https://www.reddit.com")) this.postUrl = postUrl;
         else this.postUrl = "https://www.reddit.com" + postUrl;
