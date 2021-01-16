@@ -56,9 +56,16 @@ class Wallpaper {
         f.createNewFile();
         ImageIO.write(bi, "png", f);
     }
+
     public void updateDate() {
         lastUsedDate = new Date();
     }
+
+    public boolean isDownloaded() {
+        File f = new File(getPath());
+        return f.exists();
+    }
+
 
     // GETTERS
     public void setDate() {
@@ -76,27 +83,18 @@ class Wallpaper {
     public String getPath() {
         return DEFAULT_PATH + title + ".png";
     }
-    public boolean isDownloaded() {
-        File f = new File(getPath());
-        return f.exists();
-    }
-
     public String getTitle() {
         return title;
     }
-
     public Date getLastUsedDate() {
         return lastUsedDate;
     }
-
     public String getUrl() {
         return url;
     }
-
     public String getPostUrl() {
         return postUrl;
     }
-
     public Image getWallpaper() throws IOException {
         if (wallpaper == null && isDownloaded()) {
             wallpaper = ImageIO.read(new File(getPath()));

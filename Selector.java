@@ -21,9 +21,11 @@ public class Selector {
         this.proposal = proposal;
         this.db = loadDB(f);
     }
+
     public Wallpaper select() {
         Wallpaper res;
-        ArrayList<String> listProposedID = getProposedWallpapersID(), alreadyUsedID = getOldWallpapersID();
+        ArrayList<String> listProposedID = getProposedWallpapersID(),
+                alreadyUsedID = getOldWallpapersID();
         for (String propID : listProposedID) {
             if (!alreadyUsedID.contains(propID)) {
                 res = proposal.get(propID);
@@ -33,17 +35,18 @@ public class Selector {
                 // An unused wallpaper is found
             }
         }
-
-        // No unused wallpapers are found, select oldest used wallpapers in the list
+        // OR No unused wallpapers are found, select oldest used wallpapers in the list
         String id = findOldestWallpaper(db, listProposedID);
         res = db.get(id);
         res.updateDate();
         updateDB(id, res);
         return res;
     }
+
     public ArrayList<String> getOldWallpapersID() {
         return new ArrayList<>(db.keySet());
     }
+
     public ArrayList<String> getProposedWallpapersID() {
         return new ArrayList<>(proposal.keySet());
     }
@@ -54,13 +57,15 @@ public class Selector {
         while (scan.hasNext()) {
             // database is written in the file in the form of:
             // id(key),title,url,postUrl,ms_from_epoch
-            String[] s = scan.nextLine().split(",");
+            String[] s = scan.nextLine().split(";");
+            System.out.println(s.toString());
             Wallpaper w = new Wallpaper(s[1],s[2],s[3], Long.parseLong(s[4]));
             d.put(s[0], w);
         }
 
         return d;
     }
+
     private void updateDB(String id, Wallpaper w) {
         db.put(id, w);
         cleanDB();
@@ -74,6 +79,7 @@ public class Selector {
 
 
     }
+
     private void cleanDB() {
         // the database will contain a maximum of N wallpapers (default N=50)
         // when the db gets bigger then N, the oldest wallpapers are deleted from the database
@@ -92,6 +98,7 @@ public class Selector {
         }
         return;
     }
+
     private void writeDB() throws IOException {
         File f = new File(databasePath);
         f.delete();
@@ -99,18 +106,25 @@ public class Selector {
         BufferedWriter bw = new BufferedWriter(new FileWriter(f));
         for (String id: db.keySet()) {
             Wallpaper w = db.get(id);
-            bw.write(id + "," +  w.getTitle() + "," + w.getUrl() + "," + w.getPostUrl() + "," + w.getLastUsedDate().getTime());
+            // TODO someone could break everything if they put an ";" in their title
+            bw.write(id + ";" +  w.getTitle() + ";" + w.getUrl() + ";" + w.getPostUrl() + ";" + w.getLastUsedDate().getTime());
             bw.newLine();
             // database is written in the file in the form of:
-            // id(key),title,url,postUrl,ms_from_epoch
+            // id(key),title,url,postUrl,millisecondsFromEpoch \n
         }
         bw.flush();
         bw.close();
     }
+
+
     private static String findOldestWallpaper(HashMap<String, Wallpaper> map) {
+        // to find the oldest wallpaper considering all the keys in the map itself
         return findOldestWallpaper(map, new ArrayList<>(map.keySet()));
     }
+
     private static String findOldestWallpaper(HashMap<String, Wallpaper> map, ArrayList<String> keyList) {
+        // considering just the keys that are in the key list
+
         Date oldest = new Date();
         // everything is older than the present moment
         String oldestID = "";

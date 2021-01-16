@@ -80,11 +80,13 @@ public class Searcher {
         connection.setRequestProperty("Accept-Charset", StandardCharsets.UTF_8.name());
         return connection;
     }
+
     private String getRawData(URLConnection connection) throws IOException {
         // gets the raw JSON file in String form
         Scanner s = new Scanner(connection.getInputStream()).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
     }
+
     private HashMap<String,Wallpaper> refineData(String rawData) throws JsonProcessingException {
         // converts the String JSON into a HashMap JSON, then selects the only things
         // we are interested in: the ID and the photo link
