@@ -39,6 +39,7 @@ class Wallpaper {
     public void saveImage(Image img, boolean thumbnail) throws IOException {
         String path;
         if (thumbnail) {
+            // TODO thumbnail is deprecated
             path = ".utility/thumbnails/";
         } else {
             path = DEFAULT_PATH;
@@ -51,7 +52,7 @@ class Wallpaper {
         Graphics2D g2 = bi.createGraphics();
         g2.drawImage(img, 0, 0, null);
         g2.dispose();
-        File f = new File(path + title +".png");
+        File f = new File(path + cleanString(title) +".png");
         f.mkdirs();
         f.createNewFile();
         ImageIO.write(bi, "png", f);
@@ -81,7 +82,7 @@ class Wallpaper {
         return wallpaper.getHeight(null);
     }
     public String getPath() {
-        return DEFAULT_PATH + title + ".png";
+        return DEFAULT_PATH + cleanString(title) + ".png";
     }
     public String getTitle() {
         return title;
@@ -112,6 +113,18 @@ class Wallpaper {
     @Override
     public String toString() {
         return title + "\nimage url:" + url + "\npost url: " + postUrl + "\ndate:" + lastUsedDate + "\n";
+    }
+
+    public static String cleanString(String s) {
+        // removes non alphanumerical characters from string
+        String res = "";
+        for (int i=0; i<s.length(); i++) {
+            int k = s.charAt(i);
+            if ((k>=48 && k<=57) || (k>=65 && k<=90) || (k>=97 && k<=122)) {
+                res += s.charAt(i);
+            }
+        }
+        return res;
     }
 
 }

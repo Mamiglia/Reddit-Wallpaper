@@ -5,7 +5,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         String[] title = {"cat", "dog"};
-        String[] subreddits = {"wallpapers", "dankmemes"};
+        String[] subreddits = {"wallpapers", "wallpaper", "worldpolitics"};
         int length = 1, height = 1;
         boolean nsfw = false;
         String searchBy = Searcher.SEARCH_BY_HOT;
@@ -18,6 +18,9 @@ public class Main {
         try {
             Selector selector = new Selector(wallpapers);
             Wallpaper w = selector.select();
+            w.download();
+            Thread t = new Thread(new SetNewWallpaper(w));
+            t.start();
             System.out.println(w.toString());
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

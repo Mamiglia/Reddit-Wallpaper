@@ -48,7 +48,7 @@ public class Searcher {
                 + "&sort=" //how to sort them (hot, new ...)
                 + searchBy
                 + "&limit=20" //how many posts
-                + "&t=day" //how old can a post be at most
+                // + "&t=day" //how old can a post be at most
                 + "&type=t3" //only link type posts, no text-only
                 // + "&restrict_sr=true" i don't think it's useful but still have to figure out what it does
         ;

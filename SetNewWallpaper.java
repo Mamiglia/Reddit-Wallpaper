@@ -18,8 +18,12 @@ class SetNewWallpaper implements Runnable {
         //SystemParametersInfo(20, 0, wp.getPath(), 0);
 
         // Linux XFCE
+        // probably won't work in machine different from mine
         try {
-            Runtime.getRuntime().exec("xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorVGA-1/workspace0/last-image -s " + wp.getPath());
+            String s = "xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorVGA-1/workspace0/last-image -s \"/home/studente/IdeaProjects/Reddit wallpaper downloader/" + wp.getPath() + "\"";
+            System.out.println(s);
+            ProcessBuilder processB = new ProcessBuilder().command("bash", "-c" , s);
+            Process process = processB.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
