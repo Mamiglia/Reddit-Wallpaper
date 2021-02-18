@@ -4,7 +4,6 @@ import java.util.HashMap;
 public class Main {
 
     public static void main(String[] args) throws IOException {
-        new GUI();
         String[] title = {"cat", "dog"};
         String[] subreddits = {"wallpapers", "wallpaper", "worldpolitics"};
         int length = 1, height = 1;

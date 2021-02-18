@@ -87,7 +87,7 @@ public class Searcher {
         return s.hasNext() ? s.next() : "";
     }
 
-    private HashMap<String,Wallpaper> refineData(String rawData) throws JsonProcessingException {
+    private HashMap<String,Wallpaper> refineData(String rawData) throws IOException {
         // converts the String JSON into a HashMap JSON, then selects the only things
         // we are interested in: the ID and the photo link
         HashMap<String,Object> result =

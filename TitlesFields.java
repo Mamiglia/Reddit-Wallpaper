@@ -25,7 +25,6 @@ class TitlesFields extends JPanel {
             titleFields.add(tf);
             leftSide.add(tf);
             tf.setColumns(12);
-            tf.setFon
         }
 
         JPanel rightSide = new JPanel();
