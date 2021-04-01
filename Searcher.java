@@ -40,6 +40,9 @@ public class Searcher {
         this.searchBy = searchBy;
     }
 
+    /**
+     * It generates a search query for reddit query API
+     */
     void generateSearchQuery() {
         searchQuery = "" +
                 "https://reddit.com/search.json?"
@@ -52,8 +55,12 @@ public class Searcher {
                 + "&type=t3" //only link type posts, no text-only
                 // + "&restrict_sr=true" i don't think it's useful but still have to figure out what it does
         ;
-        }
+    }
 
+    /**
+     * generates a part of the search query where
+     * @return
+     */
     String generateQuery() {
         String s =
                 "(title:("
@@ -63,11 +70,18 @@ public class Searcher {
                 + ") nsfw:" // if true shows nsfw ONLY
                 + (nsfw?"yes":"no")
                 + " self:no)" //this means no text-only posts
-                // add flairs?
+                // TODO add flairs?
                 ;
+        s = s.replace("title:() ", "").replace("subreddits:() ", "");
+        //Removes title and subreddit field if they are void
         return encodeURL(s);
     }
 
+    /**
+     * Manages the connection, connects to reddit, download the whole JSON, and refines it to make it useful
+     * @return the JSON containing the db with search results
+     * @throws IOException if unable to connect or download the JSON
+     */
     public HashMap<String, Wallpaper> getSearchResults() throws IOException {
         URLConnection connect = initializeConnection();
         String rawData = getRawData(connect);
