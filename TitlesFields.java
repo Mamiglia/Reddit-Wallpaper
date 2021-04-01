@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+//Probably useless
+
 class TitlesFields extends JPanel {
     private ArrayList<JTextField> titleFields = new ArrayList<>();
     private JButton plusBtn = new JButton("+");

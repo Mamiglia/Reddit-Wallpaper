@@ -1,4 +1,7 @@
-import com.fasterxml.jackson.core.JsonProcessingException;
+package Utils;
+
+import Wallpaper.Wallpaper;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -74,13 +77,15 @@ public class Searcher {
                 ;
         s = s.replace("title:() ", "").replace("subreddits:() ", "");
         //Removes title and subreddit field if they are void
+        //What happens if some dumbhead tries to put as keyword to search "title:() " or "subreddits:() "? Will it just break the program? Is this some sort of hijackable thing?
+        //I don't know for I am too dumb
         return encodeURL(s);
     }
 
     /**
      * Manages the connection, connects to reddit, download the whole JSON, and refines it to make it useful
      * @return the JSON containing the db with search results
-     * @throws IOException if unable to connect or download the JSON
+     * @throws IOException if unable to connect or download the JSON. Reasons: bad internet connection, dirty input string (smth like trying to research for "//" or "title:() "
      */
     public HashMap<String, Wallpaper> getSearchResults() throws IOException {
         URLConnection connect = initializeConnection();

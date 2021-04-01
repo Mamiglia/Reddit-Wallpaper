@@ -1,10 +1,14 @@
+import Utils.Searcher;
+import Utils.Selector;
+import Utils.SetNewWallpaper;
+
 import java.io.IOException;
 import java.util.HashMap;
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
-        String[] title = {"cat", "dog"};
+        String[] title = {};
         String[] subreddits = {"wallpapers", "wallpaper", "worldpolitics"};
         int length = 1, height = 1;
         boolean nsfw = false;

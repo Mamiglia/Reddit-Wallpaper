@@ -1,3 +1,7 @@
+package Utils;
+
+import Wallpaper.Wallpaper;
+
 import java.io.IOException;
 import java.nio.file.Paths;
 
@@ -17,6 +21,7 @@ class SetNewWallpaper implements Runnable {
         // Windows
         //System.loadLibarary("user32")
         //SystemParametersInfo(20, 0, wp.getPath(), 0);
+
 
         // Linux XFCE
         // probably won't work in machine different from mine

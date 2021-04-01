@@ -1,3 +1,5 @@
+package Wallpaper;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -6,7 +8,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
 
-class Wallpaper {
+public class Wallpaper {
     public static final Date NEVER_USED = new Date(0);
     public static final String DEFAULT_PATH = "wallpapers/";
     private final String title;

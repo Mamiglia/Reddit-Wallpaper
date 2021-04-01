@@ -1,3 +1,7 @@
+package Utils;
+
+import Wallpaper.Wallpaper;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -5,6 +9,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class Selector {
+    private static int MAX_DB_SIZE = 50;
     public static final String databasePath = ".utility/wallpaperDB.txt";
     private final HashMap<String, Wallpaper> proposal;
     //has a structure like: { ...
@@ -56,7 +61,7 @@ public class Selector {
         HashMap<String, Wallpaper> d = new HashMap<>();
         while (scan.hasNext()) {
             // database is written in the file in the form of:
-            // id(key),title,url,postUrl,ms_from_epoch
+            // id(key);title;url;postUrl;ms_from_epoch \n
             String[] s = scan.nextLine().split(";");
             System.out.println(s.toString());
             Wallpaper w = new Wallpaper(s[1],s[2],s[3], Long.parseLong(s[4]));
@@ -67,6 +72,7 @@ public class Selector {
     }
 
     private void updateDB(String id, Wallpaper w) {
+        // TODO terrible implementation, you just can't erase and rewrite the db every single time
         db.put(id, w);
         cleanDB();
         try{
@@ -81,10 +87,10 @@ public class Selector {
     }
 
     private void cleanDB() {
-        // the database will contain a maximum of N wallpapers (default N=50)
+        // the database will contain a maximum of MAX_DB_SIZE wallpapers (default N=50)
         // when the db gets bigger then N, the oldest wallpapers are deleted from the database
         // the user will set if he wants to delete also the wallpaper or the database entry only
-        if (getOldWallpapersID().size() >= 50) { // TODO replace 50 with N
+        if (getOldWallpapersID().size() >= MAX_DB_SIZE) {
             String idOldestWalp = findOldestWallpaper(db);
             Wallpaper w = db.get(idOldestWalp);
             db.remove(idOldestWalp);
@@ -96,7 +102,6 @@ public class Selector {
             }
             cleanDB();
         }
-        return;
     }
 
     private void writeDB() throws IOException {
@@ -110,7 +115,7 @@ public class Selector {
             bw.write(id + ";" +  w.getTitle() + ";" + w.getUrl() + ";" + w.getPostUrl() + ";" + w.getLastUsedDate().getTime());
             bw.newLine();
             // database is written in the file in the form of:
-            // id(key),title,url,postUrl,millisecondsFromEpoch \n
+            // id(key);title;url;postUrl;millisecondsFromEpoch \n
         }
         bw.flush();
         bw.close();
