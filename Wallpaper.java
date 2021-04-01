@@ -13,7 +13,7 @@ class Wallpaper {
     private final String url;
     private final String postUrl;
     private Date lastUsedDate;
-    private Image wallpaper;
+    private Image image;
 
 
     public Wallpaper(String title, String url, String postUrl) {
@@ -31,8 +31,8 @@ class Wallpaper {
     }
 
     public void download() throws IOException {
-        wallpaper = ImageIO.read(new URL(url));
-        saveImage(wallpaper, false);
+        image = ImageIO.read(new URL(url));
+        saveImage(image, false);
         // when an image is downloaded it's also used for the first time
         updateDate();
     }
@@ -77,10 +77,10 @@ class Wallpaper {
         return (double) getWidth()/ (double) getHeight();
     }
     public int getWidth() {
-        return wallpaper.getWidth(null);
+        return image.getWidth(null);
     }
     public int getHeight() {
-        return wallpaper.getHeight(null);
+        return image.getHeight(null);
     }
     public String getPath() {
         return DEFAULT_PATH + cleanString(title) + ".png";
@@ -97,13 +97,13 @@ class Wallpaper {
     public String getPostUrl() {
         return postUrl;
     }
-    public Image getWallpaper() throws IOException {
-        if (wallpaper == null && isDownloaded()) {
-            wallpaper = ImageIO.read(new File(getPath()));
-        } else if (wallpaper == null) {
-            wallpaper = ImageIO.read(new URL(url));
+    public Image getImage() throws IOException {
+        if (image == null && isDownloaded()) {
+            image = ImageIO.read(new File(getPath()));
+        } else if (image == null) {
+            image = ImageIO.read(new URL(url));
         }
-        return wallpaper;
+        return image;
     }
 
     @Override
