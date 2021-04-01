@@ -26,19 +26,23 @@ public class GUI extends JFrame{
 	private JPanel subredditPane;
 	private JTextArea titleArea;
 	private JTextArea subredditArea;
-	private JComboBox frequencySelection;
 	private JComboBox oldSelecton;
 	private JComboBox sortSelection;
 	private JCheckBox nsfwCheckBox;
 	private JTextArea logArea;
 	private JButton applyButton;
+	private JFormattedTextField a15FormattedTextField;
+	private JButton changeNowButton;
 
 	public GUI() {
+		super("Reddit Wallpaper Downloader");
 		add(rootPane);
 
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		pack();
 		setVisible(true);
 	}
+
+
 
 }
