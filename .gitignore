@@ -23,5 +23,7 @@
 hs_err_pid*
 .idea/
 out/
+wallpapers/
+.utility/
 META-INF/MANIFEST.MF
 *.iml
