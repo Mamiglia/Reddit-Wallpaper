@@ -12,21 +12,18 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
-
-public class Searcher {
-    final static String SEARCH_BY_TOP = "top";
-    final static String SEARCH_BY_NEW = "new";
-    final static String SEARCH_BY_HOT = "hot";
-    final static String SEARCH_BY_RELEVANCE = "relevance";
+class Searcher {
     private final String[] titles;
     private final String[] subreddits;
     private final int length;
     private final int height;
     private final boolean nsfw;
-    private final String searchBy;
+    private final GetNewWallpaper.SEARCH_BY searchBy;
     private String searchQuery;
+    private Map<String, Wallpaper> proposed;
 
     public Searcher(
             String[] title,
@@ -34,7 +31,7 @@ public class Searcher {
             int length,
             int height,
             boolean nsfw,
-            String searchBy) {
+            GetNewWallpaper.SEARCH_BY searchBy) {
         this.titles = title;
         this.subreddits = subreddits;
         this.length = length;
@@ -52,7 +49,7 @@ public class Searcher {
                 + "q="
                 + generateQuery()
                 + "&sort=" //how to sort them (hot, new ...)
-                + searchBy
+                + translate(searchBy)
                 + "&limit=20" //how many posts
                 // + "&t=day" //how old can a post be at most
                 + "&type=t3" //only link type posts, no text-only
@@ -87,10 +84,13 @@ public class Searcher {
      * @return the JSON containing the db with search results
      * @throws IOException if unable to connect or download the JSON. Reasons: bad internet connection, dirty input string (smth like trying to research for "//" or "title:() "
      */
-    public HashMap<String, Wallpaper> getSearchResults() throws IOException {
-        URLConnection connect = initializeConnection();
-        String rawData = getRawData(connect);
-        return refineData(rawData);
+    public Map<String, Wallpaper> getSearchResults() throws IOException {
+        if (proposed == null) {
+            URLConnection connect = initializeConnection();
+            String rawData = getRawData(connect);
+            proposed =  refineData(rawData);
+        }
+        return proposed;
     }
 
     private URLConnection initializeConnection() throws IOException {
@@ -106,7 +106,7 @@ public class Searcher {
         return s.hasNext() ? s.next() : "";
     }
 
-    private HashMap<String,Wallpaper> refineData(String rawData) throws IOException {
+    private Map<String,Wallpaper> refineData(String rawData) throws IOException {
         // converts the String JSON into a HashMap JSON, then selects the only things
         // we are interested in: the ID and the photo link
         HashMap<String,Object> result =
@@ -156,11 +156,33 @@ public class Searcher {
         return nsfw;
     }
 
-    public String getSearchBy() {
+    public GetNewWallpaper.SEARCH_BY getSearchBy() {
         return searchBy;
     }
 
     public String getSearchQuery() {
         return searchQuery;
+    }
+
+    public static String translate(GetNewWallpaper.SEARCH_BY searchBy) {
+        String s = null;
+        switch (searchBy) {
+            case HOT:
+                s = "hot";
+                break;
+            case NEW:
+                s = "new";
+                break;
+            case TOP:
+                s = "top";
+                break;
+            case RELEVANCE:
+                s = "relevance";
+                break;
+            default:
+                System.err.println("Impossible error!");
+                // should never happen to get here
+            }
+        return s;
     }
 }

@@ -34,19 +34,13 @@ public class Wallpaper {
 
     public void download() throws IOException {
         image = ImageIO.read(new URL(url));
-        saveImage(image, false);
+        saveImage(image);
         // when an image is downloaded it's also used for the first time
         updateDate();
     }
 
-    public void saveImage(Image img, boolean thumbnail) throws IOException {
-        String path;
-        if (thumbnail) {
-            // TODO thumbnail is deprecated
-            path = ".utility/thumbnails/";
-        } else {
-            path = DEFAULT_PATH;
-        }
+    public void saveImage(Image img) throws IOException {
+        String path = DEFAULT_PATH;
         BufferedImage bi = new BufferedImage(
                 img.getWidth(null),
                 img.getHeight(null),

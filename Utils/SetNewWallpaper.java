@@ -5,16 +5,20 @@ import Wallpaper.Wallpaper;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-class SetNewWallpaper implements Runnable {
+public class SetNewWallpaper implements Runnable {
+    private boolean executed = false;
     private final Wallpaper wp;
 
-    SetNewWallpaper(Wallpaper wp) {
+    public SetNewWallpaper(Wallpaper wp) {
         this.wp = wp;
     }
 
 
     @Override
     public void run() {
+        if (executed) return;
+        executed = true;
+
         if (!wp.isDownloaded()) {
             System.out.println("ERROR wallpaper file not found");
         }

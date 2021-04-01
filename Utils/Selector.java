@@ -3,24 +3,21 @@ package Utils;
 import Wallpaper.Wallpaper;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
 
-public class Selector {
+class Selector {
     private static int MAX_DB_SIZE = 50;
     public static final String databasePath = ".utility/wallpaperDB.txt";
-    private final HashMap<String, Wallpaper> proposal;
+    private final Map<String, Wallpaper> proposal;
     //has a structure like: { ...
     //                          id : Wallpaper
     //                     ...}
-    private final HashMap<String, Wallpaper> db;
+    private final Map<String, Wallpaper> db;
     //has a structure like: {...
     //                          id: Wallpaper
 
 
-    public Selector(HashMap<String, Wallpaper> proposal) throws IOException, ClassNotFoundException {
+    public Selector(Map<String, Wallpaper> proposal) throws IOException{
         File f = new File(databasePath);
         f.createNewFile();
         this.proposal = proposal;
@@ -56,9 +53,9 @@ public class Selector {
         return new ArrayList<>(proposal.keySet());
     }
 
-    private HashMap<String, Wallpaper> loadDB(File f) throws IOException, ClassNotFoundException {
+    private Map<String, Wallpaper> loadDB(File f) throws IOException {
         Scanner scan = new Scanner(new FileReader(f));
-        HashMap<String, Wallpaper> d = new HashMap<>();
+        Map<String, Wallpaper> d = new HashMap<String, Wallpaper>();
         while (scan.hasNext()) {
             // database is written in the file in the form of:
             // id(key);title;url;postUrl;ms_from_epoch \n
@@ -95,7 +92,7 @@ public class Selector {
             Wallpaper w = db.get(idOldestWalp);
             db.remove(idOldestWalp);
             System.out.println("Cleaning of DB, removing " + idOldestWalp);
-            boolean USERCHOICE = true;
+            boolean USERCHOICE = true; //what userchoice??
             if (USERCHOICE) {
                 File f = new File(w.getPath());
                 f.delete();
@@ -122,12 +119,12 @@ public class Selector {
     }
 
 
-    private static String findOldestWallpaper(HashMap<String, Wallpaper> map) {
+    private static String findOldestWallpaper(Map<String, Wallpaper> map) {
         // to find the oldest wallpaper considering all the keys in the map itself
         return findOldestWallpaper(map, new ArrayList<>(map.keySet()));
     }
 
-    private static String findOldestWallpaper(HashMap<String, Wallpaper> map, ArrayList<String> keyList) {
+    private static String findOldestWallpaper(Map<String, Wallpaper> map, ArrayList<String> keyList) {
         // considering just the keys that are in the key list
 
         Date oldest = new Date();
