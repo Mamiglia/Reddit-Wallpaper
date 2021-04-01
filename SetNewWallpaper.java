@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.nio.file.Paths;
 
 class SetNewWallpaper implements Runnable {
     private final Wallpaper wp;
@@ -20,7 +21,7 @@ class SetNewWallpaper implements Runnable {
         // Linux XFCE
         // probably won't work in machine different from mine
         try {
-            String s = "xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorVGA-1/workspace0/last-image -s \"/home/studente/IdeaProjects/Reddit wallpaper downloader/" + wp.getPath() + "\"";
+            String s = "xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorVGA-1/workspace0/last-image -s \"" + Paths.get(".").toAbsolutePath().normalize().toString() + "/" + wp.getPath() + "\"";
             System.out.println(s);
             ProcessBuilder processB = new ProcessBuilder().command("bash", "-c" , s);
             Process process = processB.start();
