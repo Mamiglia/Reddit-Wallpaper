@@ -1,10 +1,6 @@
 import Utils.GetNewWallpaper;
 import Utils.SetNewWallpaper;
-import Wallpaper.Wallpaper;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Set;
 
 public class Main {
 
