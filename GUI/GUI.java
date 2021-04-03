@@ -43,6 +43,8 @@ public class GUI extends JFrame{
 	private JSpinner heightField;
 	private JSpinner periodField;
 	private JSpinner widthField;
+	private JSpinner dbSizeField;
+	private JCheckBox keepCheckBox;
 	static final String PATH_TO_SAVEFILE = ".utility/settings.txt";
 	static final Logger log = Logger.getLogger("GUI");
 	private final Act act;
@@ -123,7 +125,7 @@ public class GUI extends JFrame{
 		GetNewWallpaper.SEARCH_BY searchBy = GetNewWallpaper.SEARCH_BY.HOT;
 
 		//TODO run in threads
-		GetNewWallpaper g = new GetNewWallpaper(title, subreddits, length, height, nsfw, searchBy);
+		GetNewWallpaper g = new GetNewWallpaper(settings);
 		g.run();
 		SetNewWallpaper set = new SetNewWallpaper(g.getResult());
 		set.run();
@@ -136,5 +138,7 @@ public class GUI extends JFrame{
 		heightField = new JSpinner(s);
 		s = new SpinnerNumberModel(1920, 0, 10000, 1);
 		widthField = new JSpinner(s);
+		s = new SpinnerNumberModel(50, -1, 10000, 1);
+		dbSizeField = new JSpinner(s);
 	}
 }

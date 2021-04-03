@@ -5,7 +5,7 @@ import Utils.GetNewWallpaper.SEARCH_BY;
 import java.util.Arrays;
 import java.util.Objects;
 
-class Settings {
+public class Settings {
 	private String[] titles = {};
 	private String[] subreddits = {"wallpapers"};
 	private SEARCH_BY searchBy = SEARCH_BY.HOT;
@@ -14,6 +14,8 @@ class Settings {
 	private int width = 1920;
 	private int period = 15; //mins
 	private int maxOldness = 24; //hours
+	private int maxDatabaseSize = 50;
+	private boolean keepWallpapers = false; //keep wallpapers after eliminating them from db?
 
 	public Settings() {
 	}
@@ -93,6 +95,22 @@ class Settings {
 		this.maxOldness = maxOldness;
 	}
 
+	public int getMaxDatabaseSize() {
+		return maxDatabaseSize;
+	}
+
+	public void setMaxDatabaseSize(int maxDatabaseSize) {
+		this.maxDatabaseSize = maxDatabaseSize;
+	}
+
+	public boolean isWantToKeepWallpapers() {
+		return keepWallpapers;
+	}
+
+	public void setWantToKeepWallpapers(boolean keepWallpapers) {
+		this.keepWallpapers = keepWallpapers;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -135,6 +153,13 @@ class Settings {
 			case "maxOldness":
 				maxOldness = Integer.parseInt(value);
 				break;
+			case "MaxDatabaseSize":
+				maxDatabaseSize = Integer.parseInt(value);
+				break;
+			case "keepWallpapers":
+				keepWallpapers = Boolean.parseBoolean(value);
+				break;
+
 			default:
 				System.err.println("Property does not exist");
 		}
