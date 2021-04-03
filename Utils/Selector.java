@@ -7,7 +7,7 @@ import java.util.*;
 
 class Selector {
     private static int MAX_DB_SIZE = 50;
-    public static final String databasePath = ".utility/wallpaperDB.txt";
+    public static final String PATH_TO_DATABASE = ".utility/wallpaperDB.txt";
     private final Map<String, Wallpaper> proposal;
     //has a structure like: { ...
     //                          id : Wallpaper
@@ -18,9 +18,9 @@ class Selector {
 
 
     public Selector(Map<String, Wallpaper> proposal) throws IOException{
-        File f = new File(databasePath);
-        f.createNewFile();
+        File f = new File(PATH_TO_DATABASE);
         this.proposal = proposal;
+
         this.db = loadDB(f);
     }
 
@@ -54,6 +54,11 @@ class Selector {
     }
 
     private Map<String, Wallpaper> loadDB(File f) throws IOException {
+        if (!f.exists()) {
+            //the DB file doesn't exist yet!
+            f.getParentFile().mkdirs();
+            f.createNewFile();
+        }
         Scanner scan = new Scanner(new FileReader(f));
         Map<String, Wallpaper> d = new HashMap<String, Wallpaper>();
         while (scan.hasNext()) {
@@ -102,7 +107,7 @@ class Selector {
     }
 
     private void writeDB() throws IOException {
-        File f = new File(databasePath);
+        File f = new File(PATH_TO_DATABASE);
         f.delete();
         f.createNewFile();
         BufferedWriter bw = new BufferedWriter(new FileWriter(f));

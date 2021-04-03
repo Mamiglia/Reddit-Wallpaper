@@ -109,7 +109,8 @@ class Searcher {
     private Map<String,Wallpaper> refineData(String rawData) throws IOException {
         // converts the String JSON into a HashMap JSON, then selects the only things
         // we are interested in: the ID and the photo link
-        HashMap<String,Object> result =
+        HashMap<String,Object> result = null;
+        result =
                 new ObjectMapper().readValue(rawData, HashMap.class);
         ArrayList<HashMap> children = (ArrayList<HashMap>) ((HashMap<String, Object>) result.get("data")).get("children");
 
