@@ -16,7 +16,6 @@ class Settings {
 	private int maxOldness = 24; //hours
 
 	public Settings() {
-		return;
 	}
 
 	public Settings(String[] titles, String[] subreddits, SEARCH_BY searchBy, boolean nsfwOnly, int height, int width, int period, int maxOldness) {
@@ -108,6 +107,37 @@ class Settings {
 		result = 31 * result + Arrays.hashCode(titles);
 		result = 31 * result + Arrays.hashCode(subreddits);
 		return result;
+	}
+
+	public void setProperty(String property, String value) {
+		switch (property) {
+			case "titles":
+				titles = value.replace("[", "").replace("]","").split(",");
+				break;
+			case "subreddits":
+				subreddits = value.replace("[", "").replace("]","").split(",");
+				break;
+			case "searchBy":
+				searchBy = SEARCH_BY.valueOf(value);
+				break;
+			case "nsfwOnly":
+				nsfwOnly = Boolean.parseBoolean(value);
+				break;
+			case "height":
+				height = Integer.parseInt(value);
+				break;
+			case "width":
+				width = Integer.parseInt(value);
+				break;
+			case "period":
+				period = Integer.parseInt(value);
+				break;
+			case "maxOldness":
+				maxOldness = Integer.parseInt(value);
+				break;
+			default:
+				System.err.println("Property does not exist");
+		}
 	}
 
 	@Override

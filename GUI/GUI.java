@@ -4,6 +4,8 @@ import Utils.GetNewWallpaper;
 import Utils.SetNewWallpaper;
 
 import javax.swing.*;
+import java.io.*;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,9 +43,10 @@ public class GUI extends JFrame{
 	private JSpinner heightField;
 	private JSpinner periodField;
 	private JSpinner widthField;
+	static final String PATH_TO_SAVEFILE = ".utility/settings.txt";
 	static final Logger log = Logger.getLogger("GUI");
 	private final Act act;
-	private final Settings settings;
+	private Settings settings;
 
 	public GUI() {
 		super("Reddit Wallpaper Downloader");
@@ -51,7 +54,7 @@ public class GUI extends JFrame{
 		act = new Act(this);
 		applyButton.addActionListener(act);
 		changeNowButton.addActionListener(act);
-		settings = loadSettings();
+		loadSettings();
 		log.log(Level.INFO, "GUI started");
 
 
@@ -69,11 +72,44 @@ public class GUI extends JFrame{
 		settings.setWidth((int) widthField.getValue());
 		//settings.getMaxOldness(oldSelecton.getSelectedItem())
 		settings.setPeriod((int) periodField.getValue());
-		settings.setSearchBy();
+		//settings.setSearchBy(sortSelection.getSelectedItem());
+
+		FileWriter wr = null;
+		try {
+			wr = new FileWriter(PATH_TO_SAVEFILE);
+			wr.write(settings.toString());
+			wr.close();
+		} catch (IOException e) {
+			log.log(Level.SEVERE, "Couldn't save the file");
+			e.printStackTrace();
+		}
+		log.log(Level.INFO, "Saved settings");
 	}
 
-	private Settings loadSettings() {
-		return null;
+	private void loadSettings() {
+		File settingFile = new File(PATH_TO_SAVEFILE);
+		if (!settingFile.exists()) {
+			settingFile.getParentFile().mkdirs();
+			try {
+				settingFile.createNewFile();
+			} catch (IOException e) {
+				//TODO bad practice
+				e.printStackTrace();
+			}
+		}
+		settings = new Settings();
+		Scanner scan = null;
+		try {
+			 scan = new Scanner(settingFile);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		while (scan.hasNext()) {
+			String[] s = scan.nextLine().split("=");
+			settings.setProperty(s[0], s[1]);
+		}
+
 	}
 
 	void changeWallpaper() {
@@ -100,6 +136,5 @@ public class GUI extends JFrame{
 		heightField = new JSpinner(s);
 		s = new SpinnerNumberModel(1920, 0, 10000, 1);
 		widthField = new JSpinner(s);
-
 	}
 }
