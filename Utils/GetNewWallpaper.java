@@ -1,5 +1,6 @@
 package Utils;
 
+import GUI.Settings;
 import Wallpaper.Wallpaper;
 
 import java.io.IOException;
@@ -8,26 +9,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class GetNewWallpaper implements Runnable {
-	public enum SEARCH_BY {TOP, NEW, HOT, RELEVANCE}
-	private boolean executed = false;
-	private static final Logger log = Logger.getLogger("Get New Wallpaper")
+	public enum SEARCH_BY {TOP, NEW, HOT, RELEVANCE} //Should be moved to settings class
 
-	private final String[] titles;
-	private final String[] subreddits;
-	private final int width;
-	private final int height;
-	private final boolean nsfw;
-	private final SEARCH_BY searchBy;
+	private boolean executed = false;
+	private static final Logger log = Logger.getLogger("Get New Wallpaper");
+	private final Settings settings;
 
 	private Wallpaper result;
 
-	public GetNewWallpaper(String[] titles, String[] subreddits, int width, int height, boolean nsfw, SEARCH_BY searchBy) {
-		this.titles = titles;
-		this.subreddits = subreddits;
-		this.width = width;
-		this.height = height;
-		this.nsfw = nsfw;
-		this.searchBy = searchBy;
+	public GetNewWallpaper(Settings settings) {
+		this.settings = settings;
 	}
 
 
@@ -36,7 +27,7 @@ public class GetNewWallpaper implements Runnable {
 		if (executed) return;
 		executed = true;
 
-		Searcher s = new Searcher(titles, subreddits, width, height, nsfw, searchBy);
+		Searcher s = new Searcher(settings);
 		s.generateSearchQuery();
 		log.log(Level.INFO, "Search query is: " + s.getSearchQuery());
 		Map<String, Wallpaper> wallpapers = null;

@@ -4,11 +4,16 @@ import Wallpaper.Wallpaper;
 
 import java.io.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 class Selector {
-    private static int MAX_DB_SIZE = 50;
+    private int MAX_DB_SIZE = 50;
+    private boolean keepWallpapers;
     public static final String PATH_TO_DATABASE = ".utility/wallpaperDB.txt";
+    private static final Logger log = Logger.getLogger("Selector");
     private final Map<String, Wallpaper> proposal;
+
     //has a structure like: { ...
     //                          id : Wallpaper
     //                     ...}
@@ -17,9 +22,11 @@ class Selector {
     //                          id: Wallpaper
 
 
-    public Selector(Map<String, Wallpaper> proposal) throws IOException{
+    public Selector(Map<String, Wallpaper> proposal, boolean keepWallpapers, int MAX_DB_SIZE) throws IOException{
         File f = new File(PATH_TO_DATABASE);
         this.proposal = proposal;
+        this.keepWallpapers = keepWallpapers;
+        this.MAX_DB_SIZE = MAX_DB_SIZE;
 
         this.db = loadDB(f);
     }
@@ -65,11 +72,11 @@ class Selector {
             // database is written in the file in the form of:
             // id(key);title;url;postUrl;ms_from_epoch \n
             String[] s = scan.nextLine().split(";");
-            System.out.println(s.toString());
+            log.log(Level.FINE, Arrays.toString(s));
             Wallpaper w = new Wallpaper(s[1],s[2],s[3], Long.parseLong(s[4]));
             d.put(s[0], w);
         }
-
+        log.log(Level.INFO, "Database loaded");
         return d;
     }
 
@@ -88,6 +95,9 @@ class Selector {
 
     }
 
+    /*
+        removes items from Database if it has more than MAX_DB_SIZE elements
+     */
     private void cleanDB() {
         // the database will contain a maximum of MAX_DB_SIZE wallpapers (default N=50)
         // when the db gets bigger then N, the oldest wallpapers are deleted from the database
@@ -96,9 +106,10 @@ class Selector {
             String idOldestWalp = findOldestWallpaper(db);
             Wallpaper w = db.get(idOldestWalp);
             db.remove(idOldestWalp);
-            System.out.println("Cleaning of DB, removing " + idOldestWalp);
-            boolean USERCHOICE = true; //what userchoice??
-            if (USERCHOICE) {
+            log.log(Level.INFO, "Cleaning of DB, removing " + idOldestWalp);
+
+            //Does the user want to keep the wallpaper after it's eliminated from the database?
+            if (!keepWallpapers) {
                 File f = new File(w.getPath());
                 f.delete();
             }

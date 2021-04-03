@@ -1,5 +1,6 @@
 package Utils;
 
+import GUI.Settings;
 import Wallpaper.Wallpaper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,30 +15,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 class Searcher {
-    private final String[] titles;
-    private final String[] subreddits;
-    private final int length;
-    private final int height;
-    private final boolean nsfw;
-    private final GetNewWallpaper.SEARCH_BY searchBy;
+    private final Settings settings;
     private String searchQuery;
     private Map<String, Wallpaper> proposed;
+    private static final Logger log = Logger.getLogger("Searcher");
 
-    public Searcher(
-            String[] title,
-            String[] subreddits,
-            int length,
-            int height,
-            boolean nsfw,
-            GetNewWallpaper.SEARCH_BY searchBy) {
-        this.titles = title;
-        this.subreddits = subreddits;
-        this.length = length;
-        this.height = height;
-        this.nsfw = nsfw;
-        this.searchBy = searchBy;
+    public Searcher(Settings settings) {
+        this.settings = settings;
     }
 
     /**
@@ -49,7 +37,7 @@ class Searcher {
                 + "q="
                 + generateQuery()
                 + "&sort=" //how to sort them (hot, new ...)
-                + translate(searchBy)
+                + translate(settings.getSearchBy())
                 + "&limit=20" //how many posts
                 // + "&t=day" //how old can a post be at most
                 + "&type=t3" //only link type posts, no text-only
@@ -58,17 +46,18 @@ class Searcher {
     }
 
     /**
-     * generates a part of the search query where
+     * generates a part of the search query
      * @return
      */
     String generateQuery() {
+        //Could be removed?
         String s =
                 "(title:("
-                + String.join(" OR ", titles)
+                + String.join(" OR ", settings.getTitles())
                 + ") subreddit:("
-                + String.join(" OR ", subreddits)
+                + String.join(" OR ", settings.getSubreddits())
                 + ") nsfw:" // if true shows nsfw ONLY
-                + (nsfw?"yes":"no")
+                + (settings.isNsfwOnly()?"yes":"no")
                 + " self:no)" //this means no text-only posts
                 // TODO add flairs?
                 ;
@@ -90,6 +79,7 @@ class Searcher {
             String rawData = getRawData(connect);
             proposed =  refineData(rawData);
         }
+        log.log(Level.INFO, "Search Result is " + proposed.toString());
         return proposed;
     }
 
@@ -110,8 +100,7 @@ class Searcher {
         // converts the String JSON into a HashMap JSON, then selects the only things
         // we are interested in: the ID and the photo link
         HashMap<String,Object> result = null;
-        result =
-                new ObjectMapper().readValue(rawData, HashMap.class);
+        result = new ObjectMapper().readValue(rawData, HashMap.class);
         ArrayList<HashMap> children = (ArrayList<HashMap>) ((HashMap<String, Object>) result.get("data")).get("children");
 
         HashMap<String, Wallpaper> res = new HashMap<>();
@@ -137,29 +126,6 @@ class Searcher {
     }
 
     // Getter
-    public String[] getTitle() {
-        return titles;
-    }
-
-    public String[] getSubreddits() {
-        return subreddits;
-    }
-
-    public int getLength() {
-        return length;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public boolean isNsfw() {
-        return nsfw;
-    }
-
-    public GetNewWallpaper.SEARCH_BY getSearchBy() {
-        return searchBy;
-    }
 
     public String getSearchQuery() {
         return searchQuery;
