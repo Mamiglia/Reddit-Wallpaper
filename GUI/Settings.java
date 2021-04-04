@@ -107,6 +107,20 @@ public class Settings {
 		return keepWallpapers;
 	}
 
+	@Override
+	public String toString() {
+		return "titles=" + Arrays.toString(titles) +
+				"\nsubreddits=" + Arrays.toString(subreddits) +
+				"\nsearchBy=" + searchBy +
+				"\nnsfwOnly=" + nsfwOnly +
+				"\nheight=" + height +
+				"\nwidth=" + width +
+				"\nperiod=" + period +
+				"\nmaxOldness=" + maxOldness +
+				"\nmaxDBSize=" + maxDBSize +
+				"\nkeepWallpapers=" + keepWallpapers;
+	}
+
 	public void setKeepWallpapers(boolean keepWallpapers) {
 		this.keepWallpapers = keepWallpapers;
 	}
@@ -165,15 +179,4 @@ public class Settings {
 		}
 	}
 
-	@Override
-	public String toString() {
-		return	"titles=" + Arrays.toString(titles) +
-				"\nsubreddits=" + Arrays.toString(subreddits) +
-				"\nsearchBy=" + searchBy +
-				"\nnsfwOnly=" + nsfwOnly +
-				"\nheight=" + height +
-				"\nwidth=" + width +
-				"\nperiod=" + period +
-				"\nmaxOldness=" + maxOldness;
-	}
 }

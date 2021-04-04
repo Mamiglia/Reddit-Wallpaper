@@ -5,6 +5,8 @@ import Utils.SetNewWallpaper;
 
 import javax.swing.*;
 import java.io.*;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -75,6 +77,9 @@ public class GUI extends JFrame{
 		//settings.getMaxOldness(oldSelecton.getSelectedItem())
 		settings.setPeriod((int) periodField.getValue());
 		//settings.setSearchBy(sortSelection.getSelectedItem());
+		settings.setKeepWallpapers(keepCheckBox.isSelected());
+		settings.setMaxDBSize((int) dbSizeField.getValue());
+
 
 		FileWriter wr = null;
 		try {
@@ -111,6 +116,24 @@ public class GUI extends JFrame{
 			String[] s = scan.nextLine().split("=");
 			settings.setProperty(s[0], s[1]);
 		}
+
+		loadSettingsToGUI();
+	}
+
+	void loadSettingsToGUI() {
+		if (settings == null) {
+			log.log(Level.WARNING, "No settings file loaded");
+		}
+		titleArea.setText(Arrays.toString(settings.getTitles()).replace("[", "").replace("]", ""));
+		subredditArea.setText(Arrays.toString(settings.getSubreddits()).replace("[", "").replace("]", ""));
+		sortSelection.setSelectedItem(settings.getSearchBy());
+		nsfwCheckBox.setSelected(settings.isNsfwOnly());
+		heightField.setValue(settings.getHeight());
+		widthField.setValue(settings.getWidth());
+		periodField.setValue(settings.getPeriod());
+		oldSelecton.setSelectedItem(settings.getMaxOldness());
+		dbSizeField.setValue(settings.getMaxDBSize());
+		keepCheckBox.setSelected(settings.doKeepWallpapers());
 
 	}
 
