@@ -46,7 +46,7 @@ public class GetNewWallpaper implements Runnable {
 		Wallpaper w = null;
 		Selector selector = null;
 		try {
-			selector = new Selector(wallpapers);
+			selector = new Selector(wallpapers, settings.doKeepWallpapers(), settings.getMaxDBSize());
 		} catch (IOException e) {
 			//TODO bad practice
 			e.printStackTrace();

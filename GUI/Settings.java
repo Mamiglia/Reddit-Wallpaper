@@ -14,7 +14,7 @@ public class Settings {
 	private int width = 1920;
 	private int period = 15; //mins
 	private int maxOldness = 24; //hours
-	private int maxDatabaseSize = 50;
+	private int maxDBSize = 50;
 	private boolean keepWallpapers = false; //keep wallpapers after eliminating them from db?
 
 	public Settings() {
@@ -95,19 +95,19 @@ public class Settings {
 		this.maxOldness = maxOldness;
 	}
 
-	public int getMaxDatabaseSize() {
-		return maxDatabaseSize;
+	public int getMaxDBSize() {
+		return maxDBSize;
 	}
 
-	public void setMaxDatabaseSize(int maxDatabaseSize) {
-		this.maxDatabaseSize = maxDatabaseSize;
+	public void setMaxDBSize(int maxDBSize) {
+		this.maxDBSize = maxDBSize;
 	}
 
-	public boolean isWantToKeepWallpapers() {
+	public boolean doKeepWallpapers() {
 		return keepWallpapers;
 	}
 
-	public void setWantToKeepWallpapers(boolean keepWallpapers) {
+	public void setKeepWallpapers(boolean keepWallpapers) {
 		this.keepWallpapers = keepWallpapers;
 	}
 
@@ -154,7 +154,7 @@ public class Settings {
 				maxOldness = Integer.parseInt(value);
 				break;
 			case "MaxDatabaseSize":
-				maxDatabaseSize = Integer.parseInt(value);
+				maxDBSize = Integer.parseInt(value);
 				break;
 			case "keepWallpapers":
 				keepWallpapers = Boolean.parseBoolean(value);
