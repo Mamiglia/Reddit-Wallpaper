@@ -3,32 +3,29 @@ package GUI;
 import Settings.Settings;
 import Settings.Settings.TIME;
 import Settings.Settings.SEARCH_BY;
-import Utils.GetNewWallpaper;
-import Utils.SetNewWallpaper;
 
 import javax.swing.*;
-import java.io.*;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class GUI extends JFrame{
-	public static void main(String[] args) {
-		try {
-			UIManager.setLookAndFeel(
-					"javax.swing.plaf.nimbus.NimbusLookAndFeel"
-					);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (UnsupportedLookAndFeelException e) {
-			e.printStackTrace();
-		}
-		new GUI();
-	}
+//	public static void main(String[] args) {
+//		try {
+//			UIManager.setLookAndFeel(
+//					"javax.swing.plaf.nimbus.NimbusLookAndFeel"
+//					);
+//		} catch (ClassNotFoundException e) {
+//			e.printStackTrace();
+//		} catch (InstantiationException e) {
+//			e.printStackTrace();
+//		} catch (IllegalAccessException e) {
+//			e.printStackTrace();
+//		} catch (UnsupportedLookAndFeelException e) {
+//			e.printStackTrace();
+//		}
+//		new GUI();
+//	}
 	private JPanel rootPane;
 	private JTabbedPane tabbedPane1;
 	private JPanel settingPane;
@@ -51,15 +48,17 @@ public class GUI extends JFrame{
 	static final Logger log = Logger.getLogger("GUI");
 	private final Act act;
 	private Settings settings = Settings.getInstance();
+	private Thread backThread;
 
-	public GUI() {
+	public GUI(Thread backThread) {
 		super("Reddit Wallpaper Downloader");
+		this.backThread = backThread;
 		add(rootPane);
 		act = new Act(this);
 		applyButton.addActionListener(act);
 		changeNowButton.addActionListener(act);
 		loadSettings();
-		log.log(Level.INFO, "GUI started");
+		log.log(Level.FINE, "GUI started");
 
 
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -103,7 +102,7 @@ public class GUI extends JFrame{
 	void changeWallpaper() {
 		saveSettings();
 
-		Background.changeNow();
+		backThread.interrupt(); //interrupting it makes it wake up and load new wallpaper
 	}
 
 	private void createUIComponents() {

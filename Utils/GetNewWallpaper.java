@@ -16,6 +16,7 @@ public class GetNewWallpaper implements Runnable {
 	private Wallpaper result;
 
 	public GetNewWallpaper(Settings settings) {
+		log.setLevel(Level.WARNING);
 		this.settings = settings;
 	}
 
@@ -27,7 +28,7 @@ public class GetNewWallpaper implements Runnable {
 
 		Searcher s = new Searcher(settings);
 		s.generateSearchQuery();
-		log.log(Level.INFO, "Search query is: " + s.getSearchQuery());
+		log.log(Level.FINE, "Search query is: " + s.getSearchQuery());
 		Map<String, Wallpaper> wallpapers = null;
 		try {
 			s.getSearchResults();

@@ -4,8 +4,11 @@ import Wallpaper.Wallpaper;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SetNewWallpaper implements Runnable {
+    private final static Logger log = Logger.getLogger("SetNewWallpaper");
     private boolean executed = false;
     private final Wallpaper wp;
 
@@ -20,7 +23,7 @@ public class SetNewWallpaper implements Runnable {
         executed = true;
 
         if (!wp.isDownloaded()) {
-            System.out.println("ERROR wallpaper file not found");
+            log.log(Level.WARNING, "ERROR wallpaper file not found");
         }
         // Windows
         //System.loadLibarary("user32")

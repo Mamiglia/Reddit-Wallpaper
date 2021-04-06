@@ -78,7 +78,6 @@ class Searcher {
             String rawData = getRawData(connect);
             proposed =  refineData(rawData);
         }
-        log.log(Level.INFO, "Search Result is " + proposed.toString());
         return proposed;
     }
 

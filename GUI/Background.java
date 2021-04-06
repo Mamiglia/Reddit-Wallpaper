@@ -32,7 +32,8 @@ public class Background implements Runnable {
 	}
 
 	public static void changeNow() {
-		uniqueInstance.getThread().interrupt();
+
+		Thread.currentThread().interrupt();
 	}
 
 	public void changeWallpaper() {
@@ -61,7 +62,7 @@ public class Background implements Runnable {
 	public boolean isStopped() {
 		return stopped;
 	}
-	public Thread getThread() {
+	public static Thread getThread() {
 		return Thread.currentThread();
 	}
 

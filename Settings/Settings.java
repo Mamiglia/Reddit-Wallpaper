@@ -58,6 +58,7 @@ public class Settings {
 	}
 
 	public static synchronized Settings getInstance() {
+		log.setLevel(Level.WARNING);
 		return uniqueInstance;
 	}
 
@@ -81,7 +82,7 @@ public class Settings {
 				if (!b) {
 					log.log(Level.WARNING, "Property not recognized: " + s[0]);
 				} else {
-					log.log(Level.INFO, "Set property: " + s[0]);
+					log.log(Level.FINE, "Set property: " + s[0]);
 				}
 			}
 		} catch (FileNotFoundException e) {
