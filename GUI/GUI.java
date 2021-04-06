@@ -61,7 +61,7 @@ public class GUI extends JFrame{
 		log.log(Level.FINE, "GUI started");
 
 
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		pack();
 		setVisible(true);
 	}

@@ -3,6 +3,7 @@ package GUI;
 import Settings.Settings;
 import Utils.GetNewWallpaper;
 import Utils.SetNewWallpaper;
+import Wallpaper.Wallpaper;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,11 +19,12 @@ public class Background implements Runnable {
 	private static final Background uniqueInstance = new Background();
 	private Settings settings = Settings.getInstance();
 	private boolean stopped = false;
+	private Wallpaper current = null;
 
 	public Background() {
 	}
 
-	public Background getInstance() {
+	public static Background getInstance() {
 		return uniqueInstance;
 	}
 
@@ -53,12 +55,17 @@ public class Background implements Runnable {
 		SetNewWallpaper set = new SetNewWallpaper(g.getResult());
 		Thread t2 = new Thread(set);
 		t2.start();
+		current = g.getResult();
 		log.log(Level.INFO, "Wallpapers is successfully set to: " + g.getResult().toString());
 	}
 
 
 
 	// GETTER & SETTER
+
+	public Wallpaper getCurrent() {
+		return current;
+	}
 	public boolean isStopped() {
 		return stopped;
 	}

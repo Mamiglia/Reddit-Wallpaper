@@ -1,5 +1,6 @@
 import GUI.Background;
 import GUI.GUI;
+import GUI.Tray;
 import Settings.Settings;
 
 import java.util.logging.Level;
@@ -16,7 +17,8 @@ public class Main {
 		Thread bThread = new Thread(b);
 		bThread.start();
 
-		new GUI(bThread);
+		Tray tray = new Tray(bThread);
+		tray.startTray();
 
 
 		log.log(Level.FINE, "End of Main");
