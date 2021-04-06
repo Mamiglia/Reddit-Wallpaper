@@ -9,7 +9,6 @@ import Utils.SetNewWallpaper;
 import javax.swing.*;
 import java.io.*;
 import java.util.Arrays;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,10 +48,9 @@ public class GUI extends JFrame{
 	private JSpinner dbSizeField;
 	private JCheckBox keepCheckBox;
 	private JComboBox<TIME> oldSelection;
-	static final String PATH_TO_SAVEFILE = ".utility/settings.txt";
 	static final Logger log = Logger.getLogger("GUI");
 	private final Act act;
-	private Settings settings;
+	private Settings settings = Settings.getInstance();
 
 	public GUI() {
 		super("Reddit Wallpaper Downloader");
@@ -62,7 +60,6 @@ public class GUI extends JFrame{
 		changeNowButton.addActionListener(act);
 		loadSettings();
 		log.log(Level.INFO, "GUI started");
-
 
 
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -83,46 +80,10 @@ public class GUI extends JFrame{
 		settings.setMaxDatabaseSize((int) dbSizeField.getValue());
 
 
-		try (FileWriter wr = new FileWriter(PATH_TO_SAVEFILE)) {
-			wr.write(settings.toString());
-		} catch (IOException e) {
-			log.log(Level.SEVERE, "Couldn't save the file");
-			e.printStackTrace();
-		}
-		log.log(Level.INFO, "Saved settings");
+		settings.writeSettings();
 	}
 
-	private void loadSettings() {
-		File settingFile = new File(PATH_TO_SAVEFILE);
-		if (!settingFile.exists()) {
-			settingFile.getParentFile().mkdirs();
-			try {
-				settingFile.createNewFile();
-			} catch (IOException e) {
-				//TODO bad practice
-				e.printStackTrace();
-			}
-		}
-		settings = new Settings();
-		try (Scanner scan = new Scanner(settingFile)) {
-			while (scan.hasNext()) {
-				String[] s = scan.nextLine().split("=");
-				boolean b = settings.setProperty(s[0], s[1]);
-				if (!b) {
-					log.log(Level.WARNING, "Property not recognized: " + s[0]);
-				} else {
-					log.log(Level.INFO, "Set property: " + s[0]);
-				}
-			}
-		} catch (FileNotFoundException e) {
-			//TODO add some useful error message?
-			e.printStackTrace();
-		}
-
-		loadSettingsToGUI();
-	}
-
-	void loadSettingsToGUI() {
+	void loadSettings() {
 		if (settings == null) {
 			log.log(Level.WARNING, "No settings file loaded");
 		}
@@ -142,18 +103,7 @@ public class GUI extends JFrame{
 	void changeWallpaper() {
 		saveSettings();
 
-		//TODO run in threads
-		GetNewWallpaper g = new GetNewWallpaper(settings);
-		Thread t1 = new Thread(g);
-		t1.start();
-		try {
-			t1.join();
-		} catch (InterruptedException e) {
-			log.log(Level.SEVERE, "Thread GetNewWallpaper was interrupted by unknown error");
-		}
-		SetNewWallpaper set = new SetNewWallpaper(g.getResult());
-		Thread t2 = new Thread(set);
-		t2.start();
+		Background.changeNow();
 	}
 
 	private void createUIComponents() {
