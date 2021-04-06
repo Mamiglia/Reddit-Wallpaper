@@ -1,9 +1,19 @@
 package Settings;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Settings {
+	//Singleton
+	private static Settings uniqueInstance = new Settings();
+	static final String PATH_TO_SAVEFILE = ".utility/settings.txt";
 	private String[] titles = {};
 	private String[] subreddits = {"wallpapers"};
 	private SEARCH_BY searchBy = SEARCH_BY.HOT;
@@ -14,6 +24,7 @@ public class Settings {
 	private TIME maxOldness = TIME.DAY; //days
 	private int maxDatabaseSize = 50;
 	private boolean keepWallpapers = false; //keep wallpapers after eliminating them from db?
+	private static final Logger log = Logger.getLogger("Settings");
 
 	public enum TIME {
 		HOUR("hour"),
@@ -43,18 +54,50 @@ public class Settings {
 		}
 	}
 
-	public Settings() {
+	private Settings() {
 	}
 
-	public Settings(String[] titles, String[] subreddits, SEARCH_BY searchBy, boolean nsfwOnly, int height, int width, int period, TIME maxOldness) {
-		this.titles = titles;
-		this.subreddits = subreddits;
-		this.searchBy = searchBy;
-		this.nsfwOnly = nsfwOnly;
-		this.height = height;
-		this.width = width;
-		this.period = period;
-		this.maxOldness = maxOldness;
+	public static synchronized Settings getInstance() {
+		return uniqueInstance;
+	}
+
+	public void readSettings() {
+		File settingFile = new File(PATH_TO_SAVEFILE);
+		if (!settingFile.exists()) {
+			settingFile.getParentFile().mkdirs();
+			try {
+				settingFile.createNewFile();
+			} catch (IOException e) {
+				//TODO bad practice
+				e.printStackTrace();
+			}
+			return;
+		}
+
+		try (Scanner scan = new Scanner(settingFile)) {
+			while (scan.hasNext()) {
+				String[] s = scan.nextLine().split("=");
+				boolean b = setProperty(s[0], s[1]);
+				if (!b) {
+					log.log(Level.WARNING, "Property not recognized: " + s[0]);
+				} else {
+					log.log(Level.INFO, "Set property: " + s[0]);
+				}
+			}
+		} catch (FileNotFoundException e) {
+			//TODO add some useful error message?
+			e.printStackTrace();
+		}
+	}
+
+	public void writeSettings() {
+		try (FileWriter wr = new FileWriter(PATH_TO_SAVEFILE)) {
+			wr.write(this.toString());
+		} catch (IOException e) {
+			log.log(Level.SEVERE, "Couldn't save the file");
+			e.printStackTrace();
+		}
+		log.log(Level.INFO, "Saved settings");
 	}
 
 	public String[] getTitles() {
