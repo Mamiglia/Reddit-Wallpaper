@@ -12,12 +12,13 @@ State: It's able to:
 - System Tray
 - Running in background and changing wallpaper each X mins
 - Supports galleries!
+- Support Windows
 
 Known Issues:
 - Doesn't support crossposts: they cause an error which blocks the setting of the wallpaper
 - Clicking furiosly while the program is elaborating something else may cause an error
 - Log panel is void, log is on console
-- Does't support Windows (Yet!)
 - Autostart is not supported (Yet!)
+- Sometimes the tray icon on Windows become more than one, with a weird effect
 
 

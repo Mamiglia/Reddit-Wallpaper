@@ -40,19 +40,18 @@ public class Wallpaper {
     }
 
     public void saveImage(Image img) throws IOException {
-        String path = DEFAULT_PATH;
         BufferedImage bi = new BufferedImage(
                 img.getWidth(null),
                 img.getHeight(null),
-                BufferedImage.TYPE_INT_ARGB);
+                BufferedImage.TYPE_INT_RGB);
 
         Graphics2D g2 = bi.createGraphics();
         g2.drawImage(img, 0, 0, null);
         g2.dispose();
-        File f = new File(path + cleanString(title) +".png");
-        f.mkdirs();
+        File f = new File(getPath());
+        f.getParentFile().mkdirs();
         f.createNewFile();
-        ImageIO.write(bi, "png", f);
+        ImageIO.write(bi, "jpg", f);
     }
 
     public void updateDate() {
@@ -79,7 +78,7 @@ public class Wallpaper {
         return image.getHeight(null);
     }
     public String getPath() {
-        return DEFAULT_PATH + cleanString(title) + ".png";
+        return DEFAULT_PATH + cleanString(title) + ".jpg";
     }
     public String getTitle() {
         return title;
@@ -117,7 +116,7 @@ public class Wallpaper {
         String res = "";
         for (int i=0; i<s.length(); i++) {
             int k = s.charAt(i);
-            if ((k>=48 && k<=57) || (k>=65 && k<=90) || (k>=97 && k<=122)) {
+            if ((k>=48 && k<=57) || (k>=65 && k<=90) || (k>=97 && k<=122) || k==91 || k==93) {
                 res += s.charAt(i);
             }
         }
