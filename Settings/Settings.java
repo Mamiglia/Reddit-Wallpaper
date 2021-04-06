@@ -94,6 +94,7 @@ public class Settings {
 	public void writeSettings() {
 		try (FileWriter wr = new FileWriter(PATH_TO_SAVEFILE)) {
 			wr.write(this.toString());
+			wr.flush();
 		} catch (IOException e) {
 			log.log(Level.SEVERE, "Couldn't save the file");
 			e.printStackTrace();

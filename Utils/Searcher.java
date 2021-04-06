@@ -42,6 +42,7 @@ class Searcher {
                 + "&type=t3" //only link type posts, no text-only
                 // + "&restrict_sr=true" i don't think it's useful but still have to figure out what it does
         ;
+        log.log(Level.INFO, "Search Query is: "+ searchQuery);
     }
 
     /**

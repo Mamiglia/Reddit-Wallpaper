@@ -43,7 +43,14 @@ class Selector {
             }
         }
         // OR No unused wallpapers are found, select oldest used wallpapers in the list
-        String id = findOldestWallpaper(db, listProposedID);
+        String id;
+        if (listProposedID.isEmpty()) {
+            log.log(Level.WARNING, "No new wallpaper is found, setting a recent wallpaper");
+            id = findOldestWallpaper(db);
+        } else {
+            log.log(Level.WARNING, "No unused wallpaper is found setting the oldest from those found");
+            id = findOldestWallpaper(db, listProposedID);
+        }
         res = db.get(id);
         res.updateDate();
         updateDB(id, res);
@@ -65,7 +72,7 @@ class Selector {
             f.createNewFile();
         }
         Scanner scan = new Scanner(new FileReader(f));
-        Map<String, Wallpaper> d = new HashMap<String, Wallpaper>();
+        Map<String, Wallpaper> d = new HashMap<>();
         while (scan.hasNext()) {
             // database is written in the file in the form of:
             // id(key);title;url;postUrl;ms_from_epoch \n
@@ -74,6 +81,7 @@ class Selector {
             Wallpaper w = new Wallpaper(s[1],s[2],s[3], Long.parseLong(s[4]));
             d.put(s[0], w);
         }
+        scan.close();
         log.log(Level.INFO, "Database loaded");
         return d;
     }
@@ -88,8 +96,6 @@ class Selector {
         } catch (IOException e) {
             log.log(Level.WARNING, "Database writing failed");
         }
-
-
 
     }
 
@@ -141,9 +147,9 @@ class Selector {
     private static String findOldestWallpaper(Map<String, Wallpaper> map, List<String> keyList) {
         // considering just the keys that are in the key list
 
-        Date oldest = new Date();
-        // everything is older than the present moment
+        Date oldest = new Date(); // everything is older than the present moment
         String oldestID = "";
+
         for (String id : keyList) {
             if (oldest.after(map.get(id).getLastUsedDate())) {
                 oldestID = id;
