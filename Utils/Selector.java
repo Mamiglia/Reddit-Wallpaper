@@ -100,7 +100,7 @@ class Selector {
         // the database will contain a maximum of MAX_DB_SIZE wallpapers (default N=50)
         // when the db gets bigger then N, the oldest wallpapers are deleted from the database
         // the user will set if he wants to delete also the wallpaper or the database entry only
-        if (getOldWallpapersID().size() > MAX_DB_SIZE) {
+        if (MAX_DB_SIZE != -1 && getOldWallpapersID().size() > MAX_DB_SIZE) {
             String idOldestWalp = findOldestWallpaper(db);
             Wallpaper w = db.get(idOldestWalp);
             db.remove(idOldestWalp);
