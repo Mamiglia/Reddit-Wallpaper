@@ -23,6 +23,7 @@ class Searcher {
     private String searchQuery;
     private Map<String, Wallpaper> proposed;
     private static final Logger log = Logger.getLogger("Searcher");
+    private static final int QUERY_SIZE = 20;
 
     public Searcher(Settings settings) {
         this.settings = settings;
@@ -36,7 +37,7 @@ class Searcher {
                 "https://reddit.com/search.json?"
                 + "q=" + generateQuery()
                 + "&sort=" + settings.getSearchBy().value //how to sort them (hot, new ...)
-                + "&limit=20" //how many posts
+                + "&limit=" + QUERY_SIZE //how many posts
                 + "&t=" + settings.getMaxOldness().value //how old can a post be at most
                 + "&type=t3" //only link type posts, no text-only
                 // + "&restrict_sr=true" i don't think it's useful but still have to figure out what it does
@@ -103,13 +104,43 @@ class Searcher {
 
         HashMap<String, Wallpaper> res = new HashMap<>();
         for (int i=0; i<children.size(); i++) {
+            // some posts can be in the form of galleries of wallpapers.
+            // such cases can be detected when the url contains the word "gallery" TODO there must be a better way
+            // it appears that there's a field "is_gallery" but there's only in gallery types sooo??
+            // in such cases we are going to
             HashMap<String, Object> child = (HashMap<String, Object>) ( (HashMap<String, Object>) children.get(i)).get("data");
-            Wallpaper wallpaper = new Wallpaper(
-                    (String) child.get("title"),
-                    (String) child.get("url"),
-                    (String) child.get("permalink")
-            );
-            res.put((String) child.get("id"), wallpaper);
+            String url = (String) child.get("url");
+            String title = (String) child.get("title");
+            String permalink = (String) child.get("permalink");
+            String id = (String) child.get("id");
+            if (url.contains("gallery")) {
+                //we are going to add all the posts from this gallery
+                //note that in this way the proposed wallpapers will be more than the QUERY_SIZE (TODO Is this a correct method?)
+                HashMap<String, Object> media_metadata = (HashMap<String, Object>) child.get("media_metadata");
+                int j=0;
+                for (String idGallery : media_metadata.keySet()) {
+                    HashMap<String, Object> galleryItem = (HashMap<String, Object>) media_metadata.get(idGallery);
+                    String type = (String) galleryItem.get("m");
+                    type = type.replace("image/", "");
+
+                    String urlGallery = "https://i.redd.it/" + idGallery + "." + type;
+                    String titleGallery = title + "["+ j++ +"]";
+
+                    Wallpaper wallpaper = new Wallpaper(
+                            titleGallery,
+                            urlGallery,
+                            permalink
+                    );
+                    res.put(idGallery, wallpaper);
+                }
+            } else {
+                Wallpaper wallpaper = new Wallpaper(
+                        title,
+                        url,
+                        permalink
+                );
+                res.put(id, wallpaper);
+            }
         }
         return res;
     }

@@ -52,7 +52,7 @@ public class Background implements Runnable {
 		SetNewWallpaper set = new SetNewWallpaper(g.getResult());
 		Thread t2 = new Thread(set);
 		t2.start();
-		log.log(Level.INFO, "Wallpapers is successfully set to: " + g.getResult().getTitle());
+		log.log(Level.INFO, "Wallpapers is successfully set to: " + g.getResult().toString());
 	}
 
 
