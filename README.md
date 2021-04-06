@@ -8,4 +8,8 @@ State: It's able to:
 - extrapolate datas from such queries
 - select the wallpaper to download through a non-repetitive pattern
 - apply (only xfce and only on my machine probably)
-- GUI is in progress
+- GUI to control settings
+- System Tray
+- Running in background and changing wallpaper each X mins
+- Supports galleries!
+

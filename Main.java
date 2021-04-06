@@ -1,5 +1,4 @@
 import GUI.Background;
-import GUI.GUI;
 import GUI.Tray;
 import Settings.Settings;
 
@@ -17,7 +16,7 @@ public class Main {
 		Thread bThread = new Thread(b);
 		bThread.start();
 
-		Tray tray = new Tray(bThread);
+		Tray tray = new Tray(bThread, b);
 		tray.startTray();
 
 

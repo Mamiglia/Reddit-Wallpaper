@@ -28,9 +28,8 @@ public class Background implements Runnable {
 		return uniqueInstance;
 	}
 
-	public static void stop() {
-		uniqueInstance.stopped = true;
-		uniqueInstance.getThread().interrupt();
+	public void stop() {
+		stopped = true;
 	}
 
 	public static void changeNow() {
@@ -75,14 +74,12 @@ public class Background implements Runnable {
 
 	@Override
 	public void run() {
-		changeWallpaper();
 		while (!stopped) {
+			changeWallpaper();
 			try {
 				Thread.sleep(settings.getPeriod() * 60 * 1000);
 			} catch (InterruptedException e) {
 				log.log(Level.INFO, "Sleep is interrupted, change of wallpaper is anticipated");
-			} finally {
-				changeWallpaper();
 			}
 		}
 		log.log(Level.INFO, "Background Service has been stopped as requested");

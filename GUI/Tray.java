@@ -5,10 +5,12 @@ import java.awt.event.*;
 import java.net.URL;
 
 public class Tray {
-	private final Thread background;
+	private final Thread backThread;
+	private final Background background;
 
-	public Tray(Thread background) {
-		this.background = background;
+	public Tray(Thread background, Background background1) {
+		this.backThread = background;
+		this.background = background1;
 	}
 
 
@@ -36,7 +38,7 @@ public class Tray {
 		gui.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new GUI(background);
+				new GUI(backThread);
 			}
 		});
 		trayPopupMenu.add(gui);
@@ -45,7 +47,7 @@ public class Tray {
 		change.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				background.interrupt();
+				backThread.interrupt();
 			}
 		});
 		trayPopupMenu.add(change);
@@ -54,7 +56,7 @@ public class Tray {
 		post.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				openWebpage(Background.getInstance().getCurrent().getPostUrl());
+				openWebpage(background.getCurrent().getPostUrl());
 			}
 		});
 		trayPopupMenu.add(post);
@@ -63,7 +65,14 @@ public class Tray {
 		close.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Background.stop();
+				background.stop();
+				backThread.interrupt();
+
+				try {
+					backThread.join();
+				} catch (InterruptedException interruptedException) {
+					interruptedException.printStackTrace();
+				}
 				System.exit(0);
 			}
 		});
