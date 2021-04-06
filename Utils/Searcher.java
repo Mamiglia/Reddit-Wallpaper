@@ -1,6 +1,6 @@
 package Utils;
 
-import GUI.Settings;
+import Settings.Settings;
 import Wallpaper.Wallpaper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,7 +37,7 @@ class Searcher {
                 + "q="
                 + generateQuery()
                 + "&sort=" //how to sort them (hot, new ...)
-                + translate(settings.getSearchBy())
+                + settings.getSearchBy().value
                 + "&limit=20" //how many posts
                 // + "&t=day" //how old can a post be at most
                 + "&type=t3" //only link type posts, no text-only
@@ -131,25 +131,4 @@ class Searcher {
         return searchQuery;
     }
 
-    public static String translate(GetNewWallpaper.SEARCH_BY searchBy) {
-        String s = null;
-        switch (searchBy) {
-            case HOT:
-                s = "hot";
-                break;
-            case NEW:
-                s = "new";
-                break;
-            case TOP:
-                s = "top";
-                break;
-            case RELEVANCE:
-                s = "relevance";
-                break;
-            default:
-                System.err.println("Impossible error!");
-                // should never happen to get here
-            }
-        return s;
-    }
 }

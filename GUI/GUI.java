@@ -1,11 +1,12 @@
 package GUI;
 
+import Settings.Settings;
+import Settings.Settings.SEARCH_BY;
 import Utils.GetNewWallpaper;
 import Utils.SetNewWallpaper;
 
 import javax.swing.*;
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -81,11 +82,8 @@ public class GUI extends JFrame{
 		settings.setMaxDBSize((int) dbSizeField.getValue());
 
 
-		FileWriter wr = null;
-		try {
-			wr = new FileWriter(PATH_TO_SAVEFILE);
+		try (FileWriter wr = new FileWriter(PATH_TO_SAVEFILE)) {
 			wr.write(settings.toString());
-			wr.close();
 		} catch (IOException e) {
 			log.log(Level.SEVERE, "Couldn't save the file");
 			e.printStackTrace();
@@ -105,17 +103,20 @@ public class GUI extends JFrame{
 			}
 		}
 		settings = new Settings();
-		Scanner scan = null;
-		try {
-			 scan = new Scanner(settingFile);
+		try (Scanner scan = new Scanner(settingFile)) {
+			while (scan.hasNext()) {
+				String[] s = scan.nextLine().split("=");
+				boolean b = settings.setProperty(s[0], s[1]);
+				if (!b) {
+					log.log(Level.WARNING, "Property not recognized: " + s[0]);
+				}
+			}
 		} catch (FileNotFoundException e) {
+			//TODO add some useful error message?
 			e.printStackTrace();
 		}
 
-		while (scan.hasNext()) {
-			String[] s = scan.nextLine().split("=");
-			settings.setProperty(s[0], s[1]);
-		}
+
 
 		loadSettingsToGUI();
 	}
@@ -140,12 +141,12 @@ public class GUI extends JFrame{
 	void changeWallpaper() {
 		saveSettings();
 
-		//TODO change upper part to depend on settings
-		String[] title = {};
-		String[] subreddits = {"wallpapers", "wallpaper", "worldpolitics"};
-		int length = 1, height = 1;
-		boolean nsfw = false;
-		GetNewWallpaper.SEARCH_BY searchBy = GetNewWallpaper.SEARCH_BY.HOT;
+		//TODO remove this as this was for testing purpose
+//		String[] title = {};
+//		String[] subreddits = {"wallpapers", "wallpaper", "worldpolitics"};
+//		int length = 1, height = 1;
+//		boolean nsfw = false;
+//		SEARCH_BY searchBy = SEARCH_BY.HOT;
 
 		//TODO run in threads
 		GetNewWallpaper g = new GetNewWallpaper(settings);

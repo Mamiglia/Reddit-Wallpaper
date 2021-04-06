@@ -1,6 +1,6 @@
 package Utils;
 
-import GUI.Settings;
+import Settings.Settings;
 import Wallpaper.Wallpaper;
 
 import java.io.IOException;
@@ -9,8 +9,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class GetNewWallpaper implements Runnable {
-	public enum SEARCH_BY {TOP, NEW, HOT, RELEVANCE} //Should be moved to settings class
-
 	private boolean executed = false;
 	private static final Logger log = Logger.getLogger("Get New Wallpaper");
 	private final Settings settings;

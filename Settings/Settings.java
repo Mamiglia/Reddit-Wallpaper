@@ -1,6 +1,4 @@
-package GUI;
-
-import Utils.GetNewWallpaper.SEARCH_BY;
+package Settings;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -16,6 +14,19 @@ public class Settings {
 	private int maxOldness = 24; //hours
 	private int maxDBSize = 50;
 	private boolean keepWallpapers = false; //keep wallpapers after eliminating them from db?
+
+	public enum SEARCH_BY {
+		TOP("top"),
+		NEW("new"),
+		HOT("hot"),
+		RELEVANCE("relevance");
+
+		public final String value;
+
+		SEARCH_BY(String value) {
+			this.value = value;
+		}
+	}
 
 	public Settings() {
 	}
@@ -141,7 +152,7 @@ public class Settings {
 		return result;
 	}
 
-	public void setProperty(String property, String value) {
+	public boolean setProperty(String property, String value) {
 		switch (property) {
 			case "titles":
 				titles = value.replace("[", "").replace("]","").split(",");
@@ -175,8 +186,9 @@ public class Settings {
 				break;
 
 			default:
-				System.err.println("Property does not exist");
+				return false;
 		}
+		return true;
 	}
 
 }
