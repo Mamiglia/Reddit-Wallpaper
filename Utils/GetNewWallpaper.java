@@ -54,6 +54,8 @@ public class GetNewWallpaper implements Runnable {
 			w.download();
 		} catch (IOException e) {
 			log.log(Level.WARNING, "Couldn't download the image and/or update the database");
+			result = null;
+			return;
 		}
 		result = w;
 	}

@@ -47,6 +47,7 @@ public class Background implements Runnable {
 
 		if (g.getResult() == null) {
 			log.log(Level.WARNING, "Wallpaper not set");
+			return;
 		}
 		SetNewWallpaper set = new SetNewWallpaper(g.getResult());
 		Thread t2 = new Thread(set);
