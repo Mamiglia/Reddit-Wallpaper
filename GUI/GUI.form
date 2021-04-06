@@ -113,18 +113,12 @@
                       <component id="46096" class="javax.swing.JLabel">
                         <constraints/>
                         <properties>
-                          <text value="Posts are at most "/>
+                          <text value="Posts are at most 1"/>
                         </properties>
                       </component>
-                      <component id="d8c17" class="javax.swing.JComboBox" binding="oldSelecton">
+                      <component id="1301a" class="javax.swing.JComboBox" binding="oldSelection" custom-create="true">
                         <constraints/>
-                        <properties>
-                          <model>
-                            <item value="1 Day"/>
-                            <item value="1 Week"/>
-                            <item value="1 Month"/>
-                          </model>
-                        </properties>
+                        <properties/>
                       </component>
                       <component id="57e77" class="javax.swing.JLabel">
                         <constraints/>
@@ -147,16 +141,9 @@
                           <text value="Sort by"/>
                         </properties>
                       </component>
-                      <component id="fbdd3" class="javax.swing.JComboBox" binding="sortSelection">
+                      <component id="fbdd3" class="javax.swing.JComboBox" binding="sortSelection" custom-create="true">
                         <constraints/>
-                        <properties>
-                          <model>
-                            <item value="Hot"/>
-                            <item value="New"/>
-                            <item value="Relevance"/>
-                            <item value="Top"/>
-                          </model>
-                        </properties>
+                        <properties/>
                       </component>
                     </children>
                   </grid>

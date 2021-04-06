@@ -34,12 +34,10 @@ class Searcher {
     void generateSearchQuery() {
         searchQuery = "" +
                 "https://reddit.com/search.json?"
-                + "q="
-                + generateQuery()
-                + "&sort=" //how to sort them (hot, new ...)
-                + settings.getSearchBy().value
+                + "q=" + generateQuery()
+                + "&sort=" + settings.getSearchBy().value //how to sort them (hot, new ...)
                 + "&limit=20" //how many posts
-                // + "&t=day" //how old can a post be at most
+                + "&t=" + settings.getMaxOldness().value //how old can a post be at most
                 + "&type=t3" //only link type posts, no text-only
                 // + "&restrict_sr=true" i don't think it's useful but still have to figure out what it does
         ;

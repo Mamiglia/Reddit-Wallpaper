@@ -8,15 +8,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 class Selector {
-    private int MAX_DB_SIZE = 50;
-    private boolean keepWallpapers;
+    private final int MAX_DB_SIZE;
+    private final boolean keepWallpapers;
     public static final String PATH_TO_DATABASE = ".utility/wallpaperDB.txt";
     private static final Logger log = Logger.getLogger("Selector");
     private final Map<String, Wallpaper> proposal;
-
     //has a structure like: { ...
     //                          id : Wallpaper
-    //                     ...}
     private final Map<String, Wallpaper> db;
     //has a structure like: {...
     //                          id: Wallpaper
@@ -33,8 +31,8 @@ class Selector {
 
     public Wallpaper select() {
         Wallpaper res;
-        ArrayList<String> listProposedID = getProposedWallpapersID(),
-                alreadyUsedID = getOldWallpapersID();
+        List<String> listProposedID = getProposedWallpapersID();
+        List<String> alreadyUsedID = getOldWallpapersID();
         for (String propID : listProposedID) {
             if (!alreadyUsedID.contains(propID)) {
                 res = proposal.get(propID);
@@ -52,11 +50,11 @@ class Selector {
         return res;
     }
 
-    public ArrayList<String> getOldWallpapersID() {
+    public List<String> getOldWallpapersID() {
         return new ArrayList<>(db.keySet());
     }
 
-    public ArrayList<String> getProposedWallpapersID() {
+    public List<String> getProposedWallpapersID() {
         return new ArrayList<>(proposal.keySet());
     }
 
@@ -86,9 +84,9 @@ class Selector {
         cleanDB();
         try{
             writeDB();
-            System.out.println("Database succesfully overwritten");
+            log.log(Level.INFO, "Database successfully overwritten");
         } catch (IOException e) {
-            System.out.println("Database writing failed");
+            log.log(Level.WARNING, "Database writing failed");
         }
 
 
@@ -102,7 +100,7 @@ class Selector {
         // the database will contain a maximum of MAX_DB_SIZE wallpapers (default N=50)
         // when the db gets bigger then N, the oldest wallpapers are deleted from the database
         // the user will set if he wants to delete also the wallpaper or the database entry only
-        if (getOldWallpapersID().size() >= MAX_DB_SIZE) {
+        if (getOldWallpapersID().size() > MAX_DB_SIZE) {
             String idOldestWalp = findOldestWallpaper(db);
             Wallpaper w = db.get(idOldestWalp);
             db.remove(idOldestWalp);
@@ -124,7 +122,7 @@ class Selector {
         BufferedWriter bw = new BufferedWriter(new FileWriter(f));
         for (String id: db.keySet()) {
             Wallpaper w = db.get(id);
-            // TODO someone could break everything if they put an ";" in their title
+            // TODO someone could break everything if they put an ";" in their title???
             bw.write(id + ";" +  w.getTitle() + ";" + w.getUrl() + ";" + w.getPostUrl() + ";" + w.getLastUsedDate().getTime());
             bw.newLine();
             // database is written in the file in the form of:
@@ -140,7 +138,7 @@ class Selector {
         return findOldestWallpaper(map, new ArrayList<>(map.keySet()));
     }
 
-    private static String findOldestWallpaper(Map<String, Wallpaper> map, ArrayList<String> keyList) {
+    private static String findOldestWallpaper(Map<String, Wallpaper> map, List<String> keyList) {
         // considering just the keys that are in the key list
 
         Date oldest = new Date();

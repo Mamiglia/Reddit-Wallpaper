@@ -11,9 +11,24 @@ public class Settings {
 	private int height = 1080;
 	private int width = 1920;
 	private int period = 15; //mins
-	private int maxOldness = 24; //hours
-	private int maxDBSize = 50;
+	private TIME maxOldness = TIME.DAY; //days
+	private int maxDatabaseSize = 50;
 	private boolean keepWallpapers = false; //keep wallpapers after eliminating them from db?
+
+	public enum TIME {
+		HOUR("hour"),
+		DAY("day"),
+		WEEK("week"),
+		MONTH("month"),
+		YEAR("year"),
+		ALL("all");
+
+		public final String value;
+
+		TIME(String value) {
+			this.value = value;
+		}
+	}
 
 	public enum SEARCH_BY {
 		TOP("top"),
@@ -31,7 +46,7 @@ public class Settings {
 	public Settings() {
 	}
 
-	public Settings(String[] titles, String[] subreddits, SEARCH_BY searchBy, boolean nsfwOnly, int height, int width, int period, int maxOldness) {
+	public Settings(String[] titles, String[] subreddits, SEARCH_BY searchBy, boolean nsfwOnly, int height, int width, int period, TIME maxOldness) {
 		this.titles = titles;
 		this.subreddits = subreddits;
 		this.searchBy = searchBy;
@@ -98,20 +113,20 @@ public class Settings {
 		this.period = period;
 	}
 
-	public int getMaxOldness() {
+	public TIME getMaxOldness() {
 		return maxOldness;
 	}
 
-	public void setMaxOldness(int maxOldness) {
+	public void setMaxOldness(TIME maxOldness) {
 		this.maxOldness = maxOldness;
 	}
 
-	public int getMaxDBSize() {
-		return maxDBSize;
+	public int getMaxDatabaseSize() {
+		return maxDatabaseSize;
 	}
 
-	public void setMaxDBSize(int maxDBSize) {
-		this.maxDBSize = maxDBSize;
+	public void setMaxDatabaseSize(int maxDatabaseSize) {
+		this.maxDatabaseSize = maxDatabaseSize;
 	}
 
 	public boolean doKeepWallpapers() {
@@ -128,7 +143,7 @@ public class Settings {
 				"\nwidth=" + width +
 				"\nperiod=" + period +
 				"\nmaxOldness=" + maxOldness +
-				"\nmaxDBSize=" + maxDBSize +
+				"\nmaxDatabaseSize=" + maxDatabaseSize +
 				"\nkeepWallpapers=" + keepWallpapers;
 	}
 
@@ -176,10 +191,10 @@ public class Settings {
 				period = Integer.parseInt(value);
 				break;
 			case "maxOldness":
-				maxOldness = Integer.parseInt(value);
+				maxOldness = TIME.valueOf(value);
 				break;
-			case "MaxDatabaseSize":
-				maxDBSize = Integer.parseInt(value);
+			case "maxDatabaseSize":
+				maxDatabaseSize = Integer.parseInt(value);
 				break;
 			case "keepWallpapers":
 				keepWallpapers = Boolean.parseBoolean(value);

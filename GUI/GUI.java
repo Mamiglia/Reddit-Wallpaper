@@ -1,6 +1,7 @@
 package GUI;
 
 import Settings.Settings;
+import Settings.Settings.TIME;
 import Settings.Settings.SEARCH_BY;
 import Utils.GetNewWallpaper;
 import Utils.SetNewWallpaper;
@@ -36,8 +37,7 @@ public class GUI extends JFrame{
 	private JPanel subredditPane;
 	private JTextArea titleArea;
 	private JTextArea subredditArea;
-	private JComboBox oldSelecton;
-	private JComboBox sortSelection;
+	private JComboBox<SEARCH_BY> sortSelection;
 	private JCheckBox nsfwCheckBox;
 	private JTextArea logArea;
 	private JButton applyButton;
@@ -48,6 +48,7 @@ public class GUI extends JFrame{
 	private JSpinner widthField;
 	private JSpinner dbSizeField;
 	private JCheckBox keepCheckBox;
+	private JComboBox<TIME> oldSelection;
 	static final String PATH_TO_SAVEFILE = ".utility/settings.txt";
 	static final Logger log = Logger.getLogger("GUI");
 	private final Act act;
@@ -75,11 +76,11 @@ public class GUI extends JFrame{
 		settings.setNsfwOnly(nsfwCheckBox.isSelected());
 		settings.setHeight((int) heightField.getValue());
 		settings.setWidth((int) widthField.getValue());
-		//settings.getMaxOldness(oldSelecton.getSelectedItem())
+		settings.setMaxOldness((TIME) oldSelection.getSelectedItem());
 		settings.setPeriod((int) periodField.getValue());
-		//settings.setSearchBy(sortSelection.getSelectedItem());
+		settings.setSearchBy((SEARCH_BY) sortSelection.getSelectedItem());
 		settings.setKeepWallpapers(keepCheckBox.isSelected());
-		settings.setMaxDBSize((int) dbSizeField.getValue());
+		settings.setMaxDatabaseSize((int) dbSizeField.getValue());
 
 
 		try (FileWriter wr = new FileWriter(PATH_TO_SAVEFILE)) {
@@ -109,14 +110,14 @@ public class GUI extends JFrame{
 				boolean b = settings.setProperty(s[0], s[1]);
 				if (!b) {
 					log.log(Level.WARNING, "Property not recognized: " + s[0]);
+				} else {
+					log.log(Level.INFO, "Set property: " + s[0]);
 				}
 			}
 		} catch (FileNotFoundException e) {
 			//TODO add some useful error message?
 			e.printStackTrace();
 		}
-
-
 
 		loadSettingsToGUI();
 	}
@@ -132,8 +133,8 @@ public class GUI extends JFrame{
 		heightField.setValue(settings.getHeight());
 		widthField.setValue(settings.getWidth());
 		periodField.setValue(settings.getPeriod());
-		oldSelecton.setSelectedItem(settings.getMaxOldness());
-		dbSizeField.setValue(settings.getMaxDBSize());
+		oldSelection.setSelectedItem(settings.getMaxOldness());
+		dbSizeField.setValue(settings.getMaxDatabaseSize());
 		keepCheckBox.setSelected(settings.doKeepWallpapers());
 
 	}
@@ -141,18 +142,18 @@ public class GUI extends JFrame{
 	void changeWallpaper() {
 		saveSettings();
 
-		//TODO remove this as this was for testing purpose
-//		String[] title = {};
-//		String[] subreddits = {"wallpapers", "wallpaper", "worldpolitics"};
-//		int length = 1, height = 1;
-//		boolean nsfw = false;
-//		SEARCH_BY searchBy = SEARCH_BY.HOT;
-
 		//TODO run in threads
 		GetNewWallpaper g = new GetNewWallpaper(settings);
-		g.run();
+		Thread t1 = new Thread(g);
+		t1.start();
+		try {
+			t1.join();
+		} catch (InterruptedException e) {
+			log.log(Level.SEVERE, "Thread GetNewWallpaper was interrupted by unknown error");
+		}
 		SetNewWallpaper set = new SetNewWallpaper(g.getResult());
-		set.run();
+		Thread t2 = new Thread(set);
+		t2.start();
 	}
 
 	private void createUIComponents() {
@@ -164,5 +165,7 @@ public class GUI extends JFrame{
 		widthField = new JSpinner(s);
 		s = new SpinnerNumberModel(50, -1, 10000, 1);
 		dbSizeField = new JSpinner(s);
+		oldSelection = new JComboBox<>(TIME.values());
+		sortSelection = new JComboBox<>(SEARCH_BY.values());
 	}
 }
