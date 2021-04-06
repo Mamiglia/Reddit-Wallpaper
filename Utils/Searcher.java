@@ -130,7 +130,15 @@ class Searcher {
                             urlGallery,
                             permalink
                     );
-                    res.put(idGallery, wallpaper);
+                    int height = (int) ((HashMap<String, Object>) galleryItem.get("s")).get("y");
+                    int width = (int) ((HashMap<String, Object>) galleryItem.get("s")).get("x");
+
+                    if (settings.getWidth() <= width && settings.getHeight() <= height) {
+                        res.put(idGallery, wallpaper);
+                    } else {
+                        log.log(Level.FINE, "Detected wallpaper not compatible with screen dimensions");
+                    }
+
                 }
             } else {
                 Wallpaper wallpaper = new Wallpaper(
@@ -138,7 +146,16 @@ class Searcher {
                         url,
                         permalink
                 );
-                res.put(id, wallpaper);
+                //this mess/nightmare is only fault of reddit nested JSON. I don't think there's a better way to do this
+                int height = (int) ((HashMap<String, Object>)((ArrayList<HashMap>)((HashMap<String, Object>) child.get("preview")).get("images")).get(0).get("source")).get("width");
+                int width = (int) ((HashMap<String, Object>)((ArrayList<HashMap>)((HashMap<String, Object>) child.get("preview")).get("images")).get(0).get("source")).get("height");
+
+                if (settings.getWidth() <= width && settings.getHeight() <= height) {
+                    res.put(id, wallpaper);
+                } else {
+                    log.log(Level.FINE, "Detected wallpaper not compatible with screen dimensions");
+                    //TODO should I merge this repeating part with the part above? they are really similar
+                }
             }
         }
         return res;

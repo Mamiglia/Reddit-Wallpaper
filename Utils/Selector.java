@@ -34,8 +34,8 @@ class Selector {
         List<String> listProposedID = getProposedWallpapersID();
         List<String> alreadyUsedID = getOldWallpapersID();
         for (String propID : listProposedID) {
+            res = proposal.get(propID);
             if (!alreadyUsedID.contains(propID)) {
-                res = proposal.get(propID);
                 res.updateDate();
                 updateDB(propID, res);
                 return res;
