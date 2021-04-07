@@ -11,6 +11,7 @@ import java.util.Date;
 public class Wallpaper {
     public static final Date NEVER_USED = new Date(0);
     public static final String DEFAULT_PATH = "wallpapers/";
+    public static final String FORMAT = "png";
     private final String title;
     private final String url;
     private final String postUrl;
@@ -28,7 +29,7 @@ public class Wallpaper {
     }
 
     public Wallpaper(String title, String url, String postUrl, long lastUsedDate) {
-        this(title, url,postUrl);
+        this(title, url, postUrl);
         this.lastUsedDate = new Date(lastUsedDate);
     }
 
@@ -43,7 +44,7 @@ public class Wallpaper {
         BufferedImage bi = new BufferedImage(
                 img.getWidth(null),
                 img.getHeight(null),
-                BufferedImage.TYPE_INT_RGB);
+                BufferedImage.TYPE_INT_ARGB);
 
         Graphics2D g2 = bi.createGraphics();
         g2.drawImage(img, 0, 0, null);
@@ -51,7 +52,7 @@ public class Wallpaper {
         File f = new File(getPath());
         f.getParentFile().mkdirs();
         f.createNewFile();
-        ImageIO.write(bi, "jpg", f);
+        ImageIO.write(bi, FORMAT, f);
     }
 
     public void updateDate() {
@@ -68,17 +69,21 @@ public class Wallpaper {
     public void setDate() {
         lastUsedDate = new Date();
     }
+
     public double getRatio() {
-        return (double) getWidth()/ (double) getHeight();
+        return (double) getWidth() / (double) getHeight();
     }
+
     public int getWidth() {
         return image.getWidth(null);
     }
+
     public int getHeight() {
         return image.getHeight(null);
     }
+
     public String getPath() {
-        return DEFAULT_PATH + cleanString(title) + ".jpg";
+        return DEFAULT_PATH + cleanString(title) + "." + FORMAT;
     }
     public String getTitle() {
         return title;
