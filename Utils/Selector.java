@@ -11,7 +11,7 @@ class Selector {
     private final int MAX_DB_SIZE;
     private final boolean keepWallpapers;
     public static final String PATH_TO_DATABASE = ".utility/wallpaperDB.txt";
-    private static final Logger log = Logger.getLogger("Selector");
+    private static final Logger log = DisplayLogger.getInstance("Selector");
     private final Map<String, Wallpaper> proposal;
     //has a structure like: { ...
     //                          id : Wallpaper

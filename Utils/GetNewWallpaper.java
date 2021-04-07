@@ -10,13 +10,12 @@ import java.util.logging.Logger;
 
 public class GetNewWallpaper implements Runnable {
 	private boolean executed = false;
-	private static final Logger log = Logger.getLogger("Get New Wallpaper");
+	private static final Logger log = DisplayLogger.getInstance("Get New Wallpaper");
 	private final Settings settings;
 
 	private Wallpaper result;
 
 	public GetNewWallpaper(Settings settings) {
-		log.setLevel(Level.WARNING);
 		this.settings = settings;
 	}
 

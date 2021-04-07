@@ -1,5 +1,7 @@
 package Settings;
 
+import Utils.DisplayLogger;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -24,7 +26,7 @@ public class Settings {
 	private TIME maxOldness = TIME.DAY; //days
 	private int maxDatabaseSize = 50;
 	private boolean keepWallpapers = false; //keep wallpapers after eliminating them from db?
-	private static final Logger log = Logger.getLogger("Settings");
+	private static final Logger log = DisplayLogger.getInstance("Settings");
 
 	public enum TIME {
 		HOUR("hour"),

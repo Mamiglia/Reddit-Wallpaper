@@ -46,11 +46,10 @@
                       <hspacer id="e9670">
                         <constraints/>
                       </hspacer>
-                      <component id="7ef1d" class="javax.swing.JTextArea" binding="titleArea">
+                      <component id="3b238" class="javax.swing.JTextField" binding="titleField">
                         <constraints/>
                         <properties>
                           <columns value="20"/>
-                          <text value=""/>
                         </properties>
                       </component>
                     </children>
@@ -71,10 +70,10 @@
                       <hspacer id="8c85d">
                         <constraints/>
                       </hspacer>
-                      <component id="e35fe" class="javax.swing.JTextArea" binding="subredditArea">
+                      <component id="210de" class="javax.swing.JTextField" binding="subredditField">
                         <constraints/>
                         <properties>
-                          <columns value="20"/>
+                          <columns value="15"/>
                           <text value="wallpapers"/>
                         </properties>
                       </component>

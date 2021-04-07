@@ -3,6 +3,7 @@ package GUI;
 import Settings.Settings;
 import Settings.Settings.TIME;
 import Settings.Settings.SEARCH_BY;
+import Utils.DisplayLogger;
 
 import javax.swing.*;
 import java.util.Arrays;
@@ -31,8 +32,8 @@ public class GUI extends JFrame{
 	private JPanel settingPane;
 	private JPanel titlePane;
 	private JPanel subredditPane;
-	private JTextArea titleArea;
-	private JTextArea subredditArea;
+	private JTextField textField;
+	private JTextField subredditField;
 	private JComboBox<SEARCH_BY> sortSelection;
 	private JCheckBox nsfwCheckBox;
 	private JTextArea logArea;
@@ -45,10 +46,11 @@ public class GUI extends JFrame{
 	private JSpinner dbSizeField;
 	private JCheckBox keepCheckBox;
 	private JComboBox<TIME> oldSelection;
-	static final Logger log = Logger.getLogger("GUI");
+	private JTextField titleField;
+	static final Logger log = DisplayLogger.getInstance("GUI");
 	private final Act act;
 	private Settings settings = Settings.getInstance();
-	private Thread backThread;
+	private final Thread backThread;
 
 	public GUI(Thread backThread) {
 		super("Reddit Wallpaper Downloader");
@@ -67,8 +69,8 @@ public class GUI extends JFrame{
 	}
 
 	void saveSettings() {
-		settings.setTitles(titleArea.getText().replace(" ", "").split(","));
-		settings.setSubreddits(subredditArea.getText().replace(" ", "").split(","));
+		settings.setTitles(textField.getText().replace(" ", "").split(","));
+		settings.setSubreddits(subredditField.getText().replace(" ", "").split(","));
 		settings.setNsfwOnly(nsfwCheckBox.isSelected());
 		settings.setHeight((int) heightField.getValue());
 		settings.setWidth((int) widthField.getValue());
@@ -86,8 +88,8 @@ public class GUI extends JFrame{
 		if (settings == null) {
 			log.log(Level.WARNING, "No settings file loaded");
 		}
-		titleArea.setText(Arrays.toString(settings.getTitles()).replace("[", "").replace("]", ""));
-		subredditArea.setText(Arrays.toString(settings.getSubreddits()).replace("[", "").replace("]", ""));
+		textField.setText(Arrays.toString(settings.getTitles()).replace("[", "").replace("]", ""));
+		subredditField.setText(Arrays.toString(settings.getSubreddits()).replace("[", "").replace("]", ""));
 		sortSelection.setSelectedItem(settings.getSearchBy());
 		nsfwCheckBox.setSelected(settings.isNsfwOnly());
 		heightField.setValue(settings.getHeight());

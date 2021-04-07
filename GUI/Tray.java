@@ -28,12 +28,11 @@ public class Tray {
 		//Toolkit toolkit = Toolkit.getDefaultToolkit();
 		//get image
 		//Toolkit.getDefaultToolkit().getImage("src/resources/busylogo.jpg");
-		Image image = Toolkit.getDefaultToolkit().getImage(".utility/external-content.duckduckgo.jpg");
+		Image image = Toolkit.getDefaultToolkit().getImage(".resources/tray_icon.png");
 
 		//popupmenu
 		PopupMenu trayPopupMenu = new PopupMenu();
 
-		//1st menuitem for popupmenu
 		MenuItem gui = new MenuItem("Settings");
 		gui.addActionListener(new ActionListener() {
 			@Override
@@ -73,6 +72,7 @@ public class Tray {
 				} catch (InterruptedException interruptedException) {
 					interruptedException.printStackTrace();
 				}
+
 				System.exit(0);
 			}
 		});

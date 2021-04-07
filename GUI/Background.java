@@ -1,6 +1,7 @@
 package GUI;
 
 import Settings.Settings;
+import Utils.DisplayLogger;
 import Utils.GetNewWallpaper;
 import Utils.SetNewWallpaper;
 import Wallpaper.Wallpaper;
@@ -15,7 +16,7 @@ public class Background implements Runnable {
 	// 2 - Sleep X time
 	// 3 - repeat
 	//until program is stopped
-	private static final Logger log = Logger.getLogger("background service");
+	private static final Logger log = DisplayLogger.getInstance("background service");
 	private static final Background uniqueInstance = new Background();
 	private Settings settings = Settings.getInstance();
 	private boolean stopped = false;

@@ -22,7 +22,7 @@ class Searcher {
     private final Settings settings;
     private String searchQuery;
     private Map<String, Wallpaper> proposed;
-    private static final Logger log = Logger.getLogger("Searcher");
+    private static final Logger log = DisplayLogger.getInstance("Searcher");
     private static final int QUERY_SIZE = 20;
 
     public Searcher(Settings settings) {
