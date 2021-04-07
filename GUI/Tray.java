@@ -24,6 +24,7 @@ public class Tray {
 		//get the systemTray of the system
 		SystemTray systemTray = SystemTray.getSystemTray();
 		Image image = Toolkit.getDefaultToolkit().getImage(".resources/tray_icon.png");
+		// icon by https://www.freepik.com
 
 		//popupmenu
 		PopupMenu trayPopupMenu = new PopupMenu();

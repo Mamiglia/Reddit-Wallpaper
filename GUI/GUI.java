@@ -49,6 +49,7 @@ public class GUI extends JFrame{
 	public GUI(Thread backThread) {
 		super("Reddit Wallpaper Downloader");
 		this.setIconImage(Toolkit.getDefaultToolkit().getImage(".resources/tray_icon.png"));
+		/* icon by https://www.freepik.com */
 		this.backThread = backThread;
 		add(rootPane);
 		act = new Act(this);
@@ -65,10 +66,6 @@ public class GUI extends JFrame{
 		});
 		loadSettings();
 		log.log(Level.FINE, "GUI started");
-
-
-
-
 
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		pack();
