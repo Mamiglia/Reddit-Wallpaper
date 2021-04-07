@@ -1,7 +1,7 @@
 # Reddit-Wallpaper
 Tool to download and automatically set a random wallpaper from reddit
 
-Work in progress!
+Work in progress! But it does work and is stable!
 
 State: It's able to:
 - query reddit's API with the specified parameters
@@ -13,12 +13,19 @@ State: It's able to:
 - Running in background and changing wallpaper each X mins
 - Supports galleries!
 - Support Windows
+- Dark Theme
 
 Known Issues:
 - Doesn't support crossposts: they cause an error which blocks the setting of the wallpaper
 - Clicking furiosly while the program is elaborating something else may cause an error
-- Log panel is void, log is on console
+- Log panel gets loooong
 - Autostart is not supported (Yet!)
 - Sometimes the tray icon on Windows become more than one, with a weird effect
+- pinterest galleries aren't supported (yet)
+
+ToDo:
+- Add option to download only horizontal wallpapers
+- Add option to download only wallpapers with a ratioi similar to the screen user
+
 
 
