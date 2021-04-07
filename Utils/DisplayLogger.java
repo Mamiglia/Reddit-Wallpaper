@@ -10,7 +10,7 @@ public class DisplayLogger {
     //Singleton
     private static final DisplayLogger uniqueInstance = new DisplayLogger();
     private static final String LOG_PATH = ".utility/log.txt";
-    private static Level level = Level.WARNING;
+    private static Level level = Level.INFO;
     private static FileHandler fh = null;
 
     public static Logger getInstance(String name) {

@@ -5,16 +5,23 @@ import Settings.Settings.TIME;
 import Settings.Settings.SEARCH_BY;
 import Utils.DisplayLogger;
 import com.formdev.flatlaf.FlatDarkLaf;
-import com.formdev.flatlaf.FlatLightLaf;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.io.BufferedInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class GUI extends JFrame{
 	private JPanel rootPane;
-	private JTabbedPane tabbedPane1;
+	private JTabbedPane tabbedPane;
 	private JPanel settingPane;
 	private JPanel titlePane;
 	private JPanel subredditPane;
@@ -32,20 +39,35 @@ public class GUI extends JFrame{
 	private JCheckBox keepCheckBox;
 	private JComboBox<TIME> oldSelection;
 	private JTextField titleField;
+	private JPanel logTab;
 	static final Logger log = DisplayLogger.getInstance("GUI");
 	private final Act act;
-	private Settings settings = Settings.getInstance();
+	private static final String LOG_PATH = ".utility/log.txt";
+	private final Settings settings = Settings.getInstance();
 	private final Thread backThread;
 
 	public GUI(Thread backThread) {
 		super("Reddit Wallpaper Downloader");
+		this.setIconImage(Toolkit.getDefaultToolkit().getImage(".resources/tray_icon.png"));
 		this.backThread = backThread;
 		add(rootPane);
 		act = new Act(this);
 		applyButton.addActionListener(act);
 		changeNowButton.addActionListener(act);
+		tabbedPane.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent changeEvent) {
+				JTabbedPane src = (JTabbedPane) changeEvent.getSource();
+				int index = src.getSelectedIndex();
+				if (src.getComponentAt(index).equals(logTab)) {
+					showLog();
+				}
+			}
+		});
 		loadSettings();
 		log.log(Level.FINE, "GUI started");
+
+
+
 
 
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -103,6 +125,18 @@ public class GUI extends JFrame{
 		dbSizeField = new JSpinner(s);
 		oldSelection = new JComboBox<>(TIME.values());
 		sortSelection = new JComboBox<>(SEARCH_BY.values());
+	}
+
+	private void showLog() {
+		FileReader reader = null;
+		try {
+			reader = new FileReader(LOG_PATH);
+			logArea.read(reader, LOG_PATH);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void setLookFeel() {

@@ -23,7 +23,7 @@ public class Settings {
 	private int height = 1080;
 	private int width = 1920;
 	private int period = 15; //mins
-	private TIME maxOldness = TIME.DAY; //days
+	private TIME maxOldness = TIME.DAY;
 	private int maxDatabaseSize = 50;
 	private boolean keepWallpapers = false; //keep wallpapers after eliminating them from db?
 	private static final Logger log = DisplayLogger.getInstance("Settings");

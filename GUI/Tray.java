@@ -23,11 +23,6 @@ public class Tray {
 		}
 		//get the systemTray of the system
 		SystemTray systemTray = SystemTray.getSystemTray();
-
-		//get default toolkit
-		//Toolkit toolkit = Toolkit.getDefaultToolkit();
-		//get image
-		//Toolkit.getDefaultToolkit().getImage("src/resources/busylogo.jpg");
 		Image image = Toolkit.getDefaultToolkit().getImage(".resources/tray_icon.png");
 
 		//popupmenu
@@ -79,7 +74,7 @@ public class Tray {
 		trayPopupMenu.add(close);
 
 		//setting tray icon
-		TrayIcon trayIcon = new TrayIcon(image, "SystemTray Demo", trayPopupMenu);
+		TrayIcon trayIcon = new TrayIcon(image, "Reddit Wallpaper", trayPopupMenu);
 		//adjust to default size as per system recommendation
 		trayIcon.setImageAutoSize(true);
 

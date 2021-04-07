@@ -113,7 +113,7 @@ public class Wallpaper {
 
     @Override
     public String toString() {
-        return title + "\nimage url:" + url + "\npost url: " + postUrl + "\ndate:" + lastUsedDate + "\n";
+        return title + "\nimage url:" + url + "\npost url: " + postUrl + "\ndate:" + lastUsedDate;
     }
 
     public static String cleanString(String s) {
