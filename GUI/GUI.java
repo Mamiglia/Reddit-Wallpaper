@@ -121,7 +121,7 @@ public class GUI extends JFrame{
 		heightField = new JSpinner(s);
 		s = new SpinnerNumberModel(1920, 0, 10000, 1);
 		widthField = new JSpinner(s);
-		s = new SpinnerNumberModel(50, -1, 10000, 1);
+		s = new SpinnerNumberModel(50, 5, 10000, 1);
 		dbSizeField = new JSpinner(s);
 		oldSelection = new JComboBox<>(TIME.values());
 		sortSelection = new JComboBox<>(SEARCH_BY.values());

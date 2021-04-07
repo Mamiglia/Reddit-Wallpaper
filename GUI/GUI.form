@@ -15,7 +15,7 @@
         <children>
           <tabbedpane id="f1979" binding="tabbedPane">
             <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <visible value="true"/>
@@ -34,7 +34,9 @@
                     <constraints>
                       <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <toolTipText value="A keyword you want to be in the title of the wallpaper. You probably want to leave this blank"/>
+                    </properties>
                     <border type="none"/>
                     <children>
                       <component id="6ab8f" class="javax.swing.JLabel">
@@ -50,6 +52,7 @@
                         <constraints/>
                         <properties>
                           <columns value="20"/>
+                          <inheritsPopupMenu value="true"/>
                         </properties>
                       </component>
                     </children>
@@ -58,7 +61,9 @@
                     <constraints>
                       <grid row="1" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <toolTipText value="The subreddits where the wallpaper is searched"/>
+                    </properties>
                     <border type="none"/>
                     <children>
                       <component id="6026a" class="javax.swing.JLabel">
@@ -74,7 +79,9 @@
                         <constraints/>
                         <properties>
                           <columns value="15"/>
+                          <inheritsPopupMenu value="false"/>
                           <text value="wallpapers"/>
+                          <toolTipText value="Format: sub1, sub2, sub3"/>
                         </properties>
                       </component>
                     </children>
@@ -83,7 +90,9 @@
                     <constraints>
                       <grid row="2" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <toolTipText value=""/>
+                    </properties>
                     <border type="none"/>
                     <children>
                       <component id="969e3" class="javax.swing.JLabel">
@@ -152,12 +161,15 @@
                     <constraints>
                       <grid row="5" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <toolTipText value="NSFW Only! Only horny photos will be shown if checked"/>
+                    </properties>
                     <border type="none"/>
                     <children>
                       <component id="94fec" class="javax.swing.JCheckBox" binding="nsfwCheckBox">
                         <constraints/>
                         <properties>
+                          <inheritsPopupMenu value="true"/>
                           <text value="NSFW only"/>
                         </properties>
                       </component>
@@ -177,7 +189,9 @@
                     <constraints>
                       <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <toolTipText value="Screen resolution in pixels. Default: 1080"/>
+                    </properties>
                     <border type="none"/>
                     <children>
                       <component id="bafb2" class="javax.swing.JLabel">
@@ -188,7 +202,9 @@
                       </component>
                       <component id="e1767" class="javax.swing.JSpinner" binding="heightField" custom-create="true">
                         <constraints/>
-                        <properties/>
+                        <properties>
+                          <inheritsPopupMenu value="true"/>
+                        </properties>
                       </component>
                     </children>
                   </grid>
@@ -201,7 +217,9 @@
                     <constraints>
                       <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <toolTipText value="Screen resolution in pixels. Default: 1920"/>
+                    </properties>
                     <border type="none"/>
                     <children>
                       <component id="49c9d" class="javax.swing.JLabel">
@@ -212,7 +230,9 @@
                       </component>
                       <component id="c2496" class="javax.swing.JSpinner" binding="widthField" custom-create="true">
                         <constraints/>
-                        <properties/>
+                        <properties>
+                          <inheritsPopupMenu value="true"/>
+                        </properties>
                       </component>
                     </children>
                   </grid>
@@ -220,12 +240,16 @@
                     <constraints>
                       <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <requestFocusEnabled value="true"/>
+                      <toolTipText value="Check to show log"/>
+                    </properties>
                     <border type="none"/>
                     <children>
                       <component id="12cb3" class="javax.swing.JCheckBox" binding="LogCheckBox">
                         <constraints/>
                         <properties>
+                          <inheritsPopupMenu value="true"/>
                           <text value="Show Log "/>
                         </properties>
                       </component>
@@ -235,7 +259,9 @@
                     <constraints>
                       <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <toolTipText value="Wallpapers may occupy much disk space. So only a certain number of wallpapers are kept, those exceeding will be eliminated"/>
+                    </properties>
                     <border type="none"/>
                     <children>
                       <component id="f3fa7" class="javax.swing.JLabel">
@@ -246,7 +272,9 @@
                       </component>
                       <component id="1e859" class="javax.swing.JSpinner" binding="dbSizeField" custom-create="true">
                         <constraints/>
-                        <properties/>
+                        <properties>
+                          <inheritsPopupMenu value="true"/>
+                        </properties>
                       </component>
                     </children>
                   </grid>
@@ -254,12 +282,15 @@
                     <constraints>
                       <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <toolTipText value="If checked wallpapers will be kept indefinetely. Pay attention to your disk space!"/>
+                    </properties>
                     <border type="none"/>
                     <children>
                       <component id="4c632" class="javax.swing.JCheckBox" binding="keepCheckBox">
                         <constraints/>
                         <properties>
+                          <inheritsPopupMenu value="true"/>
                           <text value="keep wallpapers in database?"/>
                         </properties>
                       </component>
@@ -277,18 +308,15 @@
                 <children>
                   <scrollpane id="f77de">
                     <constraints>
-                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="5" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="5" hsize-policy="5" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
-                    <properties>
-                      <autoscrolls value="false"/>
-                    </properties>
+                    <properties/>
                     <border type="none"/>
                     <children>
                       <component id="b9c12" class="javax.swing.JTextArea" binding="logArea">
                         <constraints/>
                         <properties>
                           <editable value="false"/>
-                          <maximumSize width="2147483647" height="17"/>
                         </properties>
                       </component>
                     </children>

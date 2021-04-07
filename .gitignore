@@ -27,3 +27,4 @@ wallpapers/
 .utility/
 META-INF/MANIFEST.MF
 *.iml
+Test.java
