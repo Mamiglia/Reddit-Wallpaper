@@ -4,6 +4,8 @@ import Settings.Settings;
 import Settings.Settings.TIME;
 import Settings.Settings.SEARCH_BY;
 import Utils.DisplayLogger;
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 
 import javax.swing.*;
 import java.util.Arrays;
@@ -11,28 +13,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class GUI extends JFrame{
-//	public static void main(String[] args) {
-//		try {
-//			UIManager.setLookAndFeel(
-//					"javax.swing.plaf.nimbus.NimbusLookAndFeel"
-//					);
-//		} catch (ClassNotFoundException e) {
-//			e.printStackTrace();
-//		} catch (InstantiationException e) {
-//			e.printStackTrace();
-//		} catch (IllegalAccessException e) {
-//			e.printStackTrace();
-//		} catch (UnsupportedLookAndFeelException e) {
-//			e.printStackTrace();
-//		}
-//		new GUI();
-//	}
 	private JPanel rootPane;
 	private JTabbedPane tabbedPane1;
 	private JPanel settingPane;
 	private JPanel titlePane;
 	private JPanel subredditPane;
-	private JTextField textField;
 	private JTextField subredditField;
 	private JComboBox<SEARCH_BY> sortSelection;
 	private JCheckBox nsfwCheckBox;
@@ -69,7 +54,7 @@ public class GUI extends JFrame{
 	}
 
 	void saveSettings() {
-		settings.setTitles(textField.getText().replace(" ", "").split(","));
+		settings.setTitles(titleField.getText().replace(" ", "").split(","));
 		settings.setSubreddits(subredditField.getText().replace(" ", "").split(","));
 		settings.setNsfwOnly(nsfwCheckBox.isSelected());
 		settings.setHeight((int) heightField.getValue());
@@ -88,7 +73,7 @@ public class GUI extends JFrame{
 		if (settings == null) {
 			log.log(Level.WARNING, "No settings file loaded");
 		}
-		textField.setText(Arrays.toString(settings.getTitles()).replace("[", "").replace("]", ""));
+		titleField.setText(Arrays.toString(settings.getTitles()).replace("[", "").replace("]", ""));
 		subredditField.setText(Arrays.toString(settings.getSubreddits()).replace("[", "").replace("]", ""));
 		sortSelection.setSelectedItem(settings.getSearchBy());
 		nsfwCheckBox.setSelected(settings.isNsfwOnly());
@@ -118,5 +103,30 @@ public class GUI extends JFrame{
 		dbSizeField = new JSpinner(s);
 		oldSelection = new JComboBox<>(TIME.values());
 		sortSelection = new JComboBox<>(SEARCH_BY.values());
+	}
+
+	public static void setLookFeel() {
+		try {
+			UIManager.setLookAndFeel( new FlatDarkLaf() );
+			// Set System L&F
+//			UIManager.setLookAndFeel(
+//					UIManager.getSystemLookAndFeelClassName());
+			// Nimbus Style
+//			UIManager.setLookAndFeel(
+//					"javax.swing.plaf.nimbus.NimbusLookAndFeel"
+//					);
+		}
+		catch (UnsupportedLookAndFeelException e) {
+			e.printStackTrace();
+		}
+//		catch (ClassNotFoundException e) {
+//			e.printStackTrace();
+//		}
+//		catch (InstantiationException e) {
+//			e.printStackTrace();
+//		}
+//		catch (IllegalAccessException e) {
+//			e.printStackTrace();
+//		}
 	}
 }

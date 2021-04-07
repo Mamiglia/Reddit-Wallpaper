@@ -1,4 +1,5 @@
 import GUI.Background;
+import GUI.GUI;
 import GUI.Tray;
 import Settings.Settings;
 import Utils.DisplayLogger;
@@ -17,6 +18,7 @@ public class Main {
 		Thread bThread = new Thread(b);
 		bThread.start();
 
+		GUI.setLookFeel();
 		Tray tray = new Tray(bThread, b);
 		tray.startTray();
 
