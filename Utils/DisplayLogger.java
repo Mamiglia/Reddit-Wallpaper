@@ -1,5 +1,6 @@
 package Utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -10,7 +11,7 @@ public class DisplayLogger {
     //Singleton
     private static final DisplayLogger uniqueInstance = new DisplayLogger();
     private static final String LOG_PATH = ".utility/log.txt";
-    private static Level level = Level.INFO;
+    private static Level level = Level.WARNING;
     private static FileHandler fh = null;
 
     public static Logger getInstance(String name) {
@@ -19,6 +20,9 @@ public class DisplayLogger {
 
         if (fh == null) {
             try {
+                File logFile = new File(LOG_PATH);
+                logFile.getParentFile().mkdirs();
+                logFile.createNewFile();
                 fh = new FileHandler(LOG_PATH);
                 SimpleFormatter formatter = new SimpleFormatter();
                 fh.setFormatter(formatter);
