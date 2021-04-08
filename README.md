@@ -1,6 +1,6 @@
 Reddit-Wallpaper
 ======
-##### Reddit-Wallpaper is tool to download and automatically set a random wallpaper from the Homonymus .
+##### Reddit-Wallpaper is tool to download and automatically set a random wallpaper from subreddits.
 Bored by your old static wallpaper? Want to see something new? Well boyo this is the right place for you. 
 This magnificent tool automatically downloads and sets up a wallpaper from the website reddit!
 It allows you to decide the period of time after you get bored by a wallpaper and changes it, and you won't need to move a single muscle
