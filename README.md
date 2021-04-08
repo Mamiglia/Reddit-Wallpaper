@@ -20,7 +20,7 @@ Work in progress! But it does work and is stable!
 - Dark Theme
 
 #### Disclaimer
-I need help! I'm kinda a beginner in Java development and in general as a software beginner. For sure this project is full of hidden bugs, bad practices, unoptimal implementations and so on. Furthermore, the program has me as the only tester.
+I need help! I'm kinda a beginner in Java development and in general as a software developer. For sure this project is full of hidden bugs, bad practices, unoptimal implementations and so on. Furthermore, the program has me as the only tester.
 I need help, I need feedbacks, I need people to tell me that they like this/dislike that. Only with such support this tool will get better
 
 **Known Bugs:**
