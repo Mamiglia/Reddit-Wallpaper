@@ -33,7 +33,7 @@ class Searcher {
      * It generates a search query for reddit query API
      */
     void generateSearchQuery() {
-        searchQuery = "" +
+        searchQuery =
                 "https://reddit.com/search.json?"
                 + "q=" + generateQuery()
                 + "&sort=" + settings.getSearchBy().value //how to sort them (hot, new ...)
