@@ -9,7 +9,7 @@ And it has so many more settings to customize!
 
 Work in progress! But it does work and is stable!
 
-Main Features:
+**Main Features:**
 - [Easy install](https://github.com/Mamiglia/Reddit-Wallpaper/blob/main/Installation.md)
 - query reddit's API with the specified parameters
 - select the wallpaper to download through a non-repetitive pattern
@@ -19,17 +19,18 @@ Main Features:
 - Supports galleries!
 - Dark Theme
 
+#### Disclaimer
 I need help! I'm kinda a beginner in Java development and in general as a software beginner. For sure this project is full of hidden bugs, bad practices, unoptimal implementations and so on. Furthermore, the program has me as the only tester.
 I need help, I need feedbacks, I need people to tell me that they like this/dislike that. Only with such support this tool will get better
 
-Known Bugs:
+**Known Bugs:**
 - Doesn't support crossposts: they cause an error which blocks the setting of the wallpaper
 - Clicking furiosly while the program is elaborating something else may cause an error
 - Log panel gets loooong
 - Sometimes the tray icon on Windows become more than one, with a weird effect (to be confirmed)
 - pinterest galleries aren't supported (yet)
 
-ToDo:
+**ToDo:**
 - [ ] Add option to download only horizontal wallpapers
 - [ ] Add option to download only wallpapers with a ratio similar to the screen user
 
