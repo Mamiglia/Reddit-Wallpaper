@@ -17,7 +17,7 @@ public class Settings {
 	private static Settings uniqueInstance = new Settings();
 	static final String PATH_TO_SAVEFILE = ".utility/settings.txt";
 	private String[] titles = {};
-	private String[] subreddits = {"wallpapers"};
+	private String[] subreddits = {"wallpaper", "wallpapers"};
 	private SEARCH_BY searchBy = SEARCH_BY.HOT;
 	private boolean nsfwOnly = false;
 	private int height = 1080;
