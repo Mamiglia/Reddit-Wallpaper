@@ -124,7 +124,8 @@ class Searcher {
                     type = type.replace("image/", "");
 
                     String urlGallery = "https://i.redd.it/" + idGallery + "." + type;
-                    String titleGallery = title + "["+ j++ +"]";
+                    String titleGallery = title.substring(0,30)+ j;
+                    j++;
 
                     Wallpaper wallpaper = new Wallpaper(
                             titleGallery,

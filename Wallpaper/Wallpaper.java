@@ -20,7 +20,7 @@ public class Wallpaper {
 
 
     public Wallpaper(String title, String url, String postUrl) {
-        this.title = title.replace(";", "");
+        this.title = cleanString(title);
         // no ";" allowed for stability reasons
         this.url = url;
         if (postUrl.contains("https://www.reddit.com")) this.postUrl = postUrl;
@@ -44,7 +44,8 @@ public class Wallpaper {
         BufferedImage bi = new BufferedImage(
                 img.getWidth(null),
                 img.getHeight(null),
-                BufferedImage.TYPE_INT_ARGB);
+                BufferedImage.TYPE_INT_ARGB
+        );
 
         Graphics2D g2 = bi.createGraphics();
         g2.drawImage(img, 0, 0, null);
@@ -118,10 +119,12 @@ public class Wallpaper {
 
     public static String cleanString(String s) {
         // removes non alphanumerical characters from string
+        s.replace(' ', '_');
+        if (s.length()>30) s = s.substring(0,29) + s.charAt(s.length()-1);
         String res = "";
         for (int i=0; i<s.length(); i++) {
             int k = s.charAt(i);
-            if ((k>=48 && k<=57) || (k>=65 && k<=90) || (k>=97 && k<=122) || k==91 || k==93) {
+            if ((k>=48 && k<=57) || (k>=65 && k<=90) || (k>=97 && k<=122) || k==95) {
                 res += s.charAt(i);
             }
         }
