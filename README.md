@@ -29,7 +29,6 @@ I need help, I need feedbacks, I need people to tell me that they like this/disl
 - Log panel gets loooong
 - Sometimes the tray icon on Windows become more than one, with a weird effect (to be confirmed)
 - pinterest galleries aren't supported (yet)
-- Sometimes it can't find old images (to be confirmed)
 
 **ToDo:**
 - [ ] Add option to download only horizontal wallpapers
