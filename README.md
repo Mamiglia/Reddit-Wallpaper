@@ -29,6 +29,8 @@ I need help, I need feedbacks, I need people to tell me that they like this/disl
 - Log panel gets loooong
 - Sometimes the tray icon on Windows become more than one, with a weird effect (to be confirmed)
 - pinterest galleries aren't supported (yet)
+- Sometimes it gives "Wallapper not set issue" with no further explanation
+
 
 **ToDo:**
 - [ ] Add option to download only horizontal wallpapers
@@ -36,5 +38,7 @@ I need help, I need feedbacks, I need people to tell me that they like this/disl
 - [ ] Add a button to open wallpapers folder
 - [ ] Add option to customize wallpaper folder
 - [ ] Improve logging
+- [ ] Add button to clean wallpaper database
+- [ ] Add a minimum number of upvotes to consider a file
 
 
