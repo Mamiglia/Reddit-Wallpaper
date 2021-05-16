@@ -6,16 +6,16 @@ import Settings.Settings.SEARCH_BY;
 import Utils.DisplayLogger;
 import com.formdev.flatlaf.FlatDarkLaf;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,6 +40,9 @@ public class GUI extends JFrame{
 	private JComboBox<TIME> oldSelection;
 	private JTextField titleField;
 	private JPanel logTab;
+	private JButton folderButton;
+	private JButton resetButton;
+	private JScrollPane scrollPane;
 	static final Logger log = DisplayLogger.getInstance("GUI");
 	private final Act act;
 	private static final String LOG_PATH = ".utility/log.txt";
@@ -48,13 +51,19 @@ public class GUI extends JFrame{
 
 	public GUI(Thread backThread) {
 		super("Reddit Wallpaper Downloader");
-		this.setIconImage(Toolkit.getDefaultToolkit().getImage(".resources/tray_icon.png"));
-		/* icon by https://www.freepik.com */
+		this.setIconImage(Toolkit.getDefaultToolkit().getImage(".resources/tray_icon.png"));/* icon by https://www.freepik.com */
 		this.backThread = backThread;
 		add(rootPane);
 		act = new Act(this);
 		applyButton.addActionListener(act);
+		folderButton.addActionListener(act);
+		resetButton.addActionListener(act);
 		changeNowButton.addActionListener(act);
+		scrollPane.setPreferredSize(new Dimension(-1, 3));
+
+
+		// Should display Log Tab only if Log check box is checked
+		// TODO Doesn't work!!
 		tabbedPane.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent changeEvent) {
 				JTabbedPane src = (JTabbedPane) changeEvent.getSource();
@@ -109,6 +118,26 @@ public class GUI extends JFrame{
 		saveSettings();
 
 		backThread.interrupt(); //interrupting it makes it wake up and load new wallpaper
+	}
+
+	/*
+		Opens in explorer the Wallpaper Folder
+		TODO verify that this works in Linux also
+	 */
+	void displayFolder() {
+		try {
+			Desktop.getDesktop().open(new File(settings.PATH_TO_WALLPAPER_DATABASE));
+		} catch (IOException e) {
+			log.log(Level.WARNING, e.getMessage());
+		}
+	}
+
+	void resetDB() {
+		int selectedOption = JOptionPane.showConfirmDialog(this, "You are going to remove your wallpaper database", "Alert", JOptionPane.OK_CANCEL_OPTION);
+
+		if (selectedOption == JOptionPane.OK_OPTION) {
+			//TODO actually reset the DB
+		}
 	}
 
 	private void createUIComponents() {

@@ -25,6 +25,12 @@ class Act implements ActionListener {
 			case "Apply":
 				frame.saveSettings();
 				break;
+			case "Open Wallpaper Folder":
+				frame.displayFolder();
+				break;
+			case "Reset Wallpaper Database":
+				frame.resetDB();
+				break;
 			default:
 				GUI.log.log(Level.SEVERE, "Unrecognised button");
 
