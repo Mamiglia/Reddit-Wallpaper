@@ -2,16 +2,13 @@ package Utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
+import java.util.logging.*;
 
 public class DisplayLogger {
     //Singleton
     private static final DisplayLogger uniqueInstance = new DisplayLogger();
     private static final String LOG_PATH = ".utility/log.txt";
-    private static Level level = Level.WARNING;
+    private static Level level = Level.ALL;
     private static FileHandler fh = null;
 
     public static Logger getInstance(String name) {
@@ -24,7 +21,15 @@ public class DisplayLogger {
                 logFile.getParentFile().mkdirs();
                 logFile.createNewFile();
                 fh = new FileHandler(LOG_PATH);
-                SimpleFormatter formatter = new SimpleFormatter();
+                Formatter formatter = new Formatter() {
+                    @Override
+                    public String format(LogRecord record) {
+                        StringBuilder strb = new StringBuilder();
+                        strb.append(record.getLevel()).append(": ");
+                        strb.append(record.getMessage()).append("\n");
+                        return strb.toString();
+                    }
+                };
                 fh.setFormatter(formatter);
             } catch (IOException e) {
                 e.printStackTrace();

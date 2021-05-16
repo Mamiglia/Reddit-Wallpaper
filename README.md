@@ -26,7 +26,6 @@ I need help, I need feedbacks, I need people to tell me that they like this/disl
 **Known Bugs:**
 - Doesn't support crossposts: they cause an error which blocks the setting of the wallpaper
 - Clicking furiosly while the program is elaborating something else may cause an error
-- Log panel gets loooong and doesn't scroll
 - Sometimes the tray icon on Windows become more than one, with a weird effect (to be confirmed)
 - pinterest galleries aren't supported (yet)
 - Sometimes it gives "Wallapper not set issue" with no further explanation
