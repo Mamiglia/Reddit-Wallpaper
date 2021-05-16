@@ -15,7 +15,7 @@ public class Background implements Runnable {
 	// 1 - Changes wallpaper
 	// 2 - Sleep X time
 	// 3 - repeat
-	//until program is stopped
+	// until program is stopped
 	private static final Logger log = DisplayLogger.getInstance("background service");
 	private static final Background uniqueInstance = new Background();
 	private Settings settings = Settings.getInstance();
@@ -34,7 +34,7 @@ public class Background implements Runnable {
 	}
 
 	public static void changeNow() {
-
+		// TODO remove due to deprecated
 		Thread.currentThread().interrupt();
 	}
 
@@ -80,7 +80,7 @@ public class Background implements Runnable {
 			try {
 				Thread.sleep(settings.getPeriod() * 60 * 1000);
 			} catch (InterruptedException e) {
-				log.log(Level.INFO, "Sleep is interrupted, change of wallpaper is anticipated");
+				log.log(Level.INFO, "Sleep is interrupted");
 			}
 		}
 		log.log(Level.INFO, "Background Service has been stopped as requested");

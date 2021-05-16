@@ -15,7 +15,9 @@ import java.util.logging.Logger;
 public class Settings {
 	//Singleton
 	private static Settings uniqueInstance = new Settings();
-	static final String PATH_TO_SAVEFILE = ".utility/settings.txt";
+	public static final String PATH_TO_SAVEFILE = ".utility/settings.txt";
+	public static final String PATH_TO_WALLPAPER_DATABASE = "wallpapers";
+	public static final String PATH_TO_DATABASE = ".utility/wallpaperDB.txt";
 	private String[] titles = {};
 	private String[] subreddits = {"wallpaper", "wallpapers"};
 	private SEARCH_BY searchBy = SEARCH_BY.HOT;

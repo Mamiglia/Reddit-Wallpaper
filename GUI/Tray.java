@@ -5,12 +5,12 @@ import java.awt.event.*;
 import java.net.URL;
 
 public class Tray {
-	private final Thread backThread;
+	private final Thread backThread; // it's the Thread of the backgound (the thing that runs always in background)
 	private final Background background;
 
-	public Tray(Thread background, Background background1) {
-		this.backThread = background;
-		this.background = background1;
+	public Tray(Thread backgroundThread, Background background) {
+		this.backThread = backgroundThread;
+		this.background = background;
 	}
 
 
@@ -23,8 +23,7 @@ public class Tray {
 		}
 		//get the systemTray of the system
 		SystemTray systemTray = SystemTray.getSystemTray();
-		Image image = Toolkit.getDefaultToolkit().getImage(".resources/tray_icon.png");
-		// icon by https://www.freepik.com
+		Image image = Toolkit.getDefaultToolkit().getImage(".resources/tray_icon.png");// icon by https://www.freepik.com
 
 		//popupmenu
 		PopupMenu trayPopupMenu = new PopupMenu();
@@ -42,7 +41,7 @@ public class Tray {
 		change.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				backThread.interrupt();
+				backThread.interrupt(); //interrupting the thread means waking it up. When it's awake it will automatically start searching for a new Wallpaper
 			}
 		});
 		trayPopupMenu.add(change);
