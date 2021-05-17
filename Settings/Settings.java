@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 public class Settings {
 	//Singleton
-	private static Settings uniqueInstance = new Settings();
+	private static final Settings uniqueInstance = new Settings();
 	public static final String PATH_TO_SAVEFILE = ".utility/settings.txt";
 	public static final String PATH_TO_WALLPAPER_DATABASE = "wallpapers";
 	public static final String PATH_TO_DATABASE = ".utility/wallpaperDB.txt";
@@ -219,10 +219,10 @@ public class Settings {
 	public boolean setProperty(String property, String value) {
 		switch (property) {
 			case "titles":
-				titles = value.replace("[", "").replace("]","").split(",");
+				titles = value.replace("[", "").replace("]","").split(", ");
 				break;
 			case "subreddits":
-				subreddits = value.replace("[", "").replace("]","").split(",");
+				subreddits = value.replace("[", "").replace("]","").split(", ");
 				break;
 			case "searchBy":
 				searchBy = SEARCH_BY.valueOf(value);
