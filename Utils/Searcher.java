@@ -40,7 +40,7 @@ class Searcher {
                 + "&limit=" + QUERY_SIZE //how many posts
                 + "&t=" + settings.getMaxOldness().value //how old can a post be at most
                 + "&type=t3" //only link type posts, no text-only
-                // + "&restrict_sr=true" i don't think it's useful but still have to figure out what it does
+                + "&restrict_sr=true" //i don't think it's useful but still have to figure out what it does
         ;
         log.log(Level.INFO, "Search Query is: "+ searchQuery);
     }
@@ -52,16 +52,17 @@ class Searcher {
     String generateQuery() {
         //Could be removed?
         String s =
-                "(title:("
-                + String.join(" OR ", settings.getTitles())
-                + ") subreddit:("
-                + String.join(" OR ", settings.getSubreddits())
-                + ") nsfw:" // if true shows nsfw ONLY
-                + (settings.isNsfwOnly()?"yes":"no")
-                + " self:no)" //this means no text-only posts
+                "title:("
+                + String.join(" OR ", settings.getTitles()).replace("  ", " ")
+                + ")+subreddit:("
+                + String.join(" OR ", settings.getSubreddits()).replace("  ", " ")
+                + ")"
+                //+ "+nsfw:" // if true shows nsfw ONLY
+                //+ (settings.isNsfwOnly()?"yes":"no")
+                + "+self:no" //this means no text-only posts
                 // TODO add flairs?
                 ;
-        s = s.replace("title:() ", "").replace("subreddits:() ", "");
+        s = s.replace("title:()+", "").replace("subreddits:()+", "");
         //Removes title and subreddit field if they are void
         //What happens if some dumbhead tries to put as keyword to search "title:() " or "subreddits:() "? Will it just break the program? Is this some sort of hijackable thing?
         //I don't know for I am too dumb
@@ -77,6 +78,7 @@ class Searcher {
         if (proposed == null) {
             URLConnection connect = initializeConnection();
             String rawData = getRawData(connect);
+            //System.out.println(rawData);
             proposed =  refineData(rawData);
         }
         return proposed;
@@ -138,38 +140,55 @@ class Searcher {
                     if (settings.getWidth() <= width && settings.getHeight() <= height) {
                         res.put(idGallery, wallpaper);
                     } else {
-                        log.log(Level.FINE, "Detected wallpaper not compatible with screen dimensions");
-                    }
+                        log.log(Level.FINE, "Detected wallpaper not compatible with screen dimensions: " + width + "x" + height +  "Instead of " + settings.getWidth() + "x" + settings.getHeight() + ". Searching for another...");                    }
 
                 }
             } else {
+                //case in which there's a single wallpaper (not a gallery)
                 Wallpaper wallpaper = new Wallpaper(
                         title,
                         url,
                         permalink
                 );
                 //this mess/nightmare is only fault of reddit nested JSON. I don't think there's a better way to do this
-                int height = (int) ((HashMap<String, Object>)((ArrayList<HashMap>)((HashMap<String, Object>) child.get("preview")).get("images")).get(0).get("source")).get("width");
-                int width = (int) ((HashMap<String, Object>)((ArrayList<HashMap>)((HashMap<String, Object>) child.get("preview")).get("images")).get(0).get("source")).get("height");
 
-                if (settings.getWidth() <= width && settings.getHeight() <= height) {
-                    res.put(id, wallpaper);
-                } else {
-                    log.log(Level.FINE, "Detected wallpaper not compatible with screen dimensions");
-                    //TODO should I merge this repeating part with the part above? they are really similar
+                try {
+                    HashMap<String, Object> preview = ((HashMap<String, Object>) child.get("preview"));
+                    //System.out.println(i + ": " + url + "\n "+ title + permalink);
+                    ArrayList<HashMap> images = (ArrayList<HashMap>) preview.get("images");
+                    HashMap<String, Object> zero = images.get(0);
+                    HashMap<String, Object> source = (HashMap<String, Object>) zero.get("source");
+
+                    int height = (int) source.get("width");
+                    int width = (int) source.get("height");
+
+                    if (settings.getWidth() <= width && settings.getHeight() <= height) {
+                        res.put(id, wallpaper);
+                    } else {
+                        log.log(Level.FINE, "Detected wallpaper not compatible with screen dimensions: " + width + "x" + height +  "Instead of " + settings.getWidth() + "x" + settings.getHeight() + ". Searching for another...");
+                    }
+                        //TODO should I merge this repeating part with the part above? they are really similar
+
+                } catch (NullPointerException e) {
+                    // I still have to figure out why sometimes it gives this error for no reason
+                    // It says that it can't find the "preview" field of the child but it's there
+                    log.log(Level.WARNING, "Could not read input wallpaper");
+
                 }
+
             }
         }
         return res;
     }
 
     private static String encodeURL(String value) {
-        try {
-            return URLEncoder.encode(value, StandardCharsets.UTF_8.toString()).replace("+", "%20");
-            //if you leave + as space sign it's counted as AND by reddit query, so you must use %20
-        } catch (UnsupportedEncodingException ex) {
-            throw new RuntimeException(ex.getCause());
-        }
+        return value.replace(" ", "%20");
+//        try {
+//            return URLEncoder.encode(value, StandardCharsets.UTF_8.toString()).replace("+", "%20");
+//            //if you leave + as space sign it's counted as AND by reddit query, so you must use %20
+//        } catch (UnsupportedEncodingException ex) {
+//            throw new RuntimeException(ex.getCause());
+//        }
     }
 
     // Getter
