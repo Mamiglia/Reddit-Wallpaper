@@ -32,6 +32,9 @@ class Selector {
     public Wallpaper select() {
         Wallpaper res;
         List<String> listProposedID = getProposedWallpapersID();
+        if (listProposedID.size() == 0) {
+            log.log(Level.INFO, "No wallpaper is proposed");
+        }
         List<String> alreadyUsedID = getOldWallpapersID();
         for (String propID : listProposedID) {
             res = proposal.get(propID);
@@ -50,6 +53,11 @@ class Selector {
         } else {
             log.log(Level.WARNING, "No unused wallpaper is found setting the oldest from those found");
             id = findOldestWallpaper(db, listProposedID);
+        }
+
+        if (id == null ) {
+            log.log(Level.WARNING, "Database is void, no wallpaper can be set");
+            return null;
         }
         res = db.get(id);
         res.updateDate();
@@ -128,7 +136,6 @@ class Selector {
         BufferedWriter bw = new BufferedWriter(new FileWriter(f));
         for (String id: db.keySet()) {
             Wallpaper w = db.get(id);
-            // TODO someone could break everything if they put an ";" in their title???
             bw.write(id + ";" +  w.getTitle() + ";" + w.getUrl() + ";" + w.getPostUrl() + ";" + w.getLastUsedDate().getTime());
             bw.newLine();
             // database is written in the file in the form of:
@@ -148,7 +155,7 @@ class Selector {
         // considering just the keys that are in the key list
 
         Date oldest = new Date(); // everything is older than the present moment
-        String oldestID = "";
+        String oldestID = null;
 
         for (String id : keyList) {
             if (oldest.after(map.get(id).getLastUsedDate())) {
