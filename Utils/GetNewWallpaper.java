@@ -27,7 +27,6 @@ public class GetNewWallpaper implements Runnable {
 
 		Searcher s = new Searcher(settings);
 		s.generateSearchQuery();
-		log.log(Level.FINE, "Search query is: " + s.getSearchQuery());
 		Map<String, Wallpaper> wallpapers = null;
 		try {
 			s.getSearchResults();
@@ -52,7 +51,7 @@ public class GetNewWallpaper implements Runnable {
 		w = selector.select();
 		try {
 			w.download();
-		} catch (IOException e) {
+		} catch (IOException | NullPointerException e) {
 			log.log(Level.WARNING, "Couldn't download the image and/or update the database");
 			result = null;
 			return;
