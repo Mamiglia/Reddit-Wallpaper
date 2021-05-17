@@ -34,6 +34,7 @@ public class SetNewWallpaper implements Runnable {
                 windowsChange(System.getProperty("user.dir") + "\\" + windowsPathConverter(wp.getPath()));
                 break;
             case "Linux":
+                //TODO NOT SUPPORTED YET
                 //only XFCE.
                 //Probably won't work in machines different from mine
                 try {
@@ -51,7 +52,7 @@ public class SetNewWallpaper implements Runnable {
     }
 
     interface User32 extends Library {
-        User32 INSTANCE = (User32) Native.load("user32",User32.class,W32APIOptions.DEFAULT_OPTIONS);
+        User32 INSTANCE = Native.load("user32",User32.class,W32APIOptions.DEFAULT_OPTIONS);
         boolean SystemParametersInfo (int one, int two, String s ,int three);
     }
     void windowsChange(String path) {

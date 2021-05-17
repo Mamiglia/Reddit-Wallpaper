@@ -18,7 +18,7 @@ public class Background implements Runnable {
 	// until program is stopped
 	private static final Logger log = DisplayLogger.getInstance("background service");
 	private static final Background uniqueInstance = new Background();
-	private Settings settings = Settings.getInstance();
+	private final Settings settings = Settings.getInstance();
 	private boolean stopped = false;
 	private Wallpaper current = null;
 
