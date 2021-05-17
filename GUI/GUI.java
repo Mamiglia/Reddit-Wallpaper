@@ -16,6 +16,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -126,7 +127,7 @@ public class GUI extends JFrame{
 	 */
 	void displayFolder() {
 		try {
-			Desktop.getDesktop().open(new File(settings.PATH_TO_WALLPAPER_DATABASE));
+			Desktop.getDesktop().open(new File(Settings.PATH_TO_WALLPAPER_DATABASE));
 		} catch (IOException e) {
 			log.log(Level.WARNING, e.getMessage());
 		}
@@ -137,6 +138,22 @@ public class GUI extends JFrame{
 
 		if (selectedOption == JOptionPane.OK_OPTION) {
 			//TODO actually reset the DB
+			File dbFile = new File(Settings.PATH_TO_DATABASE);
+			File wallpaperFolder = new File(Settings.PATH_TO_WALLPAPER_DATABASE);
+			if (dbFile.exists()) {
+				dbFile.delete();
+				try {
+					dbFile.createNewFile();
+				} catch (IOException e) {
+					log.log(Level.WARNING, "Failed erasing the database");
+				}
+			}
+			if (wallpaperFolder.isDirectory()) {
+				for (File walp: Objects.requireNonNull(wallpaperFolder.listFiles())) {
+					walp.delete();
+				}
+			}
+
 		}
 	}
 
