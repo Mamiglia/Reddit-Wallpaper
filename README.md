@@ -25,20 +25,20 @@ I need help, I need feedbacks, I need people to tell me that they like this/disl
 
 **Known Bugs:**
 - Doesn't support crossposts: they cause an error which blocks the setting of the wallpaper
-- Clicking furiosly while the program is elaborating something else may cause an error
-- Sometimes the tray icon on Windows become more than one, with a weird effect (to be confirmed)
+- Clicking furiously while the program is elaborating something else may cause an error
 - pinterest galleries aren't supported (yet)
-- Sometimes it gives "Wallapper not set issue" with no further explanation
-
+- Sometimes it gives "Wallpaper not set issue" with no further explanation (fixed?)
+- Sometimes wallpaper with no "preview" field are downloaded. At the moment the program skips them
 
 **ToDo:**
 - [ ] Add option to download only horizontal wallpapers
 - [ ] Add option to download only wallpapers with a ratio similar to the screen user
 - [x] Add a button to open wallpapers folder
-- [ ] Add option to customize wallpaper folder
+- [ ] Add option to customize wallpaper folder during installation
 - [ ] Improve logging
-- [ ] Add button to clean wallpaper database
+- [x] Add a button to erase wallpaper database 
 - [ ] Add a minimum number of upvotes to consider a file
 - [ ] Improve databasing with SQLite or smth
+- [ ] Add a way to check for updates
 
 
