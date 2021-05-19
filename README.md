@@ -40,5 +40,6 @@ I need help, I need feedbacks, I need people to tell me that they like this/disl
 - [ ] Add a minimum number of upvotes to consider a file
 - [ ] Improve databasing with SQLite or smth
 - [ ] Add a way to check for updates
+- [ ] Improve memory usage (actuallly ca. 200mb)
 
 

@@ -2,6 +2,7 @@
 TITLE Installing Reddit Wallpaper
 @echo ========REDDIT WALLPAPER========
 @echo Welcome to the command line installation program of Reddit Wallpaper.
+@echo If you are updating RW please first close it.
 :question
 SET /P answer="Press Y to begin installation. N to cancel (Y/N) "
 
