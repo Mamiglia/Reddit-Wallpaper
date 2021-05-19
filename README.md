@@ -29,17 +29,21 @@ I need help, I need feedbacks, I need people to tell me that they like this/disl
 - pinterest galleries aren't supported (yet)
 - Sometimes it gives "Wallpaper not set issue" with no further explanation (fixed?)
 - Sometimes wallpaper with no "preview" field are downloaded. At the moment the program skips them
+- Often wallpapers are discarded for "incompatible screen dimensions" while they would technically have the correct dimension
 
 **ToDo:**
 - [ ] Add option to download only horizontal wallpapers
 - [ ] Add option to download only wallpapers with a ratio similar to the screen user
 - [x] Add a button to open wallpapers folder
 - [ ] Add option to customize wallpaper folder during installation
-- [ ] Improve logging
+- [ ] Improve logging by making it more readable
 - [x] Add a button to erase wallpaper database 
-- [ ] Add a minimum number of upvotes to consider a file
+- [ ] Add a minimum number of upvotes to consider an entry
 - [ ] Improve databasing with SQLite or smth
 - [ ] Add a way to check for updates
 - [ ] Improve memory usage (actuallly ca. 200mb)
+- [ ] Add Linux support!
+- [ ] Add something to check  wallpaper database size in MB
+- [ ] Consider the pros and cons of saving every wallpaper in .jpg rather than .png
 
 
