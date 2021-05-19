@@ -143,7 +143,15 @@ class Searcher {
                     if (settings.getWidth() <= width && settings.getHeight() <= height) {
                         res.put(idGallery, wallpaper);
                     } else {
-                        log.log(Level.FINE, "Detected wallpaper not compatible with screen dimensions: " + width + "x" + height +  "Instead of " + settings.getWidth() + "x" + settings.getHeight() + ". Searching for another...");                    }
+                        log.log(Level.FINE,
+                                "Detected wallpaper not compatible with screen dimensions: "
+                                        + width + "x" + height
+                                        +  " Instead of "
+                                        + settings.getWidth() + "x" + settings.getHeight()
+                                        + ": "+ wallpaper.getPostUrl()
+                                        + ". Searching for another..."
+                        );
+                    }
 
                 }
             } else {
@@ -168,7 +176,14 @@ class Searcher {
                     if (settings.getWidth() <= width && settings.getHeight() <= height) {
                         res.put(id, wallpaper);
                     } else {
-                        log.log(Level.FINE, "Detected wallpaper not compatible with screen dimensions: " + width + "x" + height +  "Instead of " + settings.getWidth() + "x" + settings.getHeight() + ". Searching for another...");
+                        log.log(Level.FINE,
+                                "Detected wallpaper not compatible with screen dimensions: "
+                                        + width + "x" + height
+                                        +  " Instead of "
+                                        + settings.getWidth() + "x" + settings.getHeight()
+                                        + ": "+ wallpaper.getPostUrl()
+                                        + ". Searching for another..."
+                        );
                     }
                         //TODO should I merge this repeating part with the part above? they are really similar
 
