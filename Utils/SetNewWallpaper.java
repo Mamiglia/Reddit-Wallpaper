@@ -55,23 +55,18 @@ public class SetNewWallpaper implements Runnable {
         User32 INSTANCE = Native.load("user32",User32.class,W32APIOptions.DEFAULT_OPTIONS);
         boolean SystemParametersInfo (int one, int two, String s ,int three);
     }
+
     void windowsChange(String path) {
+        log.log(Level.FINE, () ->"Detected Windows, setting wallpaper in " + path);
         User32.INSTANCE.SystemParametersInfo(0x0014, 0, path , 1);
+        // Note: result of this ^ function is useless
     }
 
     static String windowsPathConverter(String s) {
-        //windows takes path as with double backslash:
+        // Windows takes path as with double backslash:
         // home/Desktop/folder -> home\\Desktop\\folder
-        String res = "";
-        for (int i=0; i<s.length(); i++) {
-            char k = s.charAt(i);
-            if (k=='/') {
-                res += "\\";
-            } else {
-                res += k;
-            }
-
-        }
-        return res;
+        s.replace("/", "\\");
+        // useless??
+        return s;
     }
 }
