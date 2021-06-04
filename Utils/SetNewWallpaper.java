@@ -25,13 +25,13 @@ public class SetNewWallpaper implements Runnable {
         executed = true;
 
         if (!wp.isDownloaded()) {
-            log.log(Level.WARNING, "Wallpaper file not found");
+            log.log(Level.SEVERE, "Wallpaper file not found, aborting");
             return;
         }
         String os = System.getProperty("os.name");
         switch (os) {
             case "Windows 10":
-                windowsChange(System.getProperty("user.dir") + "\\" + windowsPathConverter(wp.getPath()));
+                windowsChange(wp.getPath());
                 break;
             case "Linux":
                 //TODO NOT SUPPORTED YET
@@ -47,7 +47,7 @@ public class SetNewWallpaper implements Runnable {
                 }
                 break;
             default:
-                log.log(Level.WARNING, "Can't recognize OS: " + os);
+                log.log(Level.SEVERE, () -> "Can't recognize OS: " + os);
         }
     }
 
@@ -56,11 +56,14 @@ public class SetNewWallpaper implements Runnable {
         boolean SystemParametersInfo (int one, int two, String s ,int three);
     }
     void windowsChange(String path) {
-        User32.INSTANCE.SystemParametersInfo(0x0014, 0, path , 1);
+        log.log(Level.FINE, () ->"Detected Windows, setting wallpaper in " + path);
+        boolean res = User32.INSTANCE.SystemParametersInfo(0x0014, 0, path , 1);
+        //TODO delete the res var and the log below if res is inconclusive
+        log.log(Level.FINEST, () -> "result is " + res);
     }
 
     static String windowsPathConverter(String s) {
-        //windows takes path as with double backslash:
+        // Windows takes path as with double backslash:
         // home/Desktop/folder -> home\\Desktop\\folder
         String res = "";
         for (int i=0; i<s.length(); i++) {

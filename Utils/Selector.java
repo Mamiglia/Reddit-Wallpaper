@@ -8,23 +8,23 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 class Selector {
-    private final int MAX_DB_SIZE;
+    private final int maxDbSize;
     private final boolean keepWallpapers;
     public static final String PATH_TO_DATABASE = ".utility/wallpaperDB.txt";
     private static final Logger log = DisplayLogger.getInstance("Selector");
     private final Map<String, Wallpaper> proposal;
     //has a structure like: { ...
     //                          id : Wallpaper
-    private final Map<String, Wallpaper> db;
+    private Map<String, Wallpaper> db = null;
     //has a structure like: {...
     //                          id: Wallpaper
 
 
-    public Selector(Map<String, Wallpaper> proposal, boolean keepWallpapers, int MAX_DB_SIZE) throws IOException{
+    public Selector(Map<String, Wallpaper> proposal, boolean keepWallpapers, int maxDbSize) throws IOException {
         File f = new File(PATH_TO_DATABASE);
         this.proposal = proposal;
         this.keepWallpapers = keepWallpapers;
-        this.MAX_DB_SIZE = MAX_DB_SIZE;
+        this.maxDbSize = maxDbSize;
 
         this.db = loadDB(f);
     }
@@ -32,10 +32,8 @@ class Selector {
     public Wallpaper select() {
         Wallpaper res;
         List<String> listProposedID = getProposedWallpapersID();
-        if (listProposedID.size() == 0) {
-            log.log(Level.INFO, "No wallpaper is proposed");
-        }
         List<String> alreadyUsedID = getOldWallpapersID();
+
         for (String propID : listProposedID) {
             res = proposal.get(propID);
             if (!alreadyUsedID.contains(propID)) {
@@ -48,7 +46,7 @@ class Selector {
         // OR No unused wallpapers are found, select oldest used wallpapers in the list
         String id;
         if (listProposedID.isEmpty()) {
-            log.log(Level.WARNING, "No new wallpaper is found, setting a recent wallpaper");
+            log.log(Level.WARNING, "No new wallpaper is proposed, setting a recent wallpaper");
             id = findOldestWallpaper(db);
         } else {
             log.log(Level.WARNING, "No unused wallpaper is found setting the oldest from those found");
@@ -85,7 +83,8 @@ class Selector {
             // database is written in the file in the form of:
             // id(key);title;url;postUrl;ms_from_epoch \n
             String[] s = scan.nextLine().split(";");
-            log.log(Level.FINE, Arrays.toString(s));
+            // prints every wallpaper in DB
+            log.log(Level.FINEST, Arrays.toString(s));
             Wallpaper w = new Wallpaper(s[1],s[2],s[3], Long.parseLong(s[4]));
             d.put(s[0], w);
         }
@@ -102,7 +101,7 @@ class Selector {
             writeDB();
             log.log(Level.INFO, "Database successfully overwritten");
         } catch (IOException e) {
-            log.log(Level.WARNING, "Database writing failed");
+            log.log(Level.SEVERE, "Database writing failed");
         }
 
     }
@@ -114,11 +113,11 @@ class Selector {
         // the database will contain a maximum of MAX_DB_SIZE wallpapers (default N=50)
         // when the db gets bigger then N, the oldest wallpapers are deleted from the database
         // the user will set if he wants to delete also the wallpaper or the database entry only
-        if (MAX_DB_SIZE != -1 && getOldWallpapersID().size() > MAX_DB_SIZE) {
+        if (maxDbSize != -1 && getOldWallpapersID().size() > maxDbSize) {
             String idOldestWalp = findOldestWallpaper(db);
             Wallpaper w = db.get(idOldestWalp);
             db.remove(idOldestWalp);
-            log.log(Level.INFO, "Cleaning of DB, removing " + idOldestWalp);
+            log.log(Level.FINE, () -> "Cleaning of DB, removing " + idOldestWalp);
 
             //Does the user want to keep the wallpaper after it's eliminated from the database?
             if (!keepWallpapers) {
@@ -133,16 +132,20 @@ class Selector {
         File f = new File(PATH_TO_DATABASE);
         f.delete();
         f.createNewFile();
-        BufferedWriter bw = new BufferedWriter(new FileWriter(f));
-        for (String id: db.keySet()) {
-            Wallpaper w = db.get(id);
-            bw.write(id + ";" +  w.getTitle() + ";" + w.getUrl() + ";" + w.getPostUrl() + ";" + w.getLastUsedDate().getTime());
-            bw.newLine();
-            // database is written in the file in the form of:
-            // id(key);title;url;postUrl;millisecondsFromEpoch \n
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(f))) {
+            for (Map.Entry<String, Wallpaper> entry: db.entrySet()) {
+                Wallpaper w = entry.getValue();
+                bw.write(entry.getKey() + ";" +  w.getTitle() + ";" + w.getUrl() + ";" + w.getPostUrl() + ";" + w.getLastUsedDate().getTime());
+                bw.newLine();
+                // database is written in the file in the form of:
+                // id(key);title;url;postUrl;millisecondsFromEpoch \n
+            }
+            bw.flush();
         }
-        bw.flush();
-        bw.close();
+    }
+
+    public boolean isDBloaded() {
+        return db != null;
     }
 
 
