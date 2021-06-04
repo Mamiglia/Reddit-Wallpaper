@@ -31,7 +31,7 @@ public class SetNewWallpaper implements Runnable {
         String os = System.getProperty("os.name");
         switch (os) {
             case "Windows 10":
-                windowsChange(System.getProperty("user.dir") + "\\" + windowsPathConverter(wp.getPath()));
+                windowsChange(wp.getPath());
                 break;
             case "Linux":
                 //TODO NOT SUPPORTED YET
