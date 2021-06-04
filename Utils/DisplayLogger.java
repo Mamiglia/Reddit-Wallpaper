@@ -8,7 +8,7 @@ public class DisplayLogger {
     //Singleton
     private static final DisplayLogger uniqueInstance = new DisplayLogger();
     private static final String LOG_PATH = ".utility/log.txt";
-    private static final Level level = Level.ALL; // !! set to WARNING before pushing to production!!!
+    private static final Level level = Level.INFO; // !! set to INFO before pushing to production!!!
     private static FileHandler fh = null;
 
     public static Logger getInstance(String name) {

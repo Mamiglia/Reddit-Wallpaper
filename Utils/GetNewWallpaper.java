@@ -9,9 +9,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class GetNewWallpaper implements Runnable {
+	// This Functor is the main class that runs all the other needed in a wallpaper selection and download
 	private boolean executed = false;
 	private static final Logger log = DisplayLogger.getInstance("Get New Wallpaper");
 	private final Settings settings;
+	public static final Wallpaper ERROR_VALUE = null;
 
 	private Wallpaper result;
 
@@ -35,28 +37,35 @@ public class GetNewWallpaper implements Runnable {
 			log.log(Level.WARNING, "Couldn't download the object, Internet error or Invalid input");
 		}
 
-		if (wallpapers == null) {
-			log.log(Level.SEVERE, "Wallpaper JSON not found");
-		}
-
 		//SELECTOR
 		Wallpaper w = null;
 		Selector selector = null;
+
 		try {
 			selector = new Selector(wallpapers, settings.doKeepWallpapers(), settings.getMaxDatabaseSize());
 		} catch (IOException e) {
-			//TODO bad practice
-			e.printStackTrace();
+			log.log(Level.SEVERE, "Loading DB is impossible. Aborting wallpaper set up");
+			abort();
+			return;
 		}
+
+
 		w = selector.select();
 		try {
-			w.download();
+			if (!w.isDownloaded())
+				w.download();
 		} catch (IOException | NullPointerException e) {
-			log.log(Level.WARNING, "Couldn't download the image and/or update the database");
-			result = null;
+			log.log(Level.SEVERE, "Couldn't download the image and/or update the database");
+			abort();
 			return;
 		}
 		result = w;
+	}
+
+	private void abort() {
+		log.log(Level.INFO, "Something went wrong: couldn't download or select a new wallpaper");
+		result = null;
+
 	}
 
 	public Wallpaper getResult() {

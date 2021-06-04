@@ -10,7 +10,7 @@ import java.util.Date;
 
 public class Wallpaper {
     public static final Date NEVER_USED = new Date(0);
-    public static final String DEFAULT_PATH = "wallpapers/";
+    public static final String DEFAULT_PATH = "wallpapers" + File.separator;
     public static final String FORMAT = "png";
     private File file;
     private final String title;

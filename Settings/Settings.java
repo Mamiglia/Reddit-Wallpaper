@@ -84,9 +84,9 @@ public class Settings {
 				String[] s = scan.nextLine().split("=");
 				boolean b = setProperty(s[0], s[1]);
 				if (!b) {
-					log.log(Level.WARNING, "Property not recognized: " + s[0]);
+					log.log(Level.WARNING, "Property not recognized: {0}", s[0]);
 				} else {
-					log.log(Level.FINE, "Set property: " + s[0]);
+					log.log(Level.FINE, "Set property: {0}",  s[0]);
 				}
 			}
 		} catch (FileNotFoundException e) {
@@ -217,12 +217,13 @@ public class Settings {
 	}
 
 	public boolean setProperty(String property, String value) {
+		String[] split = value.replace("[", "").replace("]", "").split(", ");
 		switch (property) {
 			case "titles":
-				titles = value.replace("[", "").replace("]","").split(", ");
+				titles = split;
 				break;
 			case "subreddits":
-				subreddits = value.replace("[", "").replace("]","").split(", ");
+				subreddits = split;
 				break;
 			case "searchBy":
 				searchBy = SEARCH_BY.valueOf(value);
