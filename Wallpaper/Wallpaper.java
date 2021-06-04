@@ -12,6 +12,7 @@ public class Wallpaper {
     public static final Date NEVER_USED = new Date(0);
     public static final String DEFAULT_PATH = "wallpapers/";
     public static final String FORMAT = "png";
+    private File file;
     private final String title;
     private final String url;
     private final String postUrl;
@@ -22,6 +23,7 @@ public class Wallpaper {
     public Wallpaper(String title, String url, String postUrl) {
         this.title = cleanString(title);
         // no ";" allowed for stability reasons
+        file = new File(DEFAULT_PATH + this.title + "." + FORMAT);
         this.url = url;
         if (postUrl.contains("https://www.reddit.com")) this.postUrl = postUrl;
         else this.postUrl = "https://www.reddit.com" + postUrl;
@@ -50,10 +52,9 @@ public class Wallpaper {
         Graphics2D g2 = bi.createGraphics();
         g2.drawImage(img, 0, 0, null);
         g2.dispose();
-        File f = new File(getPath());
-        f.getParentFile().mkdirs();
-        f.createNewFile();
-        ImageIO.write(bi, FORMAT, f);
+        file.getParentFile().mkdirs();
+        file.createNewFile();
+        ImageIO.write(bi, FORMAT, file);
     }
 
     public void updateDate() {
@@ -61,8 +62,7 @@ public class Wallpaper {
     }
 
     public boolean isDownloaded() {
-        File f = new File(getPath());
-        return f.exists();
+        return file.exists();
     }
 
 
@@ -84,7 +84,7 @@ public class Wallpaper {
     }
 
     public String getPath() {
-        return DEFAULT_PATH + cleanString(title) + "." + FORMAT;
+        return file.getAbsolutePath();
     }
     public String getTitle() {
         return title;
@@ -128,6 +128,7 @@ public class Wallpaper {
                 res += s.charAt(i);
             }
         }
+        // TODO unefficient?
         return res;
     }
 
