@@ -47,5 +47,5 @@ I need help, I need feedbacks, I need people to tell me that they like this/disl
 - [ ] Add Linux support!
 - [ ] Add something to check wallpaper database size in MB
 - [ ] Consider the pros and cons of saving every wallpaper in .jpg rather than .png
-
+- [ ] Add an option to search from single subreddits with specific flairs
 
