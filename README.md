@@ -31,20 +31,21 @@ I need help, I need feedbacks, I need people to tell me that they like this/disl
 - Sometimes wallpaper with no "preview" field are downloaded. At the moment the program skips them
 - Often wallpapers are discarded for "incompatible screen dimensions" while they would technically have the correct dimension
 - If the URL of the image contains a ";" it breaks everything                                                                                                                                  
+- Some users report that during the installation process they get the error: "unable to access jarfile install.jar". Unfortunately I can't reproduce this bug and I don't find a way to work on it (if you have any information plz let me know!)
 
 **ToDo:**
 - [ ] Add option to download only horizontal wallpapers
 - [ ] Add option to download only wallpapers with a ratio similar to the screen user
 - [x] Add a button to open wallpapers folder
 - [ ] Add option to customize wallpaper folder during installation
-- [ ] Improve logging by making it more readable
+- [x] Improve logging by making it more readable
 - [x] Add a button to erase wallpaper database 
 - [ ] Add a minimum number of upvotes to consider an entry
 - [ ] Improve databasing with SQLite or smth
 - [ ] Add a way to check for updates
 - [ ] Improve memory usage (actuallly ca. 200mb)
 - [ ] Add Linux support!
-- [ ] Add something to check  wallpaper database size in MB
+- [ ] Add something to check wallpaper database size in MB
 - [ ] Consider the pros and cons of saving every wallpaper in .jpg rather than .png
 
 
