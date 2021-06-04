@@ -62,6 +62,8 @@ public class GUI extends JFrame{
 		changeNowButton.addActionListener(act);
 		scrollPane.setPreferredSize(new Dimension(-1, 3));
 
+		// TODO was useless!
+		nsfwCheckBox.setVisible(false);
 
 		// Should display Log Tab only if Log check box is checked
 		// TODO Doesn't work!!
