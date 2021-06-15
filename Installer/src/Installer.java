@@ -42,11 +42,12 @@ public class Installer {
 
 
         if (jarFile.exists() && batchFile.exists()) {
-            System.out.println("Installation Completed Successfully\nYou can delete this files and this folder");
+            System.out.println("\nInstallation Completed Successfully\nYou can delete these files and folders");
         } else {
-            System.out.println("Installation failed");
-            //TODO delete junk files
+            System.out.println("\nInstallation failed");
         }
+        //TODO add option to delete files
+
     }
 
     static File move(String name, String destination) {
@@ -61,8 +62,8 @@ public class Installer {
             System.err.println(f.getName() + " not found in current directory: " + f.getPath());
             return to;
         }
-        System.out.println("Transferring this file: " + f.toString());
-        System.out.println("to this location: "+ to.toString());
+        System.out.print("Transferring this file: " + f.toString());
+        System.out.println(" to this location: "+ to.toString());
 
         to.mkdirs();
         to.mkdir();
@@ -70,7 +71,7 @@ public class Installer {
         try {
             Files.copy(f.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (FileSystemException e) {
-            System.out.println("RW is still running. Please close it first then press a button");
+            System.out.println("\n!! - RW is still running. Please close it first then press a button\n");
             pause();
             move(f, to);
         } catch (IOException e) {
