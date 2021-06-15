@@ -3,23 +3,24 @@ package Utils;
 import Settings.Settings;
 import Wallpaper.Wallpaper;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 class Searcher {
+	private static final int MINIMUM_NUMBER_OF_UPVOTES = 15; // Number to not pick indecent wallpapers. This number is completely arbitrary, but it should be sufficient
 	private final Settings settings;
 	private String searchQuery;
-	private Map<String, Wallpaper> proposed;
+	private Set<Wallpaper> proposed;
 	private static final Logger log = DisplayLogger.getInstance("Searcher");
 	private static final int QUERY_SIZE = 50;
 
@@ -68,7 +69,7 @@ class Searcher {
 	 * @return the JSON containing the db with search results
 	 * @throws IOException if unable to connect or download the JSON. Reasons: bad internet connection, dirty input string (smth like trying to research for "//" or "title:() "
 	 */
-	public Map<String, Wallpaper> getSearchResults() throws IOException {
+	public Set<Wallpaper> getSearchResults() throws IOException {
 		if (proposed == null) {
 			URLConnection connect = initializeConnection();
 			String rawData = getRawData(connect);
@@ -79,7 +80,7 @@ class Searcher {
 
 	private URLConnection initializeConnection() throws IOException {
 		URLConnection connection = new URL(searchQuery).openConnection();
-		connection.setRequestProperty("User-Agent", "wannabe wallpaper bot");
+		connection.setRequestProperty("User-Agent", "Reddit-Wallpaper bot");
 		connection.setRequestProperty("Accept-Charset", StandardCharsets.UTF_8.name());
 		return connection;
 	}
@@ -90,64 +91,41 @@ class Searcher {
 		return s.hasNext() ? s.next() : "";
 	}
 
-	private Map<String,Wallpaper> refineData(String rawData) throws IOException {
+	private Set<Wallpaper> refineData(String rawData) {
 		// converts the String JSON into a HashMap JSON, then selects the only things
 		// we are interested in: the ID and the photo link
-		HashMap<String,Object> result = null;
-		result = new ObjectMapper().readValue(rawData, HashMap.class);
-		ArrayList<HashMap> children = (ArrayList<HashMap>) ((HashMap<String, Object>) result.get("data")).get("children");
+		JSONArray children = new JSONObject(rawData).getJSONObject("data").getJSONArray("children");
 
-		HashMap<String, Wallpaper> res = new HashMap<>();
-		for (int i=0; i<children.size(); i++) {
+		Set<Wallpaper> res = new HashSet<>();
+		for (int i=0; i<children.length(); i++) {
+			JSONObject child = children.getJSONObject(i).getJSONObject("data");
+			int score = child.getInt("score"); // # of upvotes
+			if (score < MINIMUM_NUMBER_OF_UPVOTES) {
+				// when a post has too few upvotes it's skipped
+				continue;
+			}
+
+			String url = child.getString("url");
+			String title = cleanTitle(child.getString("title"));
+			String permalink = child.getString("permalink");
+			String id = child.getString("id");
+
+			if (child.keySet().contains("crosspost_parent_list")) {
+				// some posts are crossposts
+				child = child.getJSONArray("crosspost_parent_list").getJSONObject(0);
+			}
+
 			// some posts can be in the form of galleries of wallpapers.
-			// such cases can be detected when the url contains the word "gallery" TODO there must be a better way
-			// it appears that there's a field "is_gallery" but there's only in gallery types sooo??
 			// in such cases we are going to
-			HashMap<String, Object> child = (HashMap<String, Object>) ( (HashMap<String, Object>) children.get(i)).get("data");
-			String url = (String) child.get("url");
-			String title = (String) child.get("title");
-			String permalink = (String) child.get("permalink");
-			String id = (String) child.get("id");
-			if (url.contains("gallery")) {
+			if (child.keySet().contains("is_gallery")) {
 				//we are going to add all the posts from this gallery
-				//note that in this way the proposed wallpapers will be more than the QUERY_SIZE (TODO Is this a correct method?)
-				HashMap<String, Object> media_metadata = (HashMap<String, Object>) child.get("media_metadata");
-				int j=0;
-				for (String idGallery : media_metadata.keySet()) {
-					HashMap<String, Object> galleryItem = (HashMap<String, Object>) media_metadata.get(idGallery);
-					String type = (String) galleryItem.get("m");
-					type = type.replace("image/", "");
+				//note that in this way the proposed wallpapers will be slightly more than the QUERY_SIZE
+				processGallery(
+						child.getJSONObject("media_metadata"),
+						title,
+						permalink,
+						res);
 
-					String urlGallery = "https://i.redd.it/" + idGallery + "." + type;
-					String titleGallery = title + j;
-					if (title.length()>30) {
-						titleGallery = title.substring(0,30) + j;
-					}
-					j++;
-
-					Wallpaper wallpaper = new Wallpaper(
-							idGallery,
-							titleGallery,
-							urlGallery,
-							permalink
-					);
-					int height = (int) ((HashMap<String, Object>) galleryItem.get("s")).get("y");
-					int width = (int) ((HashMap<String, Object>) galleryItem.get("s")).get("x");
-
-					if (settings.getWidth() <= width && settings.getHeight() <= height) {
-						res.put(idGallery, wallpaper);
-					} else {
-						log.log(Level.FINE, () ->
-								"Detected wallpaper not compatible with screen dimensions: "
-										+ width + "x" + height
-										+  " Instead of "
-										+ settings.getWidth() + "x" + settings.getHeight()
-										+ ". Searching for another..."
-						);
-						log.log(Level.FINER, () -> "Wallpaper rejected was: " + wallpaper.getPostUrl());
-					}
-
-				}
 			} else {
 				//case in which there's a single wallpaper (not a gallery)
 				Wallpaper wallpaper = new Wallpaper(
@@ -158,44 +136,69 @@ class Searcher {
 				);
 				//this mess/nightmare is only fault of reddit nested JSON. I don't think there's a better way to do this
 
-				try {
-					HashMap<String, Object> preview = ((HashMap<String, Object>) child.get("preview"));
-					ArrayList<HashMap> images = (ArrayList<HashMap>) preview.get("images");
-					HashMap<String, Object> zero = images.get(0);
-					HashMap<String, Object> source = (HashMap<String, Object>) zero.get("source");
+				JSONObject source =  child
+						.getJSONObject("preview")
+						.getJSONArray("images")
+						.getJSONObject(0)
+						.getJSONObject("source");
 
-					int height = (int) source.get("width");
-					int width = (int) source.get("height");
+				int width = source.getInt("width");
+				int height = source.getInt("height");
 
-					if (settings.getWidth() <= width && settings.getHeight() <= height) {
-						res.put(id, wallpaper);
-					} else {
-						log.log(Level.FINE, () ->
-								"Detected wallpaper not compatible with screen dimensions: "
-										+ width + "x" + height
-										+  " Instead of "
-										+ settings.getWidth() + "x" + settings.getHeight()
-										+ ". Searching for another..."
-						);
-						log.log(Level.FINER, () -> "Wallpaper rejected was: " + wallpaper.getPostUrl());
-
-					}
-					//TODO should I merge this repeating part with the part above? they are really similar
-
-				} catch (NullPointerException e) {
-					// I still have to figure out why sometimes it gives this error for no reason
-					// It says that it can't find the "preview" field of the child but it's there
-					log.log(Level.WARNING, "Could not read input wallpaper");
-
+				if (settings.getWidth() <= width && settings.getHeight() <= height) {
+					res.add(wallpaper);
+				} else {
+					log.log(Level.FINE, () ->
+							"Detected wallpaper not compatible with screen dimensions: "
+									+ width + "x" + height
+									+  " Instead of "
+									+ settings.getWidth() + "x" + settings.getHeight()
+									+ ". Searching for another..."
+					);
+					log.log(Level.FINER, () -> "Wallpaper rejected was: " + wallpaper.getPostUrl());
 				}
-
+				//TODO should I merge this repeating part with the part above? they are really similar
 			}
 		}
 		return res;
 	}
 
+	private void processGallery(JSONObject mediaMetadata, String title, String permalink, Set<Wallpaper> res) {
+		int j=0;
+		for (String idGallery : mediaMetadata.keySet()) {
+			JSONObject galleryItem = mediaMetadata.getJSONObject(idGallery);
+			int height = galleryItem.getJSONObject("s").getInt("y");
+			int width = galleryItem.getJSONObject("s").getInt("x");
+			if (settings.getWidth() > width || settings.getHeight() > height) {
+				log.log(Level.FINE, () ->
+						"Detected wallpaper not compatible with screen dimensions: "
+								+ width + "x" + height
+								+  " Instead of "
+								+ settings.getWidth() + "x" + settings.getHeight()
+								+ ". Searching for another..."
+				);
+				return;
+			}
+
+			String type = galleryItem.getString("m");
+			type = type.replace("image/", "");
+
+			String urlGallery = "https://i.redd.it/" + idGallery + "." + type;
+			String titleGallery = title + "_" + j;
+
+			Wallpaper wallpaper = new Wallpaper(
+					idGallery,
+					titleGallery,
+					urlGallery,
+					permalink
+			);
+
+			res.add(wallpaper);
+		}
+	}
+
 	private static String encodeURL(String value) {
-		return value.replace(" ", "%20");
+		return value.replace(":", "%3A").replace(" ", "%20");
 //        try {
 //            return URLEncoder.encode(value, StandardCharsets.UTF_8.toString()).replace("+", "%20");
 //            //if you leave + as space sign it's counted as AND by reddit query, so you must use %20
@@ -210,4 +213,10 @@ class Searcher {
 		return searchQuery;
 	}
 
+	public static String cleanTitle(String title) {
+		title = title.replace(' ', '_')
+				.replaceAll("[^a-zA-Z0-9_]", "");
+		title = title.substring(0, Math.min(100, title.length()));
+		return title;
+	}
 }
