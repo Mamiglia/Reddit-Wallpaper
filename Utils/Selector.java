@@ -7,7 +7,6 @@ import java.sql.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.h2.Driver;
 
 class Selector {
     private final int maxDbSize;
