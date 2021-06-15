@@ -17,10 +17,6 @@ class Selector {
     private Connection conn = null;
     private Statement db = null;
     private final Set<Wallpaper> proposal;
-    //has a structure like: { ...
-    //                          id : Wallpaper
-
-
 
     public Selector(Set<Wallpaper> proposal, boolean keepWallpapers, int maxDbSize) throws IOException {
         this.proposal = proposal;
@@ -90,20 +86,18 @@ class Selector {
         // when the db gets bigger then N, the oldest wallpapers are deleted from the database
         // the user will set if he wants to delete also the wallpaper or the database entry only
         if (maxDbSize != -1 && getOldWallpapersID().size() > maxDbSize) {
-            try (ResultSet rs = db.executeQuery("SELECT * FROM WALLPAPERS ORDER BY date PERCENT 20")) {
-                while (rs.next()) {
+            try (ResultSet rs = db.executeQuery("SELECT wp FROM WALLPAPERS ORDER BY date FETCH FIRST 20 PERCENT ROWS ONLY")) {
+                while (!keepWallpapers && rs.next()) {
                     Wallpaper wp = (Wallpaper) rs.getObject("wp");
                     log.log(Level.FINEST, wp::toString);
                     log.log(Level.FINE, () -> "Cleaning of DB, removing " + wp.getID());
 
-                    if (!keepWallpapers) {
-                        File f = new File(wp.getPath());
-                        f.delete();
-                    }
+                    File f = new File(wp.getPath());
+                    f.delete();
 
 
                 }
-                db.executeUpdate("DELETE FROM WALLPAPERS LIMIT 10");
+                db.executeUpdate("DELETE FROM WALLPAPERS WHERE id IN (SELECT id FROM WALLPAPERS ORDER BY date fetch FIRST 20 PERCENT rows only)");
 
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
