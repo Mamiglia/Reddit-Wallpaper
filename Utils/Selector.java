@@ -3,6 +3,7 @@ package Utils;
 import Wallpaper.Wallpaper;
 
 import java.io.*;
+import java.sql.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,100 +11,75 @@ import java.util.logging.Logger;
 class Selector {
     private final int maxDbSize;
     private final boolean keepWallpapers;
-    public static final String PATH_TO_DATABASE = ".utility/wallpaperDB.txt";
+    public static final String PATH_TO_DATABASE = ".utility"+ File.separator + "db";
+    private static final String dbUrl = "jdbc:h2:file:" + System.getProperty("user.dir") + File.separator + PATH_TO_DATABASE;
     private static final Logger log = DisplayLogger.getInstance("Selector");
-    private final Map<String, Wallpaper> proposal;
+    private Connection conn = null;
+    private Statement db = null;
+    private final Set<Wallpaper> proposal;
     //has a structure like: { ...
     //                          id : Wallpaper
-    private Map<String, Wallpaper> db = null;
-    //has a structure like: {...
-    //                          id: Wallpaper
 
 
-    public Selector(Map<String, Wallpaper> proposal, boolean keepWallpapers, int maxDbSize) throws IOException {
-        File f = new File(PATH_TO_DATABASE);
+
+    public Selector(Set<Wallpaper> proposal, boolean keepWallpapers, int maxDbSize) throws IOException {
         this.proposal = proposal;
         this.keepWallpapers = keepWallpapers;
         this.maxDbSize = maxDbSize;
 
-        this.db = loadDB(f);
+        loadDB();
+
+        if (conn == null) {
+            throw new IOException();
+        }
     }
 
     public Wallpaper select() {
-        Wallpaper res;
-        List<String> listProposedID = getProposedWallpapersID();
-        List<String> alreadyUsedID = getOldWallpapersID();
+        Wallpaper selected = null;
+        List<String> oldID = getOldWallpapersID();
 
-        for (String propID : listProposedID) {
-            res = proposal.get(propID);
-            if (!alreadyUsedID.contains(propID)) {
-                res.updateDate();
-                updateDB(propID, res);
-                return res;
-                // An unused wallpaper is found
+        for (Wallpaper propWallpaper : proposal) {
+            if (!oldID.contains(propWallpaper.getID())) {
+                log.log(Level.FINE, "Selected new wallpaper from those proposed");
+                insertDB(propWallpaper);
+                cleanDB();
+                closeDB();
+                return propWallpaper;
             }
         }
         // OR No unused wallpapers are found, select oldest used wallpapers in the list
-        String id;
-        if (listProposedID.isEmpty()) {
-            log.log(Level.WARNING, "No new wallpaper is proposed, setting a recent wallpaper");
-            id = findOldestWallpaper(db);
+        if (proposal.isEmpty()) {
+            log.log(Level.WARNING, "No new wallpaper is proposed, setting a recent wallpaper. Maybe your query is too restrictive?");
         } else {
-            log.log(Level.WARNING, "No unused wallpaper is found setting the oldest from those found");
-            id = findOldestWallpaper(db, listProposedID);
+            log.log(Level.INFO, "No unused wallpaper is found setting the oldest from those found");
+        }
+        try (ResultSet rs = db.executeQuery("SELECT wp FROM WALLPAPERS ORDER BY date LIMIT 1")) {
+                rs.next();
+                selected = (Wallpaper) rs.getObject("wp");
+                updateDate(selected);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
 
-        if (id == null ) {
+        if (selected == null ) {
             log.log(Level.WARNING, "Database is void, no wallpaper can be set");
             return null;
         }
-        res = db.get(id);
-        res.updateDate();
-        updateDB(id, res);
-        return res;
+        closeDB();
+
+        return selected;
     }
 
     public List<String> getOldWallpapersID() {
-        return new ArrayList<>(db.keySet());
-    }
-
-    public List<String> getProposedWallpapersID() {
-        return new ArrayList<>(proposal.keySet());
-    }
-
-    private Map<String, Wallpaper> loadDB(File f) throws IOException {
-        if (!f.exists()) {
-            //the DB file doesn't exist yet!
-            f.getParentFile().mkdirs();
-            f.createNewFile();
+        ArrayList<String> arr = new ArrayList<>();
+        try (ResultSet rs = db.executeQuery("SELECT id FROM WALLPAPERS")) {
+             while (rs.next()) {
+                 arr.add(rs.getString("id"));
+             }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
-        Scanner scan = new Scanner(new FileReader(f));
-        Map<String, Wallpaper> d = new HashMap<>();
-        while (scan.hasNext()) {
-            // database is written in the file in the form of:
-            // id(key);title;url;postUrl;ms_from_epoch \n
-            String[] s = scan.nextLine().split(";");
-            // prints every wallpaper in DB
-            log.log(Level.FINEST, Arrays.toString(s));
-            Wallpaper w = new Wallpaper(s[1],s[2],s[3], Long.parseLong(s[4]));
-            d.put(s[0], w);
-        }
-        scan.close();
-        log.log(Level.INFO, "Database loaded");
-        return d;
-    }
-
-    private void updateDB(String id, Wallpaper w) {
-        // TODO terrible implementation, you just can't erase and rewrite the db every single time
-        db.put(id, w);
-        cleanDB();
-        try{
-            writeDB();
-            log.log(Level.INFO, "Database successfully overwritten");
-        } catch (IOException e) {
-            log.log(Level.SEVERE, "Database writing failed");
-        }
-
+        return arr;
     }
 
     /*
@@ -114,58 +90,121 @@ class Selector {
         // when the db gets bigger then N, the oldest wallpapers are deleted from the database
         // the user will set if he wants to delete also the wallpaper or the database entry only
         if (maxDbSize != -1 && getOldWallpapersID().size() > maxDbSize) {
-            String idOldestWalp = findOldestWallpaper(db);
-            Wallpaper w = db.get(idOldestWalp);
-            db.remove(idOldestWalp);
-            log.log(Level.FINE, () -> "Cleaning of DB, removing " + idOldestWalp);
+            try (ResultSet rs = db.executeQuery("SELECT * FROM WALLPAPERS ORDER BY date PERCENT 20")) {
+                while (rs.next()) {
+                    Wallpaper wp = (Wallpaper) rs.getObject("wp");
+                    log.log(Level.FINEST, wp::toString);
+                    log.log(Level.FINE, () -> "Cleaning of DB, removing " + wp.getID());
 
-            //Does the user want to keep the wallpaper after it's eliminated from the database?
-            if (!keepWallpapers) {
-                File f = new File(w.getPath());
-                f.delete();
+                    if (!keepWallpapers) {
+                        File f = new File(wp.getPath());
+                        f.delete();
+                    }
+
+
+                }
+                db.executeUpdate("DELETE FROM WALLPAPERS LIMIT 10");
+
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
             }
-            cleanDB();
         }
     }
 
-    private void writeDB() throws IOException {
-        File f = new File(PATH_TO_DATABASE);
-        f.delete();
-        f.createNewFile();
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(f))) {
-            for (Map.Entry<String, Wallpaper> entry: db.entrySet()) {
-                Wallpaper w = entry.getValue();
-                bw.write(entry.getKey() + ";" +  w.getTitle() + ";" + w.getUrl() + ";" + w.getPostUrl() + ";" + w.getLastUsedDate().getTime());
-                bw.newLine();
-                // database is written in the file in the form of:
-                // id(key);title;url;postUrl;millisecondsFromEpoch \n
+
+
+    private void insertDB(Wallpaper wp) {
+
+        try (PreparedStatement p = conn.prepareStatement("INSERT INTO WALLPAPERS VALUES (?, ?, CURRENT_TIMESTAMP())")) {
+            p.setString(1, wp.getID());
+            p.setObject(2, wp);
+            p.executeUpdate();
+            log.log(Level.FINER, () -> "Successfully inserted entry: " + wp.toString());
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            log.log(Level.WARNING, () -> "Failed to insert entry in db: " + e.getMessage());
+        }
+    }
+
+    private void updateDate(Wallpaper wp) {
+        try {
+            db.executeUpdate("UPDATE WALLPAPERS SET date=CURRENT_TIMESTAMP() WHERE id=\'"+wp.getID()+"\'");
+        } catch (SQLException throwables) {
+            // consider the case in which the wp isn't in the table
+            throwables.printStackTrace();
+        }
+    }
+
+
+
+    private void loadDB() {
+        try {
+            conn = DriverManager.getConnection(dbUrl, "rw", "");
+            db = conn.createStatement();
+            db.execute("CREATE TABLE IF NOT EXISTS WALLPAPERS(id VARCHAR(100) PRIMARY KEY, wp OTHER NOT NULL, date TIMESTAMP NOT NULL)");
+            log.log(Level.FINE, "Database loaded: " + dbUrl);
+
+        } catch (SQLException e) {
+            log.log(Level.SEVERE, "Couldn't create database");
+        }
+    }
+
+    public String showDB() {
+        try (ResultSet rs = db.executeQuery("SELECT * FROM WALLPAPERS ORDER BY date")) {
+            StringBuilder str = new StringBuilder();
+            while (rs.next()) {
+                str.append(rs.getString("id"))
+                        .append(": ")
+                        .append(((Wallpaper) rs.getObject("wp")).getTitle())
+                        .append(" ; ")
+                        .append(rs.getTimestamp("date"))
+                        .append("\n");
             }
-            bw.flush();
+            return str.toString();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return null;
+
+    }
+
+    public void closeDB() {
+        try {
+            conn.close();
+            db.close();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
     }
 
     public boolean isDBloaded() {
-        return db != null;
+        return conn != null;
     }
 
+    public static void main(String[] args) {
 
-    private static String findOldestWallpaper(Map<String, Wallpaper> map) {
-        // to find the oldest wallpaper considering all the keys in the map itself
-        return findOldestWallpaper(map, new ArrayList<>(map.keySet()));
-    }
-
-    private static String findOldestWallpaper(Map<String, Wallpaper> map, List<String> keyList) {
-        // considering just the keys that are in the key list
-
-        Date oldest = new Date(); // everything is older than the present moment
-        String oldestID = null;
-
-        for (String id : keyList) {
-            if (oldest.after(map.get(id).getLastUsedDate())) {
-                oldestID = id;
-                oldest = map.get(id).getLastUsedDate();
-            }
-        }
-        return oldestID;
+//        var url = "jdbc:h2:tcp://localhost:9092/~/tmp/h2dbs/testdb";
+//        var user = "sa";
+//        var passwd = "s$cret";
+//
+//        var query = "SELECT * FROM cars";
+//
+//        try (var con = DriverManager.getConnection(url, user, passwd);
+//             var st = con.createStatement();
+//             var rs = st.executeQuery(query)) {
+//
+//            while (rs.next()) {
+//
+//                System.out.printf("%d %s %d%n", rs.getInt(1),
+//                        rs.getString(2), rs.getInt(3));
+//            }
+//
+//        } catch (SQLException ex) {
+//
+//            log.log(Level.SEVERE, ex.getMessage(), ex);
+//        }
     }
 }
