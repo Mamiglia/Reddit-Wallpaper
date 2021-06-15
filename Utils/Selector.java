@@ -7,6 +7,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.h2.Driver;
 
 class Selector {
     private final int maxDbSize;
@@ -105,8 +106,6 @@ class Selector {
         }
     }
 
-
-
     private void insertDB(Wallpaper wp) {
 
         try (PreparedStatement p = conn.prepareStatement("INSERT INTO WALLPAPERS VALUES (?, ?, CURRENT_TIMESTAMP())")) {
@@ -131,10 +130,9 @@ class Selector {
         }
     }
 
-
-
     private void loadDB() {
         try {
+            Class.forName("org.h2.Driver");
             conn = DriverManager.getConnection(dbUrl, "rw", "");
             db = conn.createStatement();
             db.execute("CREATE TABLE IF NOT EXISTS WALLPAPERS(id VARCHAR(100) PRIMARY KEY, wp OTHER NOT NULL, date TIMESTAMP NOT NULL)");
@@ -142,6 +140,9 @@ class Selector {
 
         } catch (SQLException e) {
             log.log(Level.SEVERE, "Couldn't create database");
+            log.log(Level.FINER, e.getMessage());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
@@ -176,29 +177,5 @@ class Selector {
 
     public boolean isDBloaded() {
         return conn != null;
-    }
-
-    public static void main(String[] args) {
-
-//        var url = "jdbc:h2:tcp://localhost:9092/~/tmp/h2dbs/testdb";
-//        var user = "sa";
-//        var passwd = "s$cret";
-//
-//        var query = "SELECT * FROM cars";
-//
-//        try (var con = DriverManager.getConnection(url, user, passwd);
-//             var st = con.createStatement();
-//             var rs = st.executeQuery(query)) {
-//
-//            while (rs.next()) {
-//
-//                System.out.printf("%d %s %d%n", rs.getInt(1),
-//                        rs.getString(2), rs.getInt(3));
-//            }
-//
-//        } catch (SQLException ex) {
-//
-//            log.log(Level.SEVERE, ex.getMessage(), ex);
-//        }
     }
 }
