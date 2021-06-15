@@ -10,38 +10,30 @@ And it has so many more settings to customize!
 Work in progress! But it does work and is stable!
 
 **Main Features:**
-- [Easy install](https://github.com/Mamiglia/Reddit-Wallpaper/blob/main/Installation.md)
-- query reddit's API with the specified parameters
-- select the wallpaper to download through a non-repetitive pattern
+- [Easy install and update](https://github.com/Mamiglia/Reddit-Wallpaper/blob/main/Installation.md)
+- Query reddit's API with the specified parameters
+- Select the wallpaper to download through a non-repetitive pattern
 - Automatically apply such wallpaper 
 - GUI to control settings
 - System Tray
-- Supports galleries!
+- Supports galleries and crossposts!
 - Dark Theme
+- Select only wallpapers with a sufficient resolution. All resolutions supported!
 
 #### Disclaimer
 I need help! I'm kinda a beginner in Java development and in general as a software developer. For sure this project is full of hidden bugs, bad practices, unoptimal implementations and so on. Furthermore, the program has me as the only tester.
 I need help, I need feedbacks, I need people to tell me that they like this/dislike that. Only with such support this tool will get better
 
 **Known Bugs:**
-- Doesn't support crossposts: they cause an error which blocks the setting of the wallpaper
 - pinterest galleries aren't supported (yet)
-- Sometimes it gives "Wallpaper not set issue" with no further explanation (fixed?)
-- Sometimes wallpaper with no "preview" field are downloaded. At the moment the program skips them
-- Often wallpapers are discarded for "incompatible screen dimensions" while they would technically have the correct dimension
 - Some users report that during the installation process they get the error: "unable to access jarfile install.jar". Unfortunately I can't reproduce this bug and I don't find a way to work on it (if you have any information plz let me know!)
 
 **ToDo:**
-- [ ] Add option to download only horizontal wallpapers
-- [ ] Add option to download only wallpapers with a ratio similar to the screen user
-- [x] Add a button to open wallpapers folder
 - [ ] Add option to customize wallpaper folder during installation
-- [x] Improve logging by making it more readable
-- [x] Add a button to erase wallpaper database 
-- [ ] Add a minimum number of upvotes to consider an entry
+- [x] Add a minimum number of upvotes to consider an entry
 - [x] Improve databasing with a real database
 - [ ] Add a way to check for updates
-- [ ] Improve memory usage (actually ca. 200mb)
+- [x] Improve memory usage (actually ca. 200MB) -> improved to 150MB
 - [ ] Add Linux support!
 - [ ] Add something to check wallpaper database size in MB
 - [ ] Consider the pros and cons of saving every wallpaper in .jpg rather than .png
