@@ -7,10 +7,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
-import java.util.Date;
+import java.util.Objects;
 
 public class Wallpaper implements Serializable {
-    public static final Date NEVER_USED = new Date(0);
     public static final String DEFAULT_PATH = "wallpapers" + File.separator;
     public static final String FORMAT = "png";
     private final String id;
@@ -18,12 +17,12 @@ public class Wallpaper implements Serializable {
     private final String title;
     private final String url;
     private final String postUrl;
-    private transient Image image;
+//    private transient Image image;
 
 
     public Wallpaper(String id, String title, String url, String postUrl) {
         this.id = id;
-        this.title = cleanString(title);
+        this.title = title;
         // no ";" allowed for stability reasons
         file = new File(DEFAULT_PATH + this.title + "." + FORMAT);
         this.url = url;
@@ -32,7 +31,7 @@ public class Wallpaper implements Serializable {
     }
 
     public void download() throws IOException {
-        image = ImageIO.read(new URL(url));
+        Image image = ImageIO.read(new URL(url));
         saveImage(image);
     }
 
@@ -57,17 +56,17 @@ public class Wallpaper implements Serializable {
 
 
     // GETTERS
-    public double getRatio() {
-        return (double) getWidth() / (double) getHeight();
-    }
-
-    public int getWidth() {
-        return image.getWidth(null);
-    }
-
-    public int getHeight() {
-        return image.getHeight(null);
-    }
+//    public double getRatio() {
+//        return (double) getWidth() / (double) getHeight();
+//    }
+//
+//    public int getWidth() {
+//        return image.getWidth(null);
+//    }
+//
+//    public int getHeight() {
+//        return image.getHeight(null);
+//    }
 
     public String getPath() {
         return file.getAbsolutePath();
@@ -81,14 +80,14 @@ public class Wallpaper implements Serializable {
     public String getPostUrl() {
         return postUrl;
     }
-    public Image getImage() throws IOException {
-        if (image == null && isDownloaded()) {
-            image = ImageIO.read(new File(getPath()));
-        } else if (image == null) {
-            image = ImageIO.read(new URL(url));
-        }
-        return image;
-    }
+//    public Image getImage() throws IOException {
+//        if (image == null && isDownloaded()) {
+//            image = ImageIO.read(new File(getPath()));
+//        } else if (image == null) {
+//            image = ImageIO.read(new URL(url));
+//        }
+//        return image;
+//    }
     public String getID() {
         return id;
     }
@@ -99,23 +98,12 @@ public class Wallpaper implements Serializable {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(id, title, url, postUrl);
+    }
+
+    @Override
     public String toString() {
         return title + "\nimage url:" + url + "\npost url: " + postUrl;
     }
-
-    public static String cleanString(String s) {
-        // removes non alphanumerical characters from string
-        s.replace(' ', '_');
-        if (s.length()>30) s = s.substring(0,29) + s.charAt(s.length()-1);
-        String res = "";
-        for (int i=0; i<s.length(); i++) {
-            int k = s.charAt(i);
-            if ((k>=48 && k<=57) || (k>=65 && k<=90) || (k>=97 && k<=122) || k==95) {
-                res += s.charAt(i);
-            }
-        }
-        // TODO unefficient?
-        return res;
-    }
-
 }
