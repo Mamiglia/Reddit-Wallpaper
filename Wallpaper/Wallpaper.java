@@ -5,41 +5,35 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.Date;
 
-public class Wallpaper {
+public class Wallpaper implements Serializable {
     public static final Date NEVER_USED = new Date(0);
     public static final String DEFAULT_PATH = "wallpapers" + File.separator;
     public static final String FORMAT = "png";
-    private File file;
+    private final String id;
+    private final File file;
     private final String title;
     private final String url;
     private final String postUrl;
-    private Date lastUsedDate;
-    private Image image;
+    private transient Image image;
 
 
-    public Wallpaper(String title, String url, String postUrl) {
+    public Wallpaper(String id, String title, String url, String postUrl) {
+        this.id = id;
         this.title = cleanString(title);
         // no ";" allowed for stability reasons
         file = new File(DEFAULT_PATH + this.title + "." + FORMAT);
         this.url = url;
         if (postUrl.contains("https://www.reddit.com")) this.postUrl = postUrl;
         else this.postUrl = "https://www.reddit.com" + postUrl;
-        lastUsedDate = NEVER_USED;
-    }
-
-    public Wallpaper(String title, String url, String postUrl, long lastUsedDate) {
-        this(title, url, postUrl);
-        this.lastUsedDate = new Date(lastUsedDate);
     }
 
     public void download() throws IOException {
         image = ImageIO.read(new URL(url));
         saveImage(image);
-        // when an image is downloaded it's also used for the first time
-        updateDate();
     }
 
     public void saveImage(Image img) throws IOException {
@@ -57,20 +51,12 @@ public class Wallpaper {
         ImageIO.write(bi, FORMAT, file);
     }
 
-    public void updateDate() {
-        lastUsedDate = new Date();
-    }
-
     public boolean isDownloaded() {
         return file.exists();
     }
 
 
     // GETTERS
-    public void setDate() {
-        lastUsedDate = new Date();
-    }
-
     public double getRatio() {
         return (double) getWidth() / (double) getHeight();
     }
@@ -89,9 +75,6 @@ public class Wallpaper {
     public String getTitle() {
         return title;
     }
-    public Date getLastUsedDate() {
-        return lastUsedDate;
-    }
     public String getUrl() {
         return url;
     }
@@ -106,6 +89,9 @@ public class Wallpaper {
         }
         return image;
     }
+    public String getID() {
+        return id;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -114,7 +100,7 @@ public class Wallpaper {
 
     @Override
     public String toString() {
-        return title + "\nimage url:" + url + "\npost url: " + postUrl + "\ndate:" + lastUsedDate;
+        return title + "\nimage url:" + url + "\npost url: " + postUrl;
     }
 
     public static String cleanString(String s) {

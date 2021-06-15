@@ -126,6 +126,7 @@ class Searcher {
 					j++;
 
 					Wallpaper wallpaper = new Wallpaper(
+							idGallery,
 							titleGallery,
 							urlGallery,
 							permalink
@@ -150,6 +151,7 @@ class Searcher {
 			} else {
 				//case in which there's a single wallpaper (not a gallery)
 				Wallpaper wallpaper = new Wallpaper(
+						id,
 						title,
 						url,
 						permalink
