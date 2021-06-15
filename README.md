@@ -1,7 +1,7 @@
 Reddit-Wallpaper
 ======
 ##### Reddit-Wallpaper is tool to download and automatically set a random wallpaper from subreddits.
-Bored by your old static wallpaper? Want to see something new? Well boyo this is the right place for you. 
+Bored by your old static wallpaper? Want to see something new? Well my boy this is the right place for you. 
 This magnificent tool automatically downloads and sets up a wallpaper from the website reddit!
 It allows you to decide the period of time after you get bored by a wallpaper and changes it, and you won't need to move a single muscle.
 Best thing of all, it applies wallpapers using a non-repetitive pattern - meaning that it's unlikely that you will ever see the same wallpaper twice.
@@ -11,6 +11,7 @@ Work in progress! But it does work and is stable!
 
 **Main Features:**
 - [Easy install and update](https://github.com/Mamiglia/Reddit-Wallpaper/blob/main/Installation.md)
+- No setup required, just install, and it will start doing everything by itself
 - Query reddit's API with the specified parameters
 - Select the wallpaper to download through a non-repetitive pattern
 - Automatically apply such wallpaper 

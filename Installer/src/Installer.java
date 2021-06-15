@@ -108,7 +108,7 @@ public class Installer {
         String code =
                 "@echo off\n" +
                 "cd \"" + INSTALLATION_PATH + "\"\n" +
-                "start javaw -Xmx150m -jar \"" + mainJar + "\"\n" +
+                "start javaw -jar \"" + mainJar + "\"\n" +
                 "exit";
         try (BufferedWriter fw = new BufferedWriter(new FileWriter(f))) {
             f.createNewFile();
