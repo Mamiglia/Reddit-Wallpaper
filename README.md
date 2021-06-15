@@ -41,7 +41,7 @@ I need help, I need feedbacks, I need people to tell me that they like this/disl
 - [ ] Add a minimum number of upvotes to consider an entry
 - [x] Improve databasing with a real database
 - [ ] Add a way to check for updates
-- [ ] Improve memory usage (actuallly ca. 200mb)
+- [ ] Improve memory usage (actually ca. 200mb)
 - [ ] Add Linux support!
 - [ ] Add something to check wallpaper database size in MB
 - [ ] Consider the pros and cons of saving every wallpaper in .jpg rather than .png

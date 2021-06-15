@@ -15,7 +15,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -77,7 +76,7 @@ public class GUI extends JFrame{
 			}
 		});
 		loadSettings();
-		log.log(Level.FINE, "GUI started");
+		log.log(Level.FINER, "GUI started");
 
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		pack();
