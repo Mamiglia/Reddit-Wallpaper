@@ -25,12 +25,10 @@ I need help, I need feedbacks, I need people to tell me that they like this/disl
 
 **Known Bugs:**
 - Doesn't support crossposts: they cause an error which blocks the setting of the wallpaper
-- Clicking furiously while the program is elaborating something else may cause an error
 - pinterest galleries aren't supported (yet)
 - Sometimes it gives "Wallpaper not set issue" with no further explanation (fixed?)
 - Sometimes wallpaper with no "preview" field are downloaded. At the moment the program skips them
 - Often wallpapers are discarded for "incompatible screen dimensions" while they would technically have the correct dimension
-- If the URL of the image contains a ";" it breaks everything                                                                                                                                  
 - Some users report that during the installation process they get the error: "unable to access jarfile install.jar". Unfortunately I can't reproduce this bug and I don't find a way to work on it (if you have any information plz let me know!)
 
 **ToDo:**
@@ -41,7 +39,7 @@ I need help, I need feedbacks, I need people to tell me that they like this/disl
 - [x] Improve logging by making it more readable
 - [x] Add a button to erase wallpaper database 
 - [ ] Add a minimum number of upvotes to consider an entry
-- [ ] Improve databasing with SQLite or smth
+- [x] Improve databasing with a real database
 - [ ] Add a way to check for updates
 - [ ] Improve memory usage (actuallly ca. 200mb)
 - [ ] Add Linux support!
