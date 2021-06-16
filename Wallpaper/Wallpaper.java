@@ -9,8 +9,9 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.nio.file.Files;
-
 import java.util.Objects;
+
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public class Wallpaper implements Serializable {
     public static final String DEFAULT_PATH = "wallpapers" + File.separator;
@@ -25,7 +26,6 @@ public class Wallpaper implements Serializable {
     public Wallpaper(String id, String title, String url, String postUrl) {
         this.id = id;
         this.title = title;
-        // no ";" allowed for stability reasons
         file = new File(DEFAULT_PATH + this.title + "." + FORMAT);
         this.url = url;
         if (postUrl.contains("https://www.reddit.com")) this.postUrl = postUrl;
@@ -33,8 +33,9 @@ public class Wallpaper implements Serializable {
     }
 
     public void download() throws IOException {
+        file.mkdirs();
         try(InputStream in = new URL(url).openStream()){
-            Files.copy(in, file.toPath());
+            Files.copy(in, file.toPath(), REPLACE_EXISTING);
         }
     }
 
