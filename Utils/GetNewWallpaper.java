@@ -37,7 +37,6 @@ public class GetNewWallpaper implements Runnable {
 		}
 
 		//SELECTOR
-		Wallpaper w = null;
 		Selector selector = null;
 
 		try {
@@ -48,32 +47,36 @@ public class GetNewWallpaper implements Runnable {
 			return;
 		}
 
+		selector.run();
+		result = selector.getResult();
 
-		w = selector.select();
-		try {
-			if (!w.isDownloaded())
-				w.download();
-		} catch (IOException | NullPointerException e) {
-			log.log(Level.SEVERE, "Couldn't download the image and/or update the database");
+		if (result != null && !result.isDownloaded()) {
+			try {
+				result.download();
+			} catch (IOException e) {
+				log.log(Level.SEVERE, "Couldn't download the image");
+				log.log(Level.FINER, e.getMessage());
+
+			}
+		} else if (result == null){
+			log.log(Level.SEVERE, "The selection process found no wallpaper");
 			abort();
 			return;
 		}
 
-		result = w;
+		log.log(Level.FINER, "GetNewWallpaper selected:\n" + result);
 	}
 
 	private void abort() {
 		log.log(Level.INFO, "Something went wrong: couldn't download or select a new wallpaper");
-		result = null;
-
+		result = ERROR_VALUE;
 	}
 
 	public Wallpaper getResult() {
-		if (result == null) {
-			log.log(Level.WARNING, "No wallpaper was selected");
-		}
 		if (!executed) {
 			log.log(Level.INFO, "Result was requested but the functor was never executed");
+		} else if (result == null) {
+			log.log(Level.INFO, "No wallpaper was selected");
 		}
 		return result;
 	}

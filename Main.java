@@ -23,6 +23,6 @@ public class Main {
 		tray.startTray();
 
 
-		log.log(Level.FINE, "End of Main");
+		log.log(Level.FINER, "End of Main");
 	}
 }

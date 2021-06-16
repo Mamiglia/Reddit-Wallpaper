@@ -33,11 +33,6 @@ public class Background implements Runnable {
 		stopped = true;
 	}
 
-	public static void changeNow() {
-		// TODO remove due to deprecated
-		Thread.currentThread().interrupt();
-	}
-
 	public void changeWallpaper() {
 		GetNewWallpaper g = new GetNewWallpaper(settings);
 		Thread t1 = new Thread(g);
@@ -49,13 +44,14 @@ public class Background implements Runnable {
 		}
 
 		if (g.getResult() == null) {
+			log.log(Level.WARNING, "No Wallpaper found, aborting...");
 			return;
 		}
+		current = g.getResult();
 
-		SetNewWallpaper set = new SetNewWallpaper(g.getResult());
+		SetNewWallpaper set = new SetNewWallpaper(current);
 		Thread t2 = new Thread(set);
 		t2.start();
-		current = g.getResult();
 		log.log(Level.INFO, () -> "Wallpapers is successfully set to:\n" + current.toString());
 	}
 
