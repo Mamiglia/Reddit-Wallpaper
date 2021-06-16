@@ -246,7 +246,7 @@
                     </properties>
                     <border type="none"/>
                     <children>
-                      <component id="12cb3" class="javax.swing.JCheckBox" binding="LogCheckBox">
+                      <component id="12cb3" class="javax.swing.JCheckBox" binding="logCheckBox">
                         <constraints/>
                         <properties>
                           <inheritsPopupMenu value="false"/>

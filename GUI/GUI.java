@@ -31,7 +31,7 @@ public class GUI extends JFrame{
 	private JTextArea logArea;
 	private JButton applyButton;
 	private JButton changeNowButton;
-	private JCheckBox LogCheckBox;
+	private JCheckBox logCheckBox;
 	private JSpinner heightField;
 	private JSpinner periodField;
 	private JSpinner widthField;
@@ -62,7 +62,9 @@ public class GUI extends JFrame{
 		scrollPane.setPreferredSize(new Dimension(-1, 3));
 
 		// TODO was useless!
+		logCheckBox.setVisible(false);
 		nsfwCheckBox.setVisible(false);
+
 
 		// Should display Log Tab only if Log check box is checked
 		// TODO Doesn't work!!
