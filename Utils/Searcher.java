@@ -18,6 +18,8 @@ import java.util.logging.Logger;
 
 class Searcher {
 	private static final int MINIMUM_NUMBER_OF_UPVOTES = 15; // Number to not pick indecent wallpapers. This number is completely arbitrary, but it should be sufficient
+	private static final int MAX_TITLE_SIZE = 100;
+
 	private final Settings settings;
 	private String searchQuery;
 	private Set<Wallpaper> proposed;
@@ -216,7 +218,7 @@ class Searcher {
 	public static String cleanTitle(String title) {
 		title = title.replace(' ', '_')
 				.replaceAll("[^a-zA-Z0-9_]", "");
-		title = title.substring(0, Math.min(100, title.length()));
+		title = title.substring(0, Math.min(MAX_TITLE_SIZE, title.length()));
 		return title;
 	}
 }

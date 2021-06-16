@@ -9,6 +9,7 @@ public class Installer {
     public static final File from = Paths.get(".").toAbsolutePath().normalize().toFile();
     public static final String INSTALLATION_PATH = "C:\\ProgramData\\Reddit Wallpaper";
     public static final String DB_DIRECTORY_PATH = INSTALLATION_PATH + "\\.utility";
+    public static final String SETTINGS_PATH = DB_DIRECTORY_PATH + "\\settings.txt";
 
     public static final String mainJar = "Reddit-Wallpaper.jar";
     public static final String batch = "autostartRW.bat";
@@ -40,8 +41,11 @@ public class Installer {
         for (File f : new File(resDir).listFiles()) {
             move(f.toString(), INSTALLATION_PATH + File.separator + resDir);
         }
+
+        File oldDbFile = new File(DB_DIRECTORY_PATH + "\\wallpaperDB.txt");
         File dbFile = new File(DB_DIRECTORY_PATH + "\\db.mv.db");
-        dbFile.delete();
+        if (oldDbFile.exists()) oldDbFile.delete();
+        if (dbFile.exists()) dbFile.delete();
 
 
         if (jarFile.exists() && batchFile.exists()) {

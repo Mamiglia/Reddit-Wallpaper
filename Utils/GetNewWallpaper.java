@@ -56,7 +56,6 @@ public class GetNewWallpaper implements Runnable {
 			} catch (IOException e) {
 				log.log(Level.SEVERE, "Couldn't download the image");
 				log.log(Level.FINER, e.getMessage());
-
 			}
 		} else if (result == null){
 			log.log(Level.SEVERE, "The selection process found no wallpaper");
@@ -64,7 +63,7 @@ public class GetNewWallpaper implements Runnable {
 			return;
 		}
 
-		log.log(Level.FINER, "GetNewWallpaper selected:\n" + result);
+		log.log(Level.FINER, () -> "GetNewWallpaper selected:\n" + result);
 	}
 
 	private void abort() {
