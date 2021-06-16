@@ -17,7 +17,7 @@ public class Settings {
 	private static final Settings uniqueInstance = new Settings();
 	public static final String PATH_TO_SAVEFILE = ".utility/settings.txt";
 	public static final String PATH_TO_WALLPAPER_DATABASE = "wallpapers";
-	public static final String PATH_TO_DATABASE = ".utility/wallpaperDB.txt";
+	public static final String PATH_TO_DATABASE = ".utility/db";
 	private String[] titles = {};
 	private String[] subreddits = {"wallpaper", "wallpapers"};
 	private SEARCH_BY searchBy = SEARCH_BY.HOT;
