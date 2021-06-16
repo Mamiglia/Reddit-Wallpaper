@@ -47,7 +47,7 @@ public class SetNewWallpaper implements Runnable {
                 }
                 break;
             default:
-                log.log(Level.WARNING, "Can't recognize OS: " + os);
+                log.log(Level.WARNING, () -> "Can't recognize OS: " + os);
         }
     }
 
@@ -65,8 +65,6 @@ public class SetNewWallpaper implements Runnable {
     static String windowsPathConverter(String s) {
         // Windows takes path as with double backslash:
         // home/Desktop/folder -> home\\Desktop\\folder
-        s.replace("/", "\\");
-        // useless??
-        return s;
+        return s.replace("/", "\\");
     }
 }

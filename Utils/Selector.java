@@ -47,19 +47,19 @@ class Selector {
         if (proposal.isEmpty()) {
             log.log(Level.WARNING, "No new wallpaper is proposed, setting a recent wallpaper. Maybe your query is too restrictive?");
         } else {
-            log.log(Level.INFO, "No unused wallpaper is found setting the oldest from those found");
+            log.log(Level.INFO, "No unused wallpaper is found, setting the oldest from those found");
         }
         try (ResultSet rs = db.executeQuery("SELECT wp FROM WALLPAPERS ORDER BY date LIMIT 1")) {
                 rs.next();
                 selected = (Wallpaper) rs.getObject("wp");
                 updateDate(selected);
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            log.log(Level.WARNING, "Query error in select()");
+            log.log(Level.FINEST, throwables.getMessage());
         }
 
         if (selected == null ) {
             log.log(Level.WARNING, "Database is void, no wallpaper can be set");
-            return null;
         }
         closeDB();
 
@@ -73,7 +73,8 @@ class Selector {
                  arr.add(rs.getString("id"));
              }
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            log.log(Level.WARNING, "Query Error in getOldWallpapersID()");
+            log.log(Level.FINEST, throwables.getMessage());
         }
         return arr;
     }
@@ -92,15 +93,13 @@ class Selector {
                     log.log(Level.FINEST, wp::toString);
                     log.log(Level.FINE, () -> "Cleaning of DB, removing " + wp.getID());
 
-                    File f = new File(wp.getPath());
-                    f.delete();
-
-
+                    new File(wp.getPath()).delete();
                 }
                 db.executeUpdate("DELETE FROM WALLPAPERS WHERE id IN (SELECT id FROM WALLPAPERS ORDER BY date fetch FIRST 20 PERCENT rows only)");
 
             } catch (SQLException throwables) {
-                throwables.printStackTrace();
+                log.log(Level.WARNING, "Query Error in cleanDB()");
+                log.log(Level.FINEST, throwables.getMessage());
             }
         }
     }
@@ -115,7 +114,6 @@ class Selector {
 
 
         } catch (SQLException e) {
-            e.printStackTrace();
             log.log(Level.WARNING, () -> "Failed to insert entry in db: " + e.getMessage());
         }
     }
@@ -125,23 +123,21 @@ class Selector {
             db.executeUpdate("UPDATE WALLPAPERS SET date=CURRENT_TIMESTAMP() WHERE id=\'"+wp.getID()+"\'");
         } catch (SQLException throwables) {
             // consider the case in which the wp isn't in the table
-            throwables.printStackTrace();
+            log.log(Level.WARNING, "Query Error in updateDate()");
+            log.log(Level.FINEST, throwables.getMessage());
         }
     }
 
     private void loadDB() {
         try {
-            Class.forName("org.h2.Driver");
             conn = DriverManager.getConnection(dbUrl, "rw", "");
             db = conn.createStatement();
             db.execute("CREATE TABLE IF NOT EXISTS WALLPAPERS(id VARCHAR(100) PRIMARY KEY, wp OTHER NOT NULL, date TIMESTAMP NOT NULL)");
             log.log(Level.FINE, "Database loaded: " + dbUrl);
 
         } catch (SQLException e) {
-            log.log(Level.SEVERE, "Couldn't create database");
-            log.log(Level.FINER, e.getMessage());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Query error: Couldn't create database");
+            log.log(Level.FINEST, e.getMessage());
         }
     }
 
@@ -158,7 +154,8 @@ class Selector {
             }
             return str.toString();
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            log.log(Level.WARNING, "Query Error in showDB()");
+            log.log(Level.FINEST, throwables.getMessage());
         }
         return null;
 
@@ -170,7 +167,8 @@ class Selector {
             db.close();
 
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            log.log(Level.SEVERE, "Query error: couldn't close the database connection");
+            log.log(Level.FINEST, throwables.getMessage());
         }
     }
 

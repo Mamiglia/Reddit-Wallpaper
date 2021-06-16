@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.Objects;
 
 public class Wallpaper implements Serializable {
@@ -104,6 +105,6 @@ public class Wallpaper implements Serializable {
 
     @Override
     public String toString() {
-        return title + "\nimage url:" + url + "\npost url: " + postUrl;
+        return "title:\t" + title + "\nimage url:\t" + url + "\npost url:\t" + postUrl;
     }
 }

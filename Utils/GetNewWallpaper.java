@@ -58,6 +58,7 @@ public class GetNewWallpaper implements Runnable {
 			abort();
 			return;
 		}
+
 		result = w;
 	}
 
@@ -68,6 +69,12 @@ public class GetNewWallpaper implements Runnable {
 	}
 
 	public Wallpaper getResult() {
+		if (result == null) {
+			log.log(Level.WARNING, "No wallpaper was selected");
+		}
+		if (!executed) {
+			log.log(Level.INFO, "Result was requested but the functor was never executed");
+		}
 		return result;
 	}
 }
