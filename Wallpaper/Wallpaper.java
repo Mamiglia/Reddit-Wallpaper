@@ -5,9 +5,11 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
-import java.nio.file.Path;
+import java.nio.file.Files;
+
 import java.util.Objects;
 
 public class Wallpaper implements Serializable {
@@ -18,7 +20,6 @@ public class Wallpaper implements Serializable {
     private final String title;
     private final String url;
     private final String postUrl;
-//    private transient Image image;
 
 
     public Wallpaper(String id, String title, String url, String postUrl) {
@@ -32,24 +33,26 @@ public class Wallpaper implements Serializable {
     }
 
     public void download() throws IOException {
-        Image image = ImageIO.read(new URL(url));
-        saveImage(image);
+        try(InputStream in = new URL(url).openStream()){
+            Files.copy(in, file.toPath());
+        }
     }
 
-    public void saveImage(Image img) throws IOException {
-        BufferedImage bi = new BufferedImage(
-                img.getWidth(null),
-                img.getHeight(null),
-                BufferedImage.TYPE_INT_ARGB
-        );
-
-        Graphics2D g2 = bi.createGraphics();
-        g2.drawImage(img, 0, 0, null);
-        g2.dispose();
-        file.getParentFile().mkdirs();
-        file.createNewFile();
-        ImageIO.write(bi, FORMAT, file);
-    }
+    // deprecated
+//    public void saveImage(Image img) throws IOException {
+//        BufferedImage bi = new BufferedImage(
+//                img.getWidth(null),
+//                img.getHeight(null),
+//                BufferedImage.TYPE_INT_ARGB
+//        );
+//
+//        Graphics2D g2 = bi.createGraphics();
+//        g2.drawImage(img, 0, 0, null);
+//        g2.dispose();
+//        file.getParentFile().mkdirs();
+//        file.createNewFile();
+//        ImageIO.write(bi, FORMAT, file);
+//    }
 
     public boolean isDownloaded() {
         return file.exists();
