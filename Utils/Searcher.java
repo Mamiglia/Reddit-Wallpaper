@@ -184,7 +184,7 @@ class Searcher {
 			type = type.replace("image/", "");
 
 			String urlGallery = "https://i.redd.it/" + idGallery + "." + type;
-			String titleGallery = title + "_" + j;
+			String titleGallery = title + "_" + idGallery;
 
 			Wallpaper wallpaper = new Wallpaper(
 					idGallery,
@@ -198,7 +198,7 @@ class Searcher {
 	}
 
 	private static String encodeURL(String value) {
-		return value.replace(":", "%3A").replace(" ", "%20");
+		return value.replace(" ", "%20");
 //        try {
 //            return URLEncoder.encode(value, StandardCharsets.UTF_8.toString()).replace("+", "%20");
 //            //if you leave + as space sign it's counted as AND by reddit query, so you must use %20
