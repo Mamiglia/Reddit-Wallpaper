@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-class Selector {
+class Selector implements Runnable{
     private final int maxDbSize;
     private final boolean keepWallpapers;
     public static final String PATH_TO_DATABASE = ".utility"+ File.separator + "db";
@@ -16,6 +16,8 @@ class Selector {
     private static final Logger log = DisplayLogger.getInstance("Selector");
     private Connection conn = null;
     private Statement db = null;
+    private boolean executed = false;
+    private Wallpaper result = null;
     private final Set<Wallpaper> proposal;
 
     public Selector(Set<Wallpaper> proposal, boolean keepWallpapers, int maxDbSize) throws IOException {
@@ -30,17 +32,19 @@ class Selector {
         }
     }
 
-    public Wallpaper select() {
-        Wallpaper selected = null;
+    @Override
+    public void run() {
+        if (executed) return;
+        executed = true;
         List<String> oldID = getOldWallpapersID();
 
         for (Wallpaper propWallpaper : proposal) {
             if (!oldID.contains(propWallpaper.getID())) {
                 log.log(Level.FINE, "Selected new wallpaper from those proposed");
                 insertDB(propWallpaper);
-                cleanDB();
                 closeDB();
-                return propWallpaper;
+                result = propWallpaper;
+                return;
             }
         }
         // OR No unused wallpapers are found, select oldest used wallpapers in the list
@@ -50,20 +54,27 @@ class Selector {
             log.log(Level.INFO, "No unused wallpaper is found, setting the oldest from those found");
         }
         try (ResultSet rs = db.executeQuery("SELECT wp FROM WALLPAPERS ORDER BY date LIMIT 1")) {
-                rs.next();
-                selected = (Wallpaper) rs.getObject("wp");
-                updateDate(selected);
+            rs.next();
+            result = (Wallpaper) rs.getObject("wp");
+            updateDate(result);
         } catch (SQLException throwables) {
             log.log(Level.WARNING, "Query error in select()");
             log.log(Level.FINEST, throwables.getMessage());
         }
 
-        if (selected == null ) {
+        if (result == null ) {
             log.log(Level.WARNING, "Database is void, no wallpaper can be set");
         }
         closeDB();
+    }
 
-        return selected;
+    public Wallpaper getResult() {
+        if (!executed) {
+            log.log(Level.INFO, "Result was requested but the functor was never executed");
+        } else if (result == null) {
+            log.log(Level.INFO, "Selector didn't select any wallpaper");
+        }
+        return result;
     }
 
     public List<String> getOldWallpapersID() {
@@ -105,13 +116,12 @@ class Selector {
     }
 
     private void insertDB(Wallpaper wp) {
-
         try (PreparedStatement p = conn.prepareStatement("INSERT INTO WALLPAPERS VALUES (?, ?, CURRENT_TIMESTAMP())")) {
             p.setString(1, wp.getID());
             p.setObject(2, wp);
             p.executeUpdate();
-            log.log(Level.FINER, () -> "Successfully inserted entry: " + wp.toString());
-
+            log.log(Level.FINER, () -> "Successfully inserted entry:\n" + wp.toString());
+            cleanDB();
 
         } catch (SQLException e) {
             log.log(Level.WARNING, () -> "Failed to insert entry in db: " + e.getMessage());
