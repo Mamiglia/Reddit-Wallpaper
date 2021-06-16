@@ -8,6 +8,8 @@ import java.util.Scanner;
 public class Installer {
     public static final File from = Paths.get(".").toAbsolutePath().normalize().toFile();
     public static final String INSTALLATION_PATH = "C:\\ProgramData\\Reddit Wallpaper";
+    public static final String DB_DIRECTORY_PATH = INSTALLATION_PATH + "\\.utility";
+
     public static final String mainJar = "Reddit-Wallpaper.jar";
     public static final String batch = "autostartRW.bat";
     public static final String resDir = ".resources";
@@ -17,7 +19,6 @@ public class Installer {
         System.out.println("Current Directory: " + from.toString());
 
         createAutostartFile();
-
 //        OLD CODE, it detected if an old installation of RW was present, I don't think it's very useful
 //        File dest = new File(INSTALLATION_PATH);
 //        if (dest.exists()) {
@@ -39,6 +40,8 @@ public class Installer {
         for (File f : new File(resDir).listFiles()) {
             move(f.toString(), INSTALLATION_PATH + File.separator + resDir);
         }
+        File dbFile = new File(DB_DIRECTORY_PATH + "\\db.mv.db");
+        dbFile.delete();
 
 
         if (jarFile.exists() && batchFile.exists()) {
@@ -108,7 +111,7 @@ public class Installer {
         String code =
                 "@echo off\n" +
                 "cd \"" + INSTALLATION_PATH + "\"\n" +
-                "start javaw -jar \"" + mainJar + "\"\n" +
+                "start javaw -Xmx128m -jar \"" + mainJar + "\"\n" +
                 "exit";
         try (BufferedWriter fw = new BufferedWriter(new FileWriter(f))) {
             f.createNewFile();
