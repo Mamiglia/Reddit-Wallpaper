@@ -24,8 +24,10 @@ hs_err_pid*
 .idea/
 out/
 wallpapers/
-.utility/
-META-INF/MANIFEST.MF
+utility/
+META-INF/
+
 *.iml
 Test.java
 autostartRW.bat
+RW.exe
