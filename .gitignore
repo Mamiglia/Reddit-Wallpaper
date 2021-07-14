@@ -31,3 +31,4 @@ META-INF/
 Test.java
 autostartRW.bat
 RW.exe
+*.exe

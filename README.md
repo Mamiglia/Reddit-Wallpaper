@@ -10,7 +10,7 @@ And it has so many more settings to customize!
 Work in progress! But it does work and is stable!
 
 **Main Features:**
-- [Easy install and update](https://github.com/Mamiglia/Reddit-Wallpaper/blob/main/Installation.md)
+- [Easy install and update](https://github.com/Mamiglia/Reddit-Wallpaper/blob/main/Installer/Installation.md)
 - No setup required, just install, and it will start doing everything by itself
 - Query reddit's API with the specified parameters
 - Select the wallpaper to download through a non-repetitive pattern

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>C:\Users\Archimede\Documents\GitHub\Reddit-Wallpaper\out\artifacts\Reddit_Wallpaper_jar\Reddit-Wallpaper.jar</jar>
+  <outfile>C:\Users\Archimede\Documents\GitHub\Reddit-Wallpaper\RW.exe</outfile>
+  <errTitle></errTitle>
+  <cmdLine></cmdLine>
+  <chdir>.</chdir>
+  <priority>idle</priority>
+  <downloadUrl>https://adoptopenjdk.net/</downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>false</stayAlive>
+  <restartOnCrash>false</restartOnCrash>
+  <manifest></manifest>
+  <icon>C:\Users\Archimede\Documents\GitHub\Reddit-Wallpaper\.build\tray_icon.ico</icon>
+  <singleInstance>
+    <mutexName>Reddit-Wallpaper Java @Mamiglia</mutexName>
+    <windowTitle>Reddit-Wallpaper</windowTitle>
+  </singleInstance>
+  <jre>
+    <path>C:\Program Files\AdoptOpenJDK\jdk-11.0.10.9-hotspot</path>
+    <bundledJre64Bit>true</bundledJre64Bit>
+    <bundledJreAsFallback>false</bundledJreAsFallback>
+    <minVersion>11.0.10</minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+    <runtimeBits>64/32</runtimeBits>
+    <maxHeapPercent>5</maxHeapPercent>
+  </jre>
+  <versionInfo>
+    <fileVersion>0.3.2.0</fileVersion>
+    <txtFileVersion>v0.3.2-beta</txtFileVersion>
+    <fileDescription>Exexcutable file to run Reddit-Wallpaper </fileDescription>
+    <copyright>MIT License</copyright>
+    <productVersion>0.3.2.0</productVersion>
+    <txtProductVersion>v0.3.2-beta</txtProductVersion>
+    <productName>Reddit-Wallpaper</productName>
+    <companyName></companyName>
+    <internalName>RW</internalName>
+    <originalFilename>RW.exe</originalFilename>
+    <trademarks></trademarks>
+    <language>ENGLISH_US</language>
+  </versionInfo>
+</launch4jConfig>
