@@ -31,12 +31,10 @@ I need help, I need feedbacks, I need people to tell me that they like this/disl
 
 **ToDo:**
 - [ ] Add option to customize wallpaper folder during installation
-- [x] Add a minimum number of upvotes to consider an entry
-- [x] Improve databasing with a real database
 - [ ] Add a way to check for updates
-- [x] Improve memory usage (actually ca. 200MB) -> improved to 150MB
+- [x] Improve memory usage (was ca. 200MB) -> improved to 150MB
 - [ ] Add Linux support!
 - [ ] Add something to check wallpaper database size in MB
-- [ ] Consider the pros and cons of saving every wallpaper in .jpg rather than .png
 - [ ] Add an option to search from single subreddits with specific flairs
+- [ ] Improve Installation utility by adding an uninstall/remove feature
 
