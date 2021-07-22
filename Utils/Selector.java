@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 class Selector implements Runnable{
     private final int maxDbSize;
     private final boolean keepWallpapers;
-    public static final String PATH_TO_DATABASE = ".utility"+ File.separator + "db";
+    public static final String PATH_TO_DATABASE = "utility"+ File.separator + "db";
     private static final String dbUrl = "jdbc:h2:file:" + System.getProperty("user.dir") + File.separator + PATH_TO_DATABASE;
     private static final Logger log = DisplayLogger.getInstance("Selector");
     private Connection conn = null;

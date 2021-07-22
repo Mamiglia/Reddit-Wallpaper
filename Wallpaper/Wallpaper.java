@@ -1,5 +1,7 @@
 package Wallpaper;
 
+import Settings.Settings;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -14,7 +16,7 @@ import java.util.Objects;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public class Wallpaper implements Serializable {
-    public static final String DEFAULT_PATH = "wallpapers" + File.separator;
+    public static final String DEFAULT_PATH = Settings.getWallpaperPath() + File.separator;
     public static final String FORMAT = "png";
     private final String id;
     private final File file;
@@ -38,22 +40,6 @@ public class Wallpaper implements Serializable {
             Files.copy(in, file.toPath(), REPLACE_EXISTING);
         }
     }
-
-    // deprecated
-//    public void saveImage(Image img) throws IOException {
-//        BufferedImage bi = new BufferedImage(
-//                img.getWidth(null),
-//                img.getHeight(null),
-//                BufferedImage.TYPE_INT_ARGB
-//        );
-//
-//        Graphics2D g2 = bi.createGraphics();
-//        g2.drawImage(img, 0, 0, null);
-//        g2.dispose();
-//        file.getParentFile().mkdirs();
-//        file.createNewFile();
-//        ImageIO.write(bi, FORMAT, file);
-//    }
 
     public boolean isDownloaded() {
         return file.exists();

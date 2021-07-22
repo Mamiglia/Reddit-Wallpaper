@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.net.URL;
 
 public class Tray {
+	public static final String PATH_TO_ICON = "resources/tray_icon.png";
 	private final Thread backThread; // it's the Thread of the backgound (the thing that runs always in background)
 	private final Background background;
 
@@ -23,9 +24,8 @@ public class Tray {
 		}
 		//get the systemTray of the system
 		SystemTray systemTray = SystemTray.getSystemTray();
-		Image image = Toolkit.getDefaultToolkit().getImage(".resources/tray_icon.png");// icon by https://www.freepik.com
+		Image image = Toolkit.getDefaultToolkit().getImage(PATH_TO_ICON);// icon by https://www.freepik.com
 
-		//popupmenu
 		PopupMenu trayPopupMenu = new PopupMenu();
 
 		MenuItem gui = new MenuItem("Settings");

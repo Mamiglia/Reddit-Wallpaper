@@ -7,7 +7,7 @@ import java.util.logging.*;
 public class DisplayLogger {
     //Singleton
     private static final DisplayLogger uniqueInstance = new DisplayLogger();
-    private static final String LOG_PATH = ".utility/log.txt";
+    public static final String LOG_PATH = "utility/log.txt";
     private static final Level level = Level.INFO; // !! set to INFO before pushing to production!!!
     private static FileHandler fh = null;
 
