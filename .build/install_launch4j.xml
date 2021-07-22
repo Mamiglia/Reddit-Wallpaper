@@ -3,7 +3,7 @@
   <dontWrapJar>false</dontWrapJar>
   <headerType>console</headerType>
   <jar>C:\Users\Archimede\Documents\GitHub\Reddit-Wallpaper\out\artifacts\install_jar\install.jar</jar>
-  <outfile>C:\Users\Archimede\Documents\GitHub\Reddit-Wallpaper\install.exe</outfile>
+  <outfile>C:\Users\Archimede\Documents\GitHub\Reddit-Wallpaper\out\release\INSTALL.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>
@@ -25,16 +25,16 @@
     <maxHeapPercent>5</maxHeapPercent>
   </jre>
   <versionInfo>
-    <fileVersion>0.1.1.0</fileVersion>
-    <txtFileVersion>0.1.1</txtFileVersion>
-    <fileDescription>Installer of Reddit Wallpaper</fileDescription>
+    <fileVersion>0.3.2.0</fileVersion>
+    <txtFileVersion>v0.3.2-beta</txtFileVersion>
+    <fileDescription>Exexcutable file to run Reddit-Wallpaper </fileDescription>
     <copyright>MIT License</copyright>
-    <productVersion>0.1.1.0</productVersion>
-    <txtProductVersion>0.1.1</txtProductVersion>
-    <productName>Reddit-Wallpaper Installer</productName>
+    <productVersion>0.3.2.0</productVersion>
+    <txtProductVersion>v0.3.2-beta</txtProductVersion>
+    <productName>Reddit-Wallpaper</productName>
     <companyName></companyName>
-    <internalName>RW-Installer</internalName>
-    <originalFilename>install.exe</originalFilename>
+    <internalName>RW</internalName>
+    <originalFilename>RW.exe</originalFilename>
     <trademarks></trademarks>
     <language>ENGLISH_US</language>
   </versionInfo>

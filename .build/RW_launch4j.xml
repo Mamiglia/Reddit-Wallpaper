@@ -3,7 +3,7 @@
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
   <jar>C:\Users\Archimede\Documents\GitHub\Reddit-Wallpaper\out\artifacts\Reddit_Wallpaper_jar\Reddit-Wallpaper.jar</jar>
-  <outfile>C:\Users\Archimede\Documents\GitHub\Reddit-Wallpaper\RW.exe</outfile>
+  <outfile>C:\Users\Archimede\Documents\GitHub\Reddit-Wallpaper\out\release\RW.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>
