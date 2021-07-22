@@ -1,15 +1,15 @@
 # Installation
 This program requires Java11 to run. The recommended JRE is [AdoptOpenJDK](https://adoptopenjdk.net/releases.html?variant=openjdk11&jvmVariant=hotspot)
 
-### Automated Install
+### Auto-Install
 - Download and extract the zip of the [latest release](https://github.com/Mamiglia/Reddit-Wallpaper/releases)
-- Execute _install.bat_
+- Execute _install.exe_
 - Done!
 
 ### Automated Update
 - Download and extract the zip of the [latest release](https://github.com/Mamiglia/Reddit-Wallpaper/releases)
 - **Close** the old RW if it's running!
-- Execute _install.bat_
+- Execute _install.exe_
 - Done!
 
 ### Manual Install
