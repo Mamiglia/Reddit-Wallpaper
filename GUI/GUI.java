@@ -7,6 +7,8 @@ import Utils.DisplayLogger;
 import com.formdev.flatlaf.FlatDarkLaf;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -64,8 +66,16 @@ public class GUI extends JFrame{
 		logCheckBox.setVisible(false);
 		nsfwCheckBox.setVisible(false);
 
+		tabbedPane.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent changeEvent) {
+				JTabbedPane src = (JTabbedPane) changeEvent.getSource();
+				int index = src.getSelectedIndex();
+				if (src.getComponentAt(index).equals(logTab)) {
+					showLog();
+				}
+			}
+		});
 
-		// Should display Log Tab only if Log check box is checked
 		loadSettings();
 		log.log(Level.FINER, "GUI started");
 
@@ -109,6 +119,7 @@ public class GUI extends JFrame{
 
 	void changeWallpaper() {
 		saveSettings();
+		showLog();
 
 		backThread.interrupt(); //interrupting it makes it wake up and load new wallpaper
 	}
@@ -174,6 +185,10 @@ public class GUI extends JFrame{
 		}
 	}
 
+	public void folderPicker() {
+		// TODO add folder picker for wallpaper destination
+	}
+
 	public static void setLookFeel() {
 		try {
 			UIManager.setLookAndFeel( new FlatDarkLaf() );
@@ -197,10 +212,6 @@ public class GUI extends JFrame{
 //		catch (IllegalAccessException e) {
 //			e.printStackTrace();
 //		}
-	}
-
-	public void folderPicker() {
-		// TODO add folder picker for wallpaper destination
 	}
 
 	public static void main(String[] args) {
