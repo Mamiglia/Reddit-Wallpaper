@@ -15,9 +15,8 @@ import java.util.logging.Logger;
 public class Settings {
 	//Singleton
 	private static final Settings uniqueInstance = new Settings();
-	public static final String PATH_TO_SAVEFILE = ".utility/settings.txt";
-	public static final String PATH_TO_WALLPAPER_DATABASE = "wallpapers";
-	public static final String PATH_TO_DATABASE = ".utility/db";
+	public static final String PATH_TO_SAVEFILE = "utility/settings.txt";
+	public static final String PATH_TO_DATABASE = "utility/db";
 	private String[] titles = {};
 	private String[] subreddits = {"wallpaper", "wallpapers"};
 	private SEARCH_BY searchBy = SEARCH_BY.HOT;
@@ -28,6 +27,7 @@ public class Settings {
 	private TIME maxOldness = TIME.DAY;
 	private int maxDatabaseSize = 50;
 	private boolean keepWallpapers = false; //keep wallpapers after eliminating them from db?
+	private static String wallpaperPath = "wallpapers/"; // path to wallpaper folder
 	private static final Logger log = DisplayLogger.getInstance("Settings");
 
 	public enum TIME {
@@ -69,12 +69,12 @@ public class Settings {
 	public void readSettings() {
 		File settingFile = new File(PATH_TO_SAVEFILE);
 		if (!settingFile.exists()) {
+			log.log(Level.WARNING, "No setting file is found, creating a new stock one");
 			settingFile.getParentFile().mkdirs();
 			try {
 				settingFile.createNewFile();
 			} catch (IOException e) {
-				//TODO bad practice
-				e.printStackTrace();
+				log.log(Level.SEVERE, "I/O error: Can't create settings file");
 			}
 			return;
 		}
@@ -90,8 +90,8 @@ public class Settings {
 				}
 			}
 		} catch (FileNotFoundException e) {
-			//TODO add some useful error message?
-			e.printStackTrace();
+			log.log(Level.WARNING, "I/O error: Can't create settings file");
+
 		}
 	}
 
@@ -182,6 +182,10 @@ public class Settings {
 		return keepWallpapers;
 	}
 
+	public static String getWallpaperPath() {
+		return wallpaperPath;
+	}
+
 	@Override
 	public String toString() {
 		return "titles=" + Arrays.toString(titles) +
@@ -193,7 +197,8 @@ public class Settings {
 				"\nperiod=" + period +
 				"\nmaxOldness=" + maxOldness +
 				"\nmaxDatabaseSize=" + maxDatabaseSize +
-				"\nkeepWallpapers=" + keepWallpapers;
+				"\nkeepWallpapers=" + keepWallpapers +
+				"\nwallpaperPath=" + wallpaperPath;
 	}
 
 	public void setKeepWallpapers(boolean keepWallpapers) {
@@ -248,6 +253,9 @@ public class Settings {
 				break;
 			case "keepWallpapers":
 				keepWallpapers = Boolean.parseBoolean(value);
+				break;
+			case "wallpaperPath":
+				wallpaperPath = split[0];
 				break;
 
 			default:
