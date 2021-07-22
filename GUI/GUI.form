@@ -2,7 +2,7 @@
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="GUI.GUI">
   <grid id="27dc6" binding="rootPane" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
-      <xy x="394" y="20" width="437" height="341"/>
+      <xy x="21" y="55" width="330" height="374"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -15,7 +15,9 @@
         <children>
           <tabbedpane id="f1979" binding="tabbedPane">
             <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                <preferred-size width="200" height="200"/>
+              </grid>
             </constraints>
             <properties>
               <visible value="true"/>
@@ -82,7 +84,7 @@
                         <properties>
                           <columns value="15"/>
                           <inheritsPopupMenu value="false"/>
-                          <text value="wallpapers"/>
+                          <text value="wallpaper, wallpapers"/>
                           <toolTipText value="Format: sub1, sub2, sub3"/>
                         </properties>
                       </component>
@@ -180,7 +182,161 @@
                   </grid>
                 </children>
               </grid>
-              <grid id="e5247" layout-manager="GridLayoutManager" row-count="6" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+              <grid id="74f67" layout-manager="GridLayoutManager" row-count="6" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints>
+                  <tabbedpane title="Database"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <grid id="788b" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+                    <constraints>
+                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <toolTipText value="Wallpapers may occupy much disk space. So only a certain number of wallpapers are kept, those exceeding will be eliminated"/>
+                    </properties>
+                    <border type="none"/>
+                    <children>
+                      <component id="5b8d9" class="javax.swing.JLabel">
+                        <constraints/>
+                        <properties>
+                          <text value="Maximum Size of Database"/>
+                          <toolTipText value="Wallpapers may occupy much disk space. So only a certain number of wallpapers are kept, those exceeding will be eliminated"/>
+                        </properties>
+                      </component>
+                      <component id="39ecf" class="javax.swing.JSpinner" binding="dbSizeField" custom-create="true">
+                        <constraints/>
+                        <properties>
+                          <inheritsPopupMenu value="true"/>
+                          <toolTipText value="Wallpapers may occupy much disk space. So only a certain number of wallpapers are kept, those exceeding will be eliminated"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
+                  <vspacer id="8252d">
+                    <constraints>
+                      <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                  </vspacer>
+                  <grid id="b6c8b" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+                    <constraints>
+                      <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <toolTipText value="If checked wallpapers will be kept indefinetely. Pay attention to your disk space!"/>
+                    </properties>
+                    <border type="none"/>
+                    <children>
+                      <component id="d0d12" class="javax.swing.JCheckBox" binding="keepCheckBox">
+                        <constraints/>
+                        <properties>
+                          <inheritsPopupMenu value="true"/>
+                          <text value="keep wallpapers in database?"/>
+                          <toolTipText value="If checked wallpapers will be kept indefinetely. Pay attention to your disk space!"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
+                  <grid id="c2559" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints>
+                      <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="8a79a" class="javax.swing.JButton" binding="resetButton">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="Erase Wallpaper Database"/>
+                          <toolTipText value="Safely erases all the wallpapers in the folder"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
+                  <grid id="d1d21" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <grid id="110f8" layout-manager="GridLayoutManager" row-count="1" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                        <margin top="2" left="0" bottom="2" right="0"/>
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties/>
+                        <border type="none"/>
+                        <children>
+                          <component id="e89b1" class="javax.swing.JLabel">
+                            <constraints>
+                              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="2" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <text value="Wallpaper Directory:"/>
+                            </properties>
+                          </component>
+                          <hspacer id="40c1e">
+                            <constraints>
+                              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                          </hspacer>
+                          <hspacer id="55fd9">
+                            <constraints>
+                              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                          </hspacer>
+                        </children>
+                      </grid>
+                      <grid id="7eec9" layout-manager="BorderLayout" hgap="0" vgap="0">
+                        <constraints>
+                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties/>
+                        <border type="none"/>
+                        <children>
+                          <component id="ef9cc" class="javax.swing.JTextField" binding="wallpaperPathText">
+                            <constraints border-constraint="Center"/>
+                            <properties>
+                              <editable value="false"/>
+                              <horizontalAlignment value="0"/>
+                              <text value="C:/your/path/to/wallpapers"/>
+                            </properties>
+                          </component>
+                        </children>
+                      </grid>
+                    </children>
+                  </grid>
+                  <grid id="a7988" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+                    <constraints>
+                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="65e7" class="javax.swing.JButton" binding="folderButton">
+                        <constraints/>
+                        <properties>
+                          <text value="Open Directory"/>
+                        </properties>
+                      </component>
+                      <component id="99d41" class="javax.swing.JButton" binding="changeDirectoryButton">
+                        <constraints/>
+                        <properties>
+                          <text value="Change"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
+                </children>
+              </grid>
+              <grid id="e5247" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
                   <tabbedpane title="Advanced"/>
@@ -256,77 +412,11 @@
                       </component>
                     </children>
                   </grid>
-                  <grid id="33ac2" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+                  <vspacer id="bbd96">
                     <constraints>
-                      <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                      <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
                     </constraints>
-                    <properties>
-                      <toolTipText value="Wallpapers may occupy much disk space. So only a certain number of wallpapers are kept, those exceeding will be eliminated"/>
-                    </properties>
-                    <border type="none"/>
-                    <children>
-                      <component id="f3fa7" class="javax.swing.JLabel">
-                        <constraints/>
-                        <properties>
-                          <text value="Maximum Size of Database"/>
-                          <toolTipText value="Wallpapers may occupy much disk space. So only a certain number of wallpapers are kept, those exceeding will be eliminated"/>
-                        </properties>
-                      </component>
-                      <component id="1e859" class="javax.swing.JSpinner" binding="dbSizeField" custom-create="true">
-                        <constraints/>
-                        <properties>
-                          <inheritsPopupMenu value="true"/>
-                          <toolTipText value="Wallpapers may occupy much disk space. So only a certain number of wallpapers are kept, those exceeding will be eliminated"/>
-                        </properties>
-                      </component>
-                    </children>
-                  </grid>
-                  <grid id="33c1c" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
-                    <constraints>
-                      <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <toolTipText value="If checked wallpapers will be kept indefinetely. Pay attention to your disk space!"/>
-                    </properties>
-                    <border type="none"/>
-                    <children>
-                      <component id="4c632" class="javax.swing.JCheckBox" binding="keepCheckBox">
-                        <constraints/>
-                        <properties>
-                          <inheritsPopupMenu value="true"/>
-                          <text value="keep wallpapers in database?"/>
-                          <toolTipText value="If checked wallpapers will be kept indefinetely. Pay attention to your disk space!"/>
-                        </properties>
-                      </component>
-                    </children>
-                  </grid>
-                  <grid id="d0cfc" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-                    <margin top="0" left="0" bottom="0" right="0"/>
-                    <constraints>
-                      <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties/>
-                    <border type="none"/>
-                    <children>
-                      <component id="fbc60" class="javax.swing.JButton" binding="folderButton">
-                        <constraints>
-                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <text value="Open Wallpaper Folder"/>
-                        </properties>
-                      </component>
-                      <component id="8df87" class="javax.swing.JButton" binding="resetButton">
-                        <constraints>
-                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <text value="Reset Wallpaper Database"/>
-                          <toolTipText value="Safely erases all the wallpapers in the folder"/>
-                        </properties>
-                      </component>
-                    </children>
-                  </grid>
+                  </vspacer>
                 </children>
               </grid>
               <grid id="21e7" binding="logTab" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">

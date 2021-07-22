@@ -7,8 +7,6 @@ import Utils.DisplayLogger;
 import com.formdev.flatlaf.FlatDarkLaf;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -43,15 +41,16 @@ public class GUI extends JFrame{
 	private JButton folderButton;
 	private JButton resetButton;
 	private JScrollPane scrollPane;
+	private JTextField wallpaperPathText;
+	private JButton changeDirectoryButton;
 	static final Logger log = DisplayLogger.getInstance("GUI");
 	private final Act act;
-	private static final String LOG_PATH = ".utility/log.txt";
 	private final Settings settings = Settings.getInstance();
 	private final Thread backThread;
 
 	public GUI(Thread backThread) {
 		super("Reddit Wallpaper Downloader");
-		this.setIconImage(Toolkit.getDefaultToolkit().getImage(".resources/tray_icon.png"));/* icon by https://www.freepik.com */
+		this.setIconImage(Toolkit.getDefaultToolkit().getImage(Tray.PATH_TO_ICON));/* icon by https://www.freepik.com */
 		this.backThread = backThread;
 		add(rootPane);
 		act = new Act(this);
@@ -67,16 +66,6 @@ public class GUI extends JFrame{
 
 
 		// Should display Log Tab only if Log check box is checked
-		// TODO Doesn't work!!
-		tabbedPane.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent changeEvent) {
-				JTabbedPane src = (JTabbedPane) changeEvent.getSource();
-				int index = src.getSelectedIndex();
-				if (src.getComponentAt(index).equals(logTab)) {
-					showLog();
-				}
-			}
-		});
 		loadSettings();
 		log.log(Level.FINER, "GUI started");
 
@@ -130,7 +119,7 @@ public class GUI extends JFrame{
 	 */
 	void displayFolder() {
 		try {
-			Desktop.getDesktop().open(new File(Settings.PATH_TO_WALLPAPER_DATABASE));
+			Desktop.getDesktop().open(new File(Settings.getWallpaperPath()));
 		} catch (IOException e) {
 			log.log(Level.WARNING, e.getMessage());
 		}
@@ -142,7 +131,7 @@ public class GUI extends JFrame{
 		if (selectedOption == JOptionPane.OK_OPTION) {
 			//TODO actually reset the DB
 			File dbFile = new File(Settings.PATH_TO_DATABASE);
-			File wallpaperFolder = new File(Settings.PATH_TO_WALLPAPER_DATABASE);
+			File wallpaperFolder = new File(Settings.getWallpaperPath());
 			if (dbFile.exists()) {
 				dbFile.delete();
 				try {
@@ -176,8 +165,8 @@ public class GUI extends JFrame{
 	private void showLog() {
 		FileReader reader = null;
 		try {
-			reader = new FileReader(LOG_PATH);
-			logArea.read(reader, LOG_PATH);
+			reader = new FileReader(DisplayLogger.LOG_PATH);
+			logArea.read(reader, DisplayLogger.LOG_PATH);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -208,5 +197,15 @@ public class GUI extends JFrame{
 //		catch (IllegalAccessException e) {
 //			e.printStackTrace();
 //		}
+	}
+
+	public void folderPicker() {
+		// TODO add folder picker for wallpaper destination
+	}
+
+	public static void main(String[] args) {
+		// GUI Tests
+		setLookFeel();
+		new GUI(null);
 	}
 }
