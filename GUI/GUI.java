@@ -60,6 +60,7 @@ public class GUI extends JFrame{
 		folderButton.addActionListener(act);
 		resetButton.addActionListener(act);
 		changeNowButton.addActionListener(act);
+		changeDirectoryButton.addActionListener(act);
 		scrollPane.setPreferredSize(new Dimension(-1, 3));
 
 		// TODO was useless!
@@ -114,6 +115,7 @@ public class GUI extends JFrame{
 		oldSelection.setSelectedItem(settings.getMaxOldness());
 		dbSizeField.setValue(settings.getMaxDatabaseSize());
 		keepCheckBox.setSelected(settings.doKeepWallpapers());
+		wallpaperPathText.setText(Settings.getWallpaperPath());
 
 	}
 
@@ -186,7 +188,14 @@ public class GUI extends JFrame{
 	}
 
 	public void folderPicker() {
-		// TODO add folder picker for wallpaper destination
+		JFileChooser chooser = new JFileChooser();
+		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		chooser.setDialogTitle("Select new wallpaper path");
+		chooser.setAcceptAllFileFilterUsed(false);
+		chooser.showOpenDialog(this);
+		File directory = chooser.getSelectedFile();
+		settings.setWallpaperPath(directory.toString() + File.separator);
+		loadSettings();
 	}
 
 	public static void setLookFeel() {

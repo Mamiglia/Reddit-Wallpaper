@@ -146,6 +146,10 @@ public class Settings {
 		this.height = height;
 	}
 
+	public void setWallpaperPath(String path) {
+		wallpaperPath = path;
+	}
+
 	public int getWidth() {
 		return width;
 	}
