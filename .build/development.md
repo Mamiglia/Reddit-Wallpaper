@@ -6,7 +6,7 @@ At the moment I use AdoptOpenJDK 11.0.10.9 for development. In any case it works
 ### Libraries
 Apart from the standard Java Libraries, I use the following External Libraries:
 - h2 database: com.h2database:h2:1.4.200
-- com.formdev:flatlaf:1.1.2
+- styling: com.formdev:flatlaf:1.1.2
 - org.json:json:20210307
 - jna-5.8.0
 
@@ -16,8 +16,9 @@ I generate two jars for this project:
   - Output of Reddit-Wallpaper Package
   - Libraries mentioned before
   - This is the main jar the one actually running the program
-- Installer.jar
+- Installer.jar //no longer needed!
   - Output of Installer package
  
 ### Releases
-The actual exe release is the result of the Launch4j program that bundles the aforementioned jars with the Java version I use. The config file for this program is [RW_launch4j.xml](https://github.com/Mamiglia/Reddit-Wallpaper/tree/main/.build/RW_launch4j.xml)
+The actual exe release is generated thanks to [install4j](https://www.ej-technologies.com/products/install4j/overview.html) that gave me a free open-source license (thanks!).
+The config file for install4j is [RW.install4j](https://github.com/Mamiglia/Reddit-Wallpaper/blob/main/.build/Install4j/RW.install4j)
