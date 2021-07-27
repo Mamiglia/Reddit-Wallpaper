@@ -307,6 +307,7 @@
                               <editable value="false"/>
                               <horizontalAlignment value="0"/>
                               <text value="C:/your/path/to/wallpapers"/>
+                              <toolTipText value="The folder in which your wallpapers are saved"/>
                             </properties>
                           </component>
                         </children>
@@ -324,12 +325,14 @@
                         <constraints/>
                         <properties>
                           <text value="Open Directory"/>
+                          <toolTipText value="Opens the folder"/>
                         </properties>
                       </component>
                       <component id="99d41" class="javax.swing.JButton" binding="changeDirectoryButton">
                         <constraints/>
                         <properties>
                           <text value="Change"/>
+                          <toolTipText value="Changes the folder"/>
                         </properties>
                       </component>
                     </children>
