@@ -30,11 +30,11 @@ I need help, I need feedbacks, I need people to tell me that they like this/disl
 - Some users report that during the installation process they get the error: "unable to access jarfile install.jar". Unfortunately I can't reproduce this bug and I don't find a way to work on it (if you have any information plz let me know!)
 
 **ToDo:**
-- [ ] Add option to customize wallpaper folder during installation
+- [x] Add option to customize wallpaper folder during installation
 - [ ] Add a way to check for updates
 - [x] Improve memory usage (was ca. 200MB) -> improved to 150MB
 - [ ] Add Linux support!
-- [ ] Add something to check wallpaper database size in MB
+- [x] Add something to check wallpaper database size in MB
 - [ ] Add an option to search from single subreddits with specific flairs
-- [ ] Improve Installation utility by adding an uninstall/remove feature
+- [x] Improve Installation utility by adding an uninstall/remove feature
 
