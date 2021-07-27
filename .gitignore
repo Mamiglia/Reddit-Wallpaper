@@ -26,7 +26,7 @@ hs_err_pid*
 .build/Install4j/md5sums
 .build/Install4j/output.txt
 .build/Install4j/sha256sums
-
+Saved-Wallpapers/
 out/
 wallpapers/
 utility/
@@ -37,3 +37,4 @@ Test.java
 autostartRW.bat
 RW.exe
 *.exe
+/Saved-Wallpapers/
