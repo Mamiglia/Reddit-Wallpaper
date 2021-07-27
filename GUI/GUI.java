@@ -52,7 +52,7 @@ public class GUI extends JFrame{
 
 	public GUI(Thread backThread) {
 		super("Reddit Wallpaper Downloader");
-		this.setIconImage(Toolkit.getDefaultToolkit().getImage(Tray.PATH_TO_ICON));/* icon by https://www.freepik.com */
+		this.setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource(Tray.PATH_TO_ICON)));/* icon by https://www.freepik.com */
 		this.backThread = backThread;
 		add(rootPane);
 		act = new Act(this);
@@ -197,6 +197,7 @@ public class GUI extends JFrame{
 		settings.setWallpaperPath(directory.toString() + File.separator);
 		loadSettings();
 	}
+
 
 	public static void setLookFeel() {
 		try {
