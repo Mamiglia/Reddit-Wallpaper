@@ -27,7 +27,7 @@ public class Settings {
 	private TIME maxOldness = TIME.DAY;
 	private int maxDatabaseSize = 50;
 	private boolean keepWallpapers = false; //keep wallpapers after eliminating them from db?
-	private static String wallpaperPath = "wallpapers/"; // path to wallpaper folder
+	private static String wallpaperPath = "Saved-Wallpapers"; // path to wallpaper folder
 	private static final Logger log = DisplayLogger.getInstance("Settings");
 
 	public enum TIME {
@@ -69,7 +69,7 @@ public class Settings {
 	public void readSettings() {
 		File settingFile = new File(PATH_TO_SAVEFILE);
 		if (!settingFile.exists()) {
-			log.log(Level.WARNING, "No setting file is found, creating a new stock one");
+			log.log(Level.WARNING, "No settings file is found, generating a new stock one");
 			settingFile.getParentFile().mkdirs();
 			try {
 				settingFile.createNewFile();
