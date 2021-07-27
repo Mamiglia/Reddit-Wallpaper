@@ -1,3 +1,5 @@
+package Main;
+
 import GUI.Background;
 import GUI.GUI;
 import GUI.Tray;
@@ -11,6 +13,7 @@ public class Main {
 	private static final Logger log = DisplayLogger.getInstance("Main");
 
 	public static void main(String []args) {
+		System.out.println("Main Thread started");
 		Settings s = Settings.getInstance();
 		s.readSettings();
 
