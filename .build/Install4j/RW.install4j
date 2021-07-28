@@ -1,52 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="9.0.4" transformSequenceNumber="9">
-  <directoryPresets config="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/Install4j/elements" />
-  <application name="Reddit-Wallpaper" applicationId="8546-4710-8370-9653" mediaDir="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/Install4j" shortName="RW" publisher="Mamiglia@GuySittingInFrontOfComputerAllDay" publisherWeb="https://github.com/Mamiglia" version="0.3.2" macVolumeId="d9e0d729036b5893">
+  <directoryPresets config="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/icons" />
+  <application name="Reddit-Wallpaper" applicationId="8546-4710-8370-9653" mediaDir="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/Install4j" shortName="RW" publisher="Mamiglia@GuySittingInFrontOfComputerAllDay" publisherWeb="https://github.com/Mamiglia" version="1.0" macVolumeId="d9e0d729036b5893">
     <jreBundles jdkProviderId="AdoptOpenJDK" release="11/latest">
       <modules>
         <defaultModules set="minimum" />
+        <module name="java.sql" />
       </modules>
     </jreBundles>
   </application>
-  <files defaultUninstallMode="2" launcherOverwriteMode="2">
-    <roots>
-      <root id="44" location="${installer:sys.startupDir}" />
-    </roots>
+  <files defaultOverwriteMode="1" defaultUninstallMode="2">
     <mountPoints>
-      <mountPoint id="25" location="resources" />
       <mountPoint id="24" />
-      <mountPoint id="47" location="utility" />
-      <mountPoint id="45" root="44" />
     </mountPoints>
     <entries>
-      <dirEntry mountPoint="25" file="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/resources" overwriteMode="3" overrideOverwriteMode="true" subDirectory="resources" />
       <fileEntry mountPoint="24" file="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/out/artifacts/Reddit_Wallpaper_jar/Reddit-Wallpaper.jar" overwriteMode="3" overrideOverwriteMode="true" />
-      <dirEntry mountPoint="47" file="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/Install4j/elements/utility" overwriteMode="0" overrideOverwriteMode="true" subDirectory="utility" />
-      <fileEntry mountPoint="45" file="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/autostartRW.bat" overwriteMode="3" overrideOverwriteMode="true" />
+      <fileEntry mountPoint="24" file="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/LICENSE" />
     </entries>
   </files>
   <launchers>
-    <launcher name="RW" id="39" excludeFromMenu="true">
-      <executable name="${compiler:sys.shortName}" iconSet="true" iconFile="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/tray_icon.ico" stderrFile="utility/error.log" executableMode="console" singleInstance="true">
-        <versionInfo include="true" fileDescription="Reddit Wallpaper" legalCopyright="MIT" internalName="${compiler:sys.shortName}" />
+    <launcher name="${compiler:sys.shortName}" id="51" excludeFromMenu="true">
+      <executable name="${compiler:sys.shortName}" iconSet="true" iconFile="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/icons/icon.ico" stderrFile="utility/out.log" executableMode="gui" singleInstance="true">
+        <versionInfo include="true" fileDescription="${compiler:sys.fullName} ${compiler:sys.version} - ${compiler:sys.timestamp}" legalCopyright="MIT @ ${compiler:sys.publisher}" internalName="${compiler:sys.shortName}" />
       </executable>
-      <splashScreen show="true" bitmapFile="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/resources/tray_icon.png" />
-      <java mainClass="Main.Main" allowVMPassthroughParameters="false">
+      <java mainClass="Main.Main">
         <classPath>
-          <archive location="Reddit-Wallpaper.jar" failOnError="false" />
+          <archive location="Reddit-Wallpaper.jar" />
         </classPath>
-        <modulePath>
-          <archive location="Reddit-Wallpaper.jar" failOnError="false" />
-        </modulePath>
       </java>
       <iconImageFiles>
-        <file path="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/resources/tray_icon.png" />
+        <file path="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/icons/ico16.png" />
+        <file path="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/icons/ico32.png" />
+        <file path="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/icons/ico128.png" />
+        <file path="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/icons/ico256.png" />
+        <file path="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/icons/ico512.png" />
       </iconImageFiles>
     </launcher>
   </launchers>
   <installerGui>
     <laf darkTheme="dark" />
-    <autoUpdate useMinUpdatableVersion="true" minUpdatableVersion="0.4" />
+    <autoUpdate minUpdatableVersion="0.4" />
     <applications>
       <application id="installer" beanClass="com.install4j.runtime.beans.applications.InstallerApplication">
         <startup>
@@ -178,10 +171,35 @@ return console.askOkCancel(message, true);
             </formComponents>
           </screen>
           <screen id="20" beanClass="com.install4j.runtime.beans.screens.FinishedScreen" styleId="7" rollbackBarrierExitCode="0" finishScreen="true">
+            <actions>
+              <action id="65" beanClass="com.install4j.runtime.beans.actions.finish.ExecuteLauncherAction" actionElevationType="none" rollbackBarrierExitCode="0">
+                <serializedBean>
+                  <property name="launcherId" type="string">51</property>
+                </serializedBean>
+                <condition>context.getBooleanVariable("executeLauncherAction") &amp;&amp; (!context.isUnattended())</condition>
+              </action>
+              <action id="67" beanClass="com.install4j.runtime.beans.actions.desktop.AddStartupItemAction" actionElevationType="elevated" rollbackBarrierExitCode="0">
+                <serializedBean>
+                  <property name="executable">
+                    <object class="java.io.File">
+                      <string>${compiler:sys.shortName}</string>
+                    </object>
+                  </property>
+                  <property name="name" type="string">Reddit-Wallpaper</property>
+                </serializedBean>
+              </action>
+            </actions>
             <formComponents>
               <formComponent id="21" beanClass="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent" insetBottom="10">
                 <serializedBean>
                   <property name="labelText" type="string">${form:finishedMessage}</property>
+                </serializedBean>
+              </formComponent>
+              <formComponent name="Execute launcher" id="66" beanClass="com.install4j.runtime.beans.formcomponents.CheckboxComponent">
+                <serializedBean>
+                  <property name="checkboxText" type="string">${i18n:RunEntryExec("${compiler:sys.fullName}")}</property>
+                  <property name="initiallySelected" type="boolean" value="true" />
+                  <property name="variableName" type="string">executeLauncherAction</property>
                 </serializedBean>
               </formComponent>
             </formComponents>
@@ -203,6 +221,20 @@ return console.askOkCancel(message, true);
         </startup>
         <screens>
           <screen id="24" beanClass="com.install4j.runtime.beans.screens.UninstallWelcomeScreen" styleId="7" rollbackBarrierExitCode="0">
+            <actions>
+              <action id="76" beanClass="com.install4j.runtime.beans.actions.files.DeleteFileAction" actionElevationType="elevated" rollbackBarrierExitCode="0">
+                <serializedBean>
+                  <property name="files" type="array" class="java.io.File" length="1">
+                    <element index="0">
+                      <object class="java.io.File">
+                        <string>.</string>
+                      </object>
+                    </element>
+                  </property>
+                  <property name="recursive" type="boolean" value="true" />
+                </serializedBean>
+              </action>
+            </actions>
             <formComponents>
               <formComponent id="25" beanClass="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent" insetBottom="10">
                 <serializedBean>
