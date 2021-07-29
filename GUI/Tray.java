@@ -1,8 +1,11 @@
 package GUI;
 
+import Utils.DisplayLogger;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.net.URL;
+import java.util.logging.Level;
 
 public class Tray {
 	public static final String PATH_TO_ICON = "/resources/tray_icon.png";
@@ -41,7 +44,12 @@ public class Tray {
 		change.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				backThread.interrupt(); //interrupting the thread means waking it up. When it's awake it will automatically start searching for a new Wallpaper
+				if (backThread.getState() == Thread.State.TIMED_WAITING) {
+					backThread.interrupt(); //interrupting it makes it wake up and load new wallpaper
+				} else {
+					DisplayLogger.getInstance("Tray").log(Level.INFO, "Change button was pressed too early, still occupied changing wallpaper from the last time");
+				}
+				//interrupting the thread means waking it up. When it's awake it will automatically start searching for a new Wallpaper
 			}
 		});
 		trayPopupMenu.add(change);
