@@ -38,3 +38,4 @@ autostartRW.bat
 RW.exe
 *.exe
 /Saved-Wallpapers/
+.build/Install4j/RW_unix_0_4.sh
