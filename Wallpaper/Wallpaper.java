@@ -59,6 +59,9 @@ public class Wallpaper implements Serializable {
 //        return image.getHeight(null);
 //    }
 
+    /**
+        @return the absolute path of the wallpaper
+     */
     public String getPath() {
         return file.getAbsolutePath();
     }
