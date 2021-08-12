@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <updateDescriptor baseUrl="">
-  <entry targetMediaFileId="36" updatableVersionMin="0.4" updatableVersionMax="" fileName="RW_windows-x64_0_4.exe" newVersion="0.4" newMediaFileId="36" fileSize="39647232" md5Sum="f89dd40f653e4249e61210c47830b411" sha256Sum="7523635775a7c7bb7d5f704df29d066dffbc26ab909350c016ae8b6faf798a9f" bundledJre="windows-amd64-11.0.11.tar.gz" archive="false" singleBundle="false">
+  <entry targetMediaFileId="36" updatableVersionMin="0.4" updatableVersionMax="" fileName="RW_windows-x64_0_4.exe" newVersion="0.4" newMediaFileId="36" fileSize="39656960" md5Sum="32a387e6f600416e9154686090a23a8d" sha256Sum="0923b4d32dd4440079ed597540fa365abe633b2fa2ff9e0f15364e21012fa1d1" bundledJre="windows-amd64-11.0.11.tar.gz" archive="false" singleBundle="false">
+    <comment language="en" />
+  </entry>
+  <entry targetMediaFileId="144" updatableVersionMin="0.4" updatableVersionMax="" fileName="RW_unix_0_4.sh" newVersion="0.4" newMediaFileId="144" fileSize="39909970" md5Sum="460b227b06c5ae8e26c78f73bf65a557" sha256Sum="3b6d2fb356cc13dc872c770c5e2e5a54304abe45ee7ef703a4bdd6e89a0028c1" bundledJre="linux-amd64-11.0.11.tar.gz" archive="false" singleBundle="false">
     <comment language="en" />
   </entry>
 </updateDescriptor>
