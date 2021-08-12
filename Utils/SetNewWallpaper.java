@@ -6,12 +6,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
-
 import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.sun.jna.win32.*;
-import org.h2.util.StringUtils;
 
 public class SetNewWallpaper implements Runnable {
     private final static Logger log = DisplayLogger.getInstance("SetNewWallpaper");
@@ -78,53 +76,61 @@ public class SetNewWallpaper implements Runnable {
 
     public static String identifyDE() {
         String de;
-        de = executeProcess("echo $XDG_CURRENT_DESKTOP").toLowerCase();
+        de = System.getenv("XDG_CURRENT_DESKTOP");
 
-        if (de.contains("xfce")) {
-            return "xfce";
-        } else if (de.contains("kde")) {
-            return "kde";
-        } else if (de.contains("unity")) {
-            return "unity";
-        } else if (de.contains("gnome")) {
-            return "gnome";
-        } else if (de.contains("cinnamon")) {
-            return "cinnamon";
-        } else if (de.contains("mate")) {
-            return "mate";
-        } else if (de.contains("deepin")) {
-            return "deepin";
-        } else if (de.contains("budgie")) {
-            return "budgie";
-        } else if (de.contains("lxqt")) {
-            return "lxqt";
-        } else {
-            log.log(Level.FINE, () -> "Not identifiable with: echo $XDG_CURRENT_DESKTOP: " + de);
+        if (de != null) {
+            de = de.toLowerCase();
+            if (de.contains("xfce")) {
+                return "xfce";
+            } else if (de.contains("kde")) {
+                return "kde";
+            } else if (de.contains("unity")) {
+                return "unity";
+            } else if (de.contains("gnome")) {
+                return "gnome";
+            } else if (de.contains("cinnamon")) {
+                return "cinnamon";
+            } else if (de.contains("mate")) {
+                return "mate";
+            } else if (de.contains("deepin")) {
+                return "deepin";
+            } else if (de.contains("budgie")) {
+                return "budgie";
+            } else if (de.contains("lxqt")) {
+                return "lxqt";
+            } else {
+                log.log(Level.FINE, "Not identifiable with: echo $XDG_CURRENT_DESKTOP: {1}", de);
+            }
         }
 
-        de = executeProcess("echo $GDM_SESSION").toLowerCase();
 
-        if (de.contains("xfce")) {
-            return "xfce";
-        } else if (de.contains("kde")) {
-            return "kde";
-        } else if (de.contains("unity")) {
-            return "unity";
-        } else if (de.contains("gnome")) {
-            return "gnome";
-        } else if (de.contains("cinnamon")) {
-            return "cinnamon";
-        }  else if (de.contains("mate")) {
-            return "mate";
-        } else if (de.contains("deepin")) {
-            return "deepin";
-        } else if (de.contains("budgie")) {
-            return "budgie";
-        } else if (de.contains("lxqt")) {
-            return "lxqt";
-        } else {
-            log.log(Level.FINE, "Not identifiable with: echo $GDM_SESSION");
+        de = System.getenv("$GDM_SESSION");
+
+        if (de != null) {
+            de = de.toLowerCase();
+            if (de.contains("xfce")) {
+                return "xfce";
+            } else if (de.contains("kde")) {
+                return "kde";
+            } else if (de.contains("unity")) {
+                return "unity";
+            } else if (de.contains("gnome")) {
+                return "gnome";
+            } else if (de.contains("cinnamon")) {
+                return "cinnamon";
+            }  else if (de.contains("mate")) {
+                return "mate";
+            } else if (de.contains("deepin")) {
+                return "deepin";
+            } else if (de.contains("budgie")) {
+                return "budgie";
+            } else if (de.contains("lxqt")) {
+                return "lxqt";
+            } else {
+                log.log(Level.FINE, "Not identifiable with: echo $GDM_SESSION");
+            }
         }
+
 
         return null;
     }
