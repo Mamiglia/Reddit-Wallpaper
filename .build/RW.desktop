@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Version=${compiler:sys.version}
+Name=${compiler:sys.fullName}
+Exec=${installer:sys.installationDir}/${compiler:sys.shortName}
+StartupNotify=false
+Terminal=false
