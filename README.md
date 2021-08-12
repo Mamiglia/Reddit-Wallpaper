@@ -39,4 +39,5 @@ I need help, I need feedbacks, I need people to tell me that they like this/disl
 - [ ] Add an option to search from single subreddits with specific flairs
 - [x] Improve Installation utility by adding an uninstall/remove feature
 - [ ] Feature request: add "save" button that saves the wallpapers you like in a folder
+- [ ] Feature request: add option to apply different wallpapers for different monitors
 
