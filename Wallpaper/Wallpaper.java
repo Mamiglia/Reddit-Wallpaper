@@ -16,7 +16,6 @@ import java.util.Objects;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public class Wallpaper implements Serializable {
-    public static final String DEFAULT_PATH = Settings.getWallpaperPath() + File.separator;
     public static final String FORMAT = "png";
     private final String id;
     private final File file;
@@ -28,7 +27,7 @@ public class Wallpaper implements Serializable {
     public Wallpaper(String id, String title, String url, String postUrl) {
         this.id = id;
         this.title = title;
-        file = new File(DEFAULT_PATH + this.title + "." + FORMAT);
+        file = new File(getWallpaperDirectory() + this.title + "." + FORMAT);
         this.url = url;
         if (postUrl.contains("https://www.reddit.com")) this.postUrl = postUrl;
         else this.postUrl = "https://www.reddit.com" + postUrl;
@@ -100,4 +99,9 @@ public class Wallpaper implements Serializable {
     public String toString() {
         return "title:\t" + title + "\nimage url:\t" + url + "\npost url:\t" + postUrl;
     }
+
+    private static String getWallpaperDirectory() {
+        return Settings.getWallpaperPath() + File.separator;
+    }
+
 }

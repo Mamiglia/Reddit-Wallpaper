@@ -102,7 +102,6 @@ public class GUI extends JFrame{
 		settings.setKeepWallpapers(keepCheckBox.isSelected());
 		settings.setMaxDatabaseSize((int) dbSizeField.getValue());
 
-
 		settings.writeSettings();
 	}
 
