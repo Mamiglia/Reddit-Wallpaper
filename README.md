@@ -1,6 +1,12 @@
 Reddit-Wallpaper
 ======
 ##### Reddit-Wallpaper is tool to download and automatically set a random wallpaper from subreddits.
+[![stars - Reddit-Wallpaper](https://img.shields.io/github/stars/Mamiglia/Reddit-Wallpaper?style=social)](https://github.com/Mamiglia/Reddit-Wallpaper)
+[![Mamiglia - Reddit-Wallpaper](https://img.shields.io/static/v1?label=Mamiglia&message=Reddit-Wallpaper&color=violet&logo=github)](https://github.com/Mamiglia/Reddit-Wallpaper)
+[![GitHub release](https://img.shields.io/github/release/Mamiglia/Reddit-Wallpaper?include_prereleases=&sort=semver&color=blueviolet)](https://github.com/Mamiglia/Reddit-Wallpaper/releases/)
+[![License](https://img.shields.io/badge/License-MIT-blue)](#license)
+[![issues - Reddit-Wallpaper](https://img.shields.io/github/issues/Mamiglia/Reddit-Wallpaper)](https://github.com/Mamiglia/Reddit-Wallpaper/issues)
+
 Bored by your old static wallpaper? Want to see something new? Well my boy this is the right place for you. 
 This magnificent tool automatically downloads and sets up a wallpaper from the website reddit!
 It allows you to decide the period of time after you get bored by a wallpaper and changes it, and you won't need to move a single muscle.
