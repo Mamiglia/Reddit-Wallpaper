@@ -27,19 +27,15 @@ I need help, I need feedbacks, I need people to tell me that they like this/disl
 
 **Known Bugs:**
 - pinterest galleries aren't supported (yet)
-- <del>Some users report that during the installation process they get the error: "unable to access jarfile install.jar". Unfortunately I can't reproduce this bug and I don't find a way to work on it (if you have any information plz let me know!) </del> No longer relevant due to change of installer
-- Changing the wallpaper destination folder doesn't take effect until the program is restarted
-- NSFW queries fail
+- <del>Changing the wallpaper destination folder doesn't take effect until the program is restarted</del>
+- <del>NSFW queries fail</del>
 
 **ToDo:**
-- [x] Add option to customize wallpaper folder during installation
 - [ ] Add a way to check for updates
 - [x] Improve memory usage (was ca. 200MB) -> improved to 150MB
 - [ ] Add Linux support!
-- [x] Add something to check wallpaper database size in MB
 - [ ] Add an option to search from single subreddits with specific flairs
-- [x] Improve Installation utility by adding an uninstall/remove feature
-- [ ] Feature request: add "save" button that saves the wallpapers you like in a folder
+- [ ] Feature request: add "save" button that saves the wallpapers you like in a specific folder
 - [ ] Feature request: add option to apply different wallpapers for different monitors
 - [ ] Consider turning the application in a service
-- [ ] Feature request: add the title of the post to the image (somewhere)
+- [x] Feature request: add the title of the post to the image (somewhere)
