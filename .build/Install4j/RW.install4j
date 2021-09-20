@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="9.0.4" transformSequenceNumber="9">
   <directoryPresets config="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/icons" />
-  <application name="Reddit-Wallpaper" applicationId="8546-4710-8370-9653" mediaDir="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/Install4j" shortName="RW" publisher="Mamiglia@GuySittingInFrontOfComputerAllDay" publisherWeb="https://github.com/Mamiglia" version="0.4" macVolumeId="d9e0d729036b5893">
+  <application name="Reddit-Wallpaper" applicationId="8546-4710-8370-9653" mediaDir="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/Install4j" shortName="RW" publisher="Mamiglia@GuySittingInFrontOfComputerAllDay" publisherWeb="https://github.com/Mamiglia" version="1.1" macVolumeId="d9e0d729036b5893">
     <jreBundles jdkProviderId="AdoptOpenJDK" release="11/latest">
       <modules>
         <defaultModules set="minimum" />
@@ -1146,4 +1146,7 @@ return true;</property>
       </exclude>
     </unixInstaller>
   </mediaSets>
+  <buildIds buildAll="false">
+    <mediaSet refId="36" />
+  </buildIds>
 </install4j>
