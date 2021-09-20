@@ -23,7 +23,7 @@ public class Settings {
 	private String[] titles = {};
 	private String[] subreddits = {"wallpaper", "wallpapers"};
 	private SEARCH_BY searchBy = SEARCH_BY.HOT;
-	private boolean nsfwOnly = false;
+	private NSFW_LEVEL nsfwLevel = NSFW_LEVEL.ALLOW;
 	private int height = 1080;
 	private int width = 1920;
 	private int period = 15; //mins
@@ -45,6 +45,33 @@ public class Settings {
 
 		TIME(String value) {
 			this.value = value;
+		}
+	}
+
+	public enum NSFW_LEVEL {
+		NEVER(-1, "&nsfw=no"),
+		ALLOW(0, "&include_over_18=true"),
+		ONLY(1, "&include_over_18=true&nsfw=yes");
+
+		public final int value;
+		public final String query;
+
+		NSFW_LEVEL(int value, String query) {
+			this.value = value;
+			this.query = query;
+		}
+
+		public static NSFW_LEVEL valueOf(Integer i) {
+			switch (i) {
+				case -1:
+					return NEVER;
+				case 0:
+					return ALLOW;
+				case 1:
+					return ONLY;
+				default:
+					return ALLOW; //If not recongnized it will be considered as ALLOW
+			}
 		}
 	}
 
@@ -137,12 +164,12 @@ public class Settings {
 		this.searchBy = searchBy;
 	}
 
-	public boolean isNsfwOnly() {
-		return nsfwOnly;
+	public NSFW_LEVEL getNsfwLevel() {
+		return nsfwLevel;
 	}
 
-	public void setNsfwOnly(boolean nsfwOnly) {
-		this.nsfwOnly = nsfwOnly;
+	public void setNsfwLevel(int level) {
+		this.nsfwLevel = NSFW_LEVEL.valueOf(level);
 	}
 
 	public int getHeight() {
@@ -215,7 +242,7 @@ public class Settings {
 		return "titles=" + Arrays.toString(titles) +
 				"\nsubreddits=" + Arrays.toString(subreddits) +
 				"\nsearchBy=" + searchBy +
-				"\nnsfwOnly=" + nsfwOnly +
+				"\nnsfwLevel=" + nsfwLevel.value +
 				"\nheight=" + height +
 				"\nwidth=" + width +
 				"\nperiod=" + period +
@@ -234,12 +261,12 @@ public class Settings {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		Settings settings = (Settings) o;
-		return nsfwOnly == settings.nsfwOnly && height == settings.height && width == settings.width && period == settings.period && maxOldness == settings.maxOldness && Arrays.equals(titles, settings.titles) && Arrays.equals(subreddits, settings.subreddits) && searchBy == settings.searchBy;
+		return nsfwLevel == settings.nsfwLevel && height == settings.height && width == settings.width && period == settings.period && maxOldness == settings.maxOldness && Arrays.equals(titles, settings.titles) && Arrays.equals(subreddits, settings.subreddits) && searchBy == settings.searchBy;
 	}
 
 	@Override
 	public int hashCode() {
-		int result = Objects.hash(searchBy, nsfwOnly, height, width, period, maxOldness);
+		int result = Objects.hash(searchBy, nsfwLevel, height, width, period, maxOldness);
 		result = 31 * result + Arrays.hashCode(titles);
 		result = 31 * result + Arrays.hashCode(subreddits);
 		return result;
@@ -257,8 +284,8 @@ public class Settings {
 			case "searchBy":
 				searchBy = SEARCH_BY.valueOf(value);
 				break;
-			case "nsfwOnly":
-				nsfwOnly = Boolean.parseBoolean(value);
+			case "nsfwLevel":
+				setNsfwLevel(Integer.parseInt(value));
 				break;
 			case "height":
 				height = Integer.parseInt(value);

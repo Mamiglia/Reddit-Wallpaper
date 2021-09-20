@@ -42,7 +42,7 @@ class Searcher {
 						+ "&t=" + settings.getMaxOldness().value //how old can a post be at most
 						+ "&type=t3" //only link type posts, no text-only
 						+ "&restrict_sr=true" //i don't think it's useful but still have to figure out what it does
-						+ "&include_over_18=true"
+						+ settings.getNsfwLevel().query;
 		;
 		log.log(Level.INFO, () -> "Search Query is: "+ searchQuery);
 	}
@@ -55,8 +55,6 @@ class Searcher {
 						+ ")+subreddit:("
 						+ String.join(" OR ", settings.getSubreddits()).replace("  ", " ")
 						+ ")"
-						//+ "+nsfw:" // if true shows nsfw ONLY
-						//+ (settings.isNsfwOnly()?"yes":"no")
 						+ "+self:no" //this means no text-only posts
 				// TODO add flairs?
 				;

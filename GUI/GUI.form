@@ -2,7 +2,7 @@
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="GUI.GUI">
   <grid id="27dc6" binding="rootPane" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
-      <xy x="21" y="55" width="330" height="374"/>
+      <xy x="21" y="55" width="330" height="391"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -166,16 +166,30 @@
                       <grid row="5" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <toolTipText value="NSFW Only! Only horny photos will be shown if checked"/>
+                      <toolTipText value="Never: no NSFW wallpaper will ever be shown\nAllow: NSFW Wallpapers might be shown \nOnly: only NSFW will be shown, warning: Horny!"/>
                     </properties>
                     <border type="none"/>
                     <children>
-                      <component id="94fec" class="javax.swing.JCheckBox" binding="nsfwCheckBox">
+                      <component id="1fdfc" class="javax.swing.JLabel">
                         <constraints/>
                         <properties>
-                          <inheritsPopupMenu value="false"/>
-                          <text value="NSFW only"/>
-                          <toolTipText value="NSFW Only! Only horny photos will be shown if checked"/>
+                          <text value="NSFW:"/>
+                        </properties>
+                      </component>
+                      <hspacer id="f84c9">
+                        <constraints/>
+                      </hspacer>
+                      <component id="a7a9" class="javax.swing.JSlider" binding="nsfwSlider">
+                        <constraints/>
+                        <properties>
+                          <maximum value="1"/>
+                          <minimum value="-1"/>
+                          <paintLabels value="true"/>
+                          <paintTicks value="false"/>
+                          <paintTrack value="true"/>
+                          <snapToTicks value="true"/>
+                          <toolTipText value="NEVER: no nsfw wallpaper will ever be shown. ALLOW: nsfw wallpapers might be shown. ONLY: only nsfw will be shown, warning: Horny!"/>
+                          <value value="0"/>
                         </properties>
                       </component>
                     </children>

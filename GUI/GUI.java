@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,7 +28,6 @@ public class GUI extends JFrame{
 	private JPanel subredditPane;
 	private JTextField subredditField;
 	private JComboBox<SEARCH_BY> sortSelection;
-	private JCheckBox nsfwCheckBox;
 	private JTextArea logArea;
 	private JButton applyButton;
 	private JButton changeNowButton;
@@ -45,6 +45,7 @@ public class GUI extends JFrame{
 	private JScrollPane scrollPane;
 	private JTextField wallpaperPathText;
 	private JButton changeDirectoryButton;
+	private JSlider nsfwSlider;
 	static final Logger log = DisplayLogger.getInstance("GUI");
 	private final Act act;
 	private final Settings settings = Settings.getInstance();
@@ -62,10 +63,14 @@ public class GUI extends JFrame{
 		changeNowButton.addActionListener(act);
 		changeDirectoryButton.addActionListener(act);
 		scrollPane.setPreferredSize(new Dimension(-1, 3));
+		nsfwSlider.setLabelTable(new Hashtable<Integer, JLabel>() {{
+			put(-1, new JLabel("Never"));
+			put(0, new JLabel("Allow"));
+			put(1, new JLabel("Only"));
+		}});
 
 		// TODO was useless!
 		logCheckBox.setVisible(false);
-		nsfwCheckBox.setVisible(false);
 
 		tabbedPane.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent changeEvent) {
@@ -88,7 +93,7 @@ public class GUI extends JFrame{
 	void saveSettings() {
 		settings.setTitles(titleField.getText().replace(" ", "").split(","));
 		settings.setSubreddits(subredditField.getText().replace(" ", "").split(","));
-		settings.setNsfwOnly(nsfwCheckBox.isSelected());
+		settings.setNsfwLevel(nsfwSlider.getValue());
 		settings.setHeight((int) heightField.getValue());
 		settings.setWidth((int) widthField.getValue());
 		settings.setMaxOldness((TIME) oldSelection.getSelectedItem());
@@ -108,7 +113,6 @@ public class GUI extends JFrame{
 		titleField.setText(Arrays.toString(settings.getTitles()).replace("[", "").replace("]", ""));
 		subredditField.setText(Arrays.toString(settings.getSubreddits()).replace("[", "").replace("]", ""));
 		sortSelection.setSelectedItem(settings.getSearchBy());
-		nsfwCheckBox.setSelected(settings.isNsfwOnly());
 		heightField.setValue(settings.getHeight());
 		widthField.setValue(settings.getWidth());
 		periodField.setValue(settings.getPeriod());
