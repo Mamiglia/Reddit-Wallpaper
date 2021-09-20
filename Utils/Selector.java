@@ -104,7 +104,7 @@ class Selector implements Runnable{
                     log.log(Level.FINEST, wp::toString);
                     log.log(Level.FINE, () -> "Cleaning of DB, removing " + wp.getID());
 
-                    new File(wp.getPath()).delete();
+                    new File(wp.getPath().toAbsolutePath().toString()).delete();
                 }
                 db.executeUpdate("DELETE FROM WALLPAPERS WHERE id IN (SELECT id FROM WALLPAPERS ORDER BY date fetch FIRST 20 PERCENT rows only)");
 

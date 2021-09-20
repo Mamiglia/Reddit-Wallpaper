@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Objects;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
@@ -62,8 +63,8 @@ public class Wallpaper implements Serializable {
     /**
         @return the absolute path of the wallpaper
      */
-    public String getPath() {
-        return file.getAbsolutePath();
+    public Path getPath() {
+        return file.toPath();
     }
     public String getTitle() {
         return title;

@@ -31,7 +31,7 @@ public class SetNewWallpaper implements Runnable {
             log.log(Level.WARNING, "Wallpaper file not found");
             return;
         }
-        String wpPath = wp.getPath();
+        String wpPath = wp.getPath().toAbsolutePath().toString();
         String os = System.getProperty("os.name");
         switch (os) {
             case "Windows 10":

@@ -78,12 +78,18 @@ public class Background implements Runnable {
 	}
 
 	private static String cosmetifyTitle (String title) {
-		return title
+		String temp = title
 				.replace('_', ' ')
 				.replace("OC", "")
+				.replaceAll("[0-9]?[0-9][0-9][0-9] ?[*xX] ?[0-9][0-9][0-9][0-9]?", "")
 				.replaceAll("[^a-zA-Z0-9 ,-]", "")
-				.replaceAll(" [a-zA-Z]+[0-9]+[a-zA-Z0-9]*$", "")
-				.replaceAll("[0-9]?[0-9][0-9][0-9] ?[*xX] ?[0-9][0-9][0-9][0-9]?", "");
+				.replaceAll(" [a-zA-Z]+[0-9]+[a-zA-Z0-9]*$", "");
+		if (temp.length() > 23) {
+			temp = temp.substring(0, 20);
+			temp += "...";
+		}
+		return temp;
+
 
 	}
 

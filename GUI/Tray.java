@@ -2,9 +2,16 @@ package GUI;
 
 import Utils.DisplayLogger;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -67,6 +74,29 @@ public class Tray {
 				}
 			});
 			trayPopupMenu.add(titleItem);
+
+			MenuItem saveItem = new MenuItem("Save Wallpaper");
+			saveItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JFileChooser chooser = new JFileChooser();
+					chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+					chooser.setSelectedFile(background.getCurrent().getPath().toFile());
+					chooser.setDialogTitle("Select where to save wallpaper");
+					chooser.setAcceptAllFileFilterUsed(false);
+					int ret = chooser.showSaveDialog(null);
+					if (ret == JFileChooser.APPROVE_OPTION) {
+						Path path = chooser.getSelectedFile().toPath();
+						try {
+							Files.copy(background.getCurrent().getPath(), path, StandardCopyOption.REPLACE_EXISTING);
+						} catch (IOException ioException) {
+							ioException.printStackTrace();
+						}
+					}
+				}
+			});
+			trayPopupMenu.add(saveItem);
+			trayPopupMenu.addSeparator();
 		}
 
 		MenuItem changeItem = new MenuItem("Change Wallpaper");
