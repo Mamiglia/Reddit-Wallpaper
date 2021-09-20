@@ -16,13 +16,13 @@ public class Background implements Runnable {
 	// 2 - Sleep X time
 	// 3 - repeat
 	// until program is stopped
-	private static final Logger log = DisplayLogger.getInstance("background service");
+	private static final Logger log = DisplayLogger.getInstance("Background service");
 	private static final Background uniqueInstance = new Background();
 	private final Settings settings = Settings.getInstance();
 	private boolean stopped = false;
 	private Wallpaper current = null;
 
-	public Background() {
+	private Background() {
 	}
 
 	public static Background getInstance() {
@@ -52,6 +52,7 @@ public class Background implements Runnable {
 		SetNewWallpaper set = new SetNewWallpaper(current);
 		Thread t2 = new Thread(set);
 		t2.start();
+		Tray.getInstance().populateTray(cosmetifyTitle(current.getTitle()));
 		log.log(Level.INFO, () -> "Wallpapers is successfully set to:\n" + current.toString());
 	}
 
@@ -74,11 +75,20 @@ public class Background implements Runnable {
 		while (!stopped) {
 			changeWallpaper();
 			try {
-				Thread.sleep(settings.getPeriod() * 60 * 1000);
+				Thread.sleep((long) settings.getPeriod() * 60 * 1000);
 			} catch (InterruptedException e) {
 				log.log(Level.INFO, "Sleep is interrupted");
 			}
 		}
 		log.log(Level.INFO, "Background Service has been stopped as requested");
+	}
+
+	private static String cosmetifyTitle (String title) {
+		return title
+				.replace('_', ' ')
+				.replace("OC", "")
+				.replaceAll("[^a-zA-Z0-9 ,-]", "")
+				.replaceAll("[0-9]?[0-9][0-9][0-9] ?[*xX] ?[0-9][0-9][0-9][0-9]?", "");
+
 	}
 }

@@ -17,12 +17,12 @@ public class Main {
 		Settings s = Settings.getInstance();
 		s.readSettings();
 
-		Background b = new Background();
+		Background b = Background.getInstance();
 		Thread bThread = new Thread(b);
 		bThread.start();
 
 		GUI.setLookFeel();
-		Tray tray = new Tray(bThread, b);
+		Tray tray = Tray.getInstance(bThread, b);
 		tray.startTray();
 
 

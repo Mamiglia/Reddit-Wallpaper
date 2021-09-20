@@ -6,42 +6,71 @@ import java.awt.*;
 import java.awt.event.*;
 import java.net.URL;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Tray {
+	private static Tray uniqueInstance;
 	public static final String PATH_TO_ICON = "/resources/tray_icon.png";
 	private final Thread backThread; // it's the Thread of the backgound (the thing that runs always in background)
 	private final Background background;
+	private final TrayIcon trayIcon;
+	private final SystemTray systemTray;
 
-	public Tray(Thread backgroundThread, Background background) {
-		this.backThread = backgroundThread;
-		this.background = background;
+	private final Logger log = DisplayLogger.getInstance("Tray");
+
+	public static Tray getInstance() {
+		if (uniqueInstance == null) throw new RuntimeException("Tray isn't initialized!");
+		return uniqueInstance;
+	}
+	public static Tray getInstance(Thread backgroundThread, Background background) {
+		if (uniqueInstance != null) return uniqueInstance;
+
+		uniqueInstance = new Tray(backgroundThread, background);
+		return uniqueInstance;
 	}
 
 
+	private Tray(Thread backgroundThread, Background background) {
+		this.backThread = backgroundThread;
+		this.background = background;
+		Image image = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource(PATH_TO_ICON));// icon by https://www.freepik.com
+		this.trayIcon = new TrayIcon(image, "Reddit Wallpaper", null);
+		this.systemTray = SystemTray.getSystemTray();
+	}
+
 	//start of main method
-	public void startTray(){
-		//checking for support
+	public void startTray() {
 		if(!SystemTray.isSupported()){
-			System.out.println("System tray is not supported !!! ");
+			//checking for support
+			log.log(Level.SEVERE, "System tray is not supported !!!");
 			return ;
 		}
-		//get the systemTray of the system
-		SystemTray systemTray = SystemTray.getSystemTray();
-		Image image = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource(PATH_TO_ICON));// icon by https://www.freepik.com
 
+		populateTray(null);
+
+		try{
+			systemTray.add(trayIcon);
+		}catch(AWTException awtException){
+			log.log(Level.SEVERE, "Cannot set the system tray");
+		}
+	}
+
+	public void populateTray(String title){
 		PopupMenu trayPopupMenu = new PopupMenu();
 
-		MenuItem gui = new MenuItem("Settings");
-		gui.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				new GUI(backThread);
-			}
-		});
-		trayPopupMenu.add(gui);
+		if (title != null) {
+			MenuItem titleItem = new MenuItem(title);
+			titleItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					openWebpage(background.getCurrent().getPostUrl());
+				}
+			});
+			trayPopupMenu.add(titleItem);
+		}
 
-		MenuItem change = new MenuItem("Change Wallpaper");
-		change.addActionListener(new ActionListener() {
+		MenuItem changeItem = new MenuItem("Change Wallpaper");
+		changeItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (backThread.getState() == Thread.State.TIMED_WAITING) {
@@ -52,19 +81,19 @@ public class Tray {
 				//interrupting the thread means waking it up. When it's awake it will automatically start searching for a new Wallpaper
 			}
 		});
-		trayPopupMenu.add(change);
+		trayPopupMenu.add(changeItem);
 
-		MenuItem post = new MenuItem("Current thread");
-		post.addActionListener(new ActionListener() {
+		MenuItem guiItem = new MenuItem("Settings");
+		guiItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				openWebpage(background.getCurrent().getPostUrl());
+				new GUI(backThread);
 			}
 		});
-		trayPopupMenu.add(post);
+		trayPopupMenu.add(guiItem);
 
-		MenuItem close = new MenuItem("Close");
-		close.addActionListener(new ActionListener() {
+		MenuItem closeItem = new MenuItem("Close");
+		closeItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				background.stop();
@@ -79,18 +108,13 @@ public class Tray {
 				System.exit(0);
 			}
 		});
-		trayPopupMenu.add(close);
+		trayPopupMenu.add(closeItem);
 
-		//setting tray icon
-		TrayIcon trayIcon = new TrayIcon(image, "Reddit Wallpaper", trayPopupMenu);
+		//setting tray icon menu
+		trayIcon.setPopupMenu(trayPopupMenu);
+
 		//adjust to default size as per system recommendation
 		trayIcon.setImageAutoSize(true);
-
-		try{
-			systemTray.add(trayIcon);
-		}catch(AWTException awtException){
-			awtException.printStackTrace();
-		}
 	}
 
 	public static void openWebpage(String urlString) {
@@ -100,5 +124,6 @@ public class Tray {
 			e.printStackTrace();
 		}
 	}
+
 
 }
