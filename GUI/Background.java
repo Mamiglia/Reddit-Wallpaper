@@ -52,33 +52,27 @@ public class Background implements Runnable {
 		SetNewWallpaper set = new SetNewWallpaper(current);
 		Thread t2 = new Thread(set);
 		t2.start();
+		settings.updateDate();
 		Tray.getInstance().populateTray(cosmetifyTitle(current.getTitle()));
 		log.log(Level.INFO, () -> "Wallpapers is successfully set to:\n" + current.toString());
 	}
 
-
-
-	// GETTER & SETTER
-
-	public Wallpaper getCurrent() {
-		return current;
-	}
-	public boolean isStopped() {
-		return stopped;
-	}
-	public static Thread getThread() {
-		return Thread.currentThread();
-	}
-
 	@Override
 	public void run() {
-		while (!stopped) {
+		long residualTime = settings.getLastTimeWallpaperChanged() + settings.getPeriod() * 60000L - System.currentTimeMillis();
+		if (residualTime <= 60000L) { //if residualTime is under a minute I change the wallpaper anyway
 			changeWallpaper();
+			residualTime = settings.getPeriod() * 60000L;
+		}
+
+		while (!stopped) {
 			try {
-				Thread.sleep((long) settings.getPeriod() * 60 * 1000);
+				Thread.sleep(residualTime); //
 			} catch (InterruptedException e) {
 				log.log(Level.INFO, "Sleep is interrupted");
 			}
+			residualTime = settings.getPeriod() * 60000L;
+			changeWallpaper();
 		}
 		log.log(Level.INFO, "Background Service has been stopped as requested");
 	}
@@ -90,5 +84,17 @@ public class Background implements Runnable {
 				.replaceAll("[^a-zA-Z0-9 ,-]", "")
 				.replaceAll("[0-9]?[0-9][0-9][0-9] ?[*xX] ?[0-9][0-9][0-9][0-9]?", "");
 
+	}
+
+	// GETTER & SETTER
+
+	public Wallpaper getCurrent() {
+		return current;
+	}
+	public boolean isStopped() {
+		return stopped;
+	}
+	public static Thread getThread() {
+		return Thread.currentThread();
 	}
 }

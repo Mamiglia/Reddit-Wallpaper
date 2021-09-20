@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.attribute.FileTime;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Scanner;
@@ -14,9 +16,10 @@ import java.util.logging.Logger;
 
 public class Settings {
 	//Singleton
-	private static final Settings uniqueInstance = new Settings();
+	private static Settings uniqueInstance;
 	public static final String PATH_TO_SAVEFILE = "utility/settings.txt";
 	public static final String PATH_TO_DATABASE = "utility/db";
+	private final File settingFile = new File(PATH_TO_SAVEFILE);
 	private String[] titles = {};
 	private String[] subreddits = {"wallpaper", "wallpapers"};
 	private SEARCH_BY searchBy = SEARCH_BY.HOT;
@@ -59,15 +62,6 @@ public class Settings {
 	}
 
 	private Settings() {
-	}
-
-	public static synchronized Settings getInstance() {
-		log.setLevel(Level.WARNING);
-		return uniqueInstance;
-	}
-
-	public void readSettings() {
-		File settingFile = new File(PATH_TO_SAVEFILE);
 		if (!settingFile.exists()) {
 			log.log(Level.WARNING, "No settings file is found, generating a new stock one");
 			settingFile.getParentFile().mkdirs();
@@ -76,9 +70,20 @@ public class Settings {
 			} catch (IOException e) {
 				log.log(Level.SEVERE, "I/O error: Can't create settings file");
 			}
-			return;
+			writeSettings();
 		}
 
+	}
+
+	public static synchronized Settings getInstance() {
+		if (uniqueInstance == null) {
+			log.setLevel(Level.WARNING);
+			uniqueInstance = new Settings();
+		}
+		return uniqueInstance;
+	}
+
+	public void readSettings() {
 		try (Scanner scan = new Scanner(settingFile)) {
 			while (scan.hasNext()) {
 				String[] s = scan.nextLine().split("=");
@@ -188,6 +193,19 @@ public class Settings {
 
 	public static String getWallpaperPath() {
 		return wallpaperPath;
+	}
+
+	public long getLastTimeWallpaperChanged() {
+		// The settings file is updated each time a wallpaper is changed
+		return settingFile.lastModified();
+	}
+
+	public void updateDate() {
+		try {
+			Files.setLastModifiedTime(settingFile.toPath(), FileTime.fromMillis(System.currentTimeMillis()));
+		} catch (IOException e) {
+			log.log(Level.WARNING, "Can't update settings file");
+		}
 	}
 
 	@Override
