@@ -35,7 +35,8 @@ I need help, I need feedbacks, I need people to tell me that they like this/disl
 - [x] Improve memory usage (was ca. 200MB) -> improved to 150MB
 - [ ] Add Linux support!
 - [ ] Add an option to search from single subreddits with specific flairs
-- [ ] Feature request: add "save" button that saves the wallpapers you like in a specific folder
+- [x] Feature request: add "save" button that saves the wallpapers you like in a specific folder
 - [ ] Feature request: add option to apply different wallpapers for different monitors
 - [ ] Consider turning the application in a service
 - [x] Feature request: add the title of the post to the image (somewhere)
+- [ ] Feature request: add blacklist option for wallpapers
