@@ -82,6 +82,7 @@ public class Background implements Runnable {
 				.replace('_', ' ')
 				.replace("OC", "")
 				.replaceAll("[^a-zA-Z0-9 ,-]", "")
+				.replaceAll("[a-zA-Z]+[0-9]+[a-zA-Z0-9]*", "")
 				.replaceAll("[0-9]?[0-9][0-9][0-9] ?[*xX] ?[0-9][0-9][0-9][0-9]?", "");
 
 	}
