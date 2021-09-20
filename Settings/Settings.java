@@ -67,10 +67,12 @@ public class Settings {
 			settingFile.getParentFile().mkdirs();
 			try {
 				settingFile.createNewFile();
+				writeSettings();
+				Files.setLastModifiedTime(settingFile.toPath(), FileTime.fromMillis(0));
 			} catch (IOException e) {
 				log.log(Level.SEVERE, "I/O error: Can't create settings file");
 			}
-			writeSettings();
+
 		}
 
 	}
