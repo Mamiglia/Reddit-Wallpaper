@@ -100,8 +100,10 @@ class Searcher {
 		for (int i=0; i<children.length(); i++) {
 			JSONObject child = children.getJSONObject(i).getJSONObject("data");
 			int score = child.getInt("score"); // # of upvotes
-			if (score < MINIMUM_NUMBER_OF_UPVOTES) {
+			boolean is_over_18 = child.getBoolean("over_18");
+			if (score < MINIMUM_NUMBER_OF_UPVOTES || (!is_over_18 && settings.getNsfwLevel() == Settings.NSFW_LEVEL.ONLY)) {
 				// when a post has too few upvotes it's skipped
+				// or if only over_18 content is allowed		- no need to check in the other sense, because the query excludes them
 				continue;
 			}
 
