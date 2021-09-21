@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 
 public class Tray {
 	private static Tray uniqueInstance;
-//	public static final String PATH_TO_TRAY_ICON = "/resources/tray_icon.png";
+	public static final String PATH_TO_TRAY_ICON = "/resources/tray_icon.png";
 //	public static final String PATH_TO_CHANGE_ICON = "/resources/change_ico.png";
 //	public static final String PATH_TO_DOWNLOAD_ICON = "/resources/download_ico.png";
 //	public static final String PATH_TO_POWER_ICON = "/resources/power_ico.png";
