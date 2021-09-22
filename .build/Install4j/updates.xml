@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <updateDescriptor baseUrl="">
-  <entry targetMediaFileId="36" updatableVersionMin="0.4" updatableVersionMax="" fileName="RW_windows-x64_1_1_1.exe" newVersion="1.1.1" newMediaFileId="36" fileSize="39659008" md5Sum="77eb40d57d420c77ff80c88a80fa8939" sha256Sum="04eedbdea293825cb901bee01ba3bd7a953d5272d0b3fb2db7b6b9f43a62e217" bundledJre="windows-amd64-11.0.11.tar.gz" archive="false" singleBundle="false">
+  <entry targetMediaFileId="36" updatableVersionMin="1.0" updatableVersionMax="" fileName="RW_windows-x64_1_1_1.exe" newVersion="1.1.1" newMediaFileId="36" fileSize="39661056" md5Sum="a462385cb0e6e89bad633d99ccfc8a37" sha256Sum="442c93777c2b67afa559c7816c9880ec9a76cf73482d99812d56f6ce644beb9f" bundledJre="windows-amd64-11.0.11.tar.gz" archive="false" singleBundle="false">
     <comment language="en" />
   </entry>
 </updateDescriptor>
