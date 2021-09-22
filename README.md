@@ -45,4 +45,4 @@ I need help, I need feedbacks, I need people to tell me that they like this/disl
 - [ ] Feature request: add option to apply different wallpapers for different monitors
 - [ ] Consider turning the application in a service
 - [x] Feature request: add the title of the post to the image (somewhere)
-- [ ] Feature request: add blacklist option for wallpapers
+- [x] Feature request: add blacklist option for wallpapers

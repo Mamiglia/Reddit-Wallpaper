@@ -1,5 +1,6 @@
 package Utils;
 
+import Settings.Settings;
 import Wallpaper.Wallpaper;
 
 import java.io.*;
@@ -18,6 +19,7 @@ class Selector implements Runnable{
     private Statement db = null;
     private boolean executed = false;
     private Wallpaper result = null;
+    private final Settings settings = Settings.getInstance();
     private final Set<Wallpaper> proposal;
 
     public Selector(Set<Wallpaper> proposal, boolean keepWallpapers, int maxDbSize) throws IOException {
@@ -40,6 +42,11 @@ class Selector implements Runnable{
 
         for (Wallpaper propWallpaper : proposal) {
             if (!oldID.contains(propWallpaper.getID())) {
+                if (settings.isBanned(propWallpaper.getID())) {
+                    // if banned the wallpaper must not be considered
+                    removeWp(propWallpaper.getID());
+                    continue;
+                }
                 log.log(Level.FINE, "Selected new wallpaper from those proposed");
                 insertDB(propWallpaper);
                 closeDB();
@@ -53,13 +60,20 @@ class Selector implements Runnable{
         } else {
             log.log(Level.INFO, "No unused wallpaper is found, setting the oldest from those found");
         }
-        try (ResultSet rs = db.executeQuery("SELECT wp FROM WALLPAPERS ORDER BY date LIMIT 1")) {
-            rs.next();
-            result = (Wallpaper) rs.getObject("wp");
-            updateDate(result);
-        } catch (SQLException throwables) {
-            log.log(Level.WARNING, "Query error in select()");
-            log.log(Level.FINEST, throwables.getMessage());
+
+        while (true) {
+            try (ResultSet rs = db.executeQuery("SELECT wp FROM WALLPAPERS ORDER BY date LIMIT 1")) {
+                rs.next();
+                result = (Wallpaper) rs.getObject("wp");
+                if (result != null && !settings.isBanned(result.getID())) {
+                    updateDate(result);
+                    break;
+                } else if (result==null) break;
+                removeWp(result.getID());
+            } catch (SQLException throwables) {
+                log.log(Level.WARNING, "DB Query error in select()");
+                log.log(Level.FINEST, throwables.getMessage());
+            }
         }
 
         if (result == null ) {
@@ -179,6 +193,16 @@ class Selector implements Runnable{
         } catch (SQLException throwables) {
             log.log(Level.SEVERE, "Query error: couldn't close the database connection");
             log.log(Level.FINEST, throwables.getMessage());
+        }
+    }
+
+    public void removeWp(String id) {
+        try (PreparedStatement p = conn.prepareStatement("DELETE FROM WALLPAPERS where id=?")) {
+            p.setString(1, id);
+            p.executeUpdate();
+            log.log(Level.FINER, () -> "Successfully deleted entry:\n" + id);
+        } catch (SQLException e) {
+            log.log(Level.WARNING, () -> "Failed to insert entry in db: " + e.getMessage());
         }
     }
 

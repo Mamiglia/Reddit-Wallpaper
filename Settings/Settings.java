@@ -8,9 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.FileTime;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,6 +27,7 @@ public class Settings {
 	private int period = 15; //mins
 	private TIME maxOldness = TIME.DAY;
 	private int maxDatabaseSize = 50;
+	private final Set<String> bannedList;
 	private boolean keepWallpapers = false; //keep wallpapers after eliminating them from db?
 	private static String wallpaperPath = "Saved-Wallpapers"; // path to wallpaper folder
 	private static final Logger log = DisplayLogger.getInstance("Settings");
@@ -50,7 +49,7 @@ public class Settings {
 
 	public enum NSFW_LEVEL {
 		NEVER(-1, "&nsfw=no"),
-		ALLOW(0, "&include_over_18=true"),
+		ALLOW(0, "&include_over_18=true&nsfw=yes"),
 		ONLY(1, "&include_over_18=true&nsfw=yes");
 
 		public final int value;
@@ -101,6 +100,7 @@ public class Settings {
 			}
 
 		}
+		bannedList = new HashSet<>();
 
 	}
 
@@ -235,6 +235,14 @@ public class Settings {
 		} catch (IOException e) {
 			log.log(Level.WARNING, "Can't update settings file");
 		}
+	}
+
+	public boolean isBanned(String id) {
+		return bannedList.contains(id);
+	}
+
+	public void addBanned(String id) {
+		bannedList.add(id);
 	}
 
 	@Override

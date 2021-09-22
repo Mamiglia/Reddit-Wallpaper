@@ -33,6 +33,10 @@ public class Background implements Runnable {
 		stopped = true;
 	}
 
+	public void banWallpaper() {
+		settings.addBanned(current.getID());
+	}
+
 	public void changeWallpaper() {
 		GetNewWallpaper g = new GetNewWallpaper(settings);
 		Thread t1 = new Thread(g);
