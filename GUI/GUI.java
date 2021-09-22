@@ -107,9 +107,6 @@ public class GUI extends JFrame{
 	}
 
 	void loadSettings() {
-		if (settings == null) {
-			log.log(Level.WARNING, "No settings file loaded");
-		}
 		titleField.setText(Arrays.toString(settings.getTitles()).replace("[", "").replace("]", ""));
 		subredditField.setText(Arrays.toString(settings.getSubreddits()).replace("[", "").replace("]", ""));
 		sortSelection.setSelectedItem(settings.getSearchBy());
@@ -120,7 +117,7 @@ public class GUI extends JFrame{
 		dbSizeField.setValue(settings.getMaxDatabaseSize());
 		keepCheckBox.setSelected(settings.doKeepWallpapers());
 		wallpaperPathText.setText(Settings.getWallpaperPath());
-
+		nsfwSlider.setValue(settings.getNsfwLevel().value);
 	}
 
 	void changeWallpaper() {
