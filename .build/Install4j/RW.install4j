@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="9.0.4" transformSequenceNumber="9">
-  <directoryPresets config="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/icons" />
+  <directoryPresets config="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/RW.sh" />
   <application name="Reddit-Wallpaper" applicationId="8546-4710-8370-9653" mediaDir="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/Install4j" shortName="RW" publisher="Mamiglia@GuySittingInFrontOfComputerAllDay" publisherWeb="https://github.com/Mamiglia" version="1.1" macVolumeId="d9e0d729036b5893">
     <jreBundles jdkProviderId="AdoptOpenJDK" release="11/latest">
       <modules>
@@ -15,23 +15,39 @@
     </filesets>
     <roots>
       <root id="163" fileset="162" />
-      <root id="159" fileset="162" location="${installer:sys.userHome}/.config/autostart/" />
     </roots>
     <mountPoints>
       <mountPoint id="24" />
+      <mountPoint id="441" location="utility" />
       <mountPoint id="164" root="163" />
-      <mountPoint id="165" root="159" />
+      <mountPoint id="442" root="163" location="utility" />
     </mountPoints>
     <entries>
       <fileEntry mountPoint="24" file="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/out/artifacts/Reddit_Wallpaper_jar/Reddit-Wallpaper.jar" overwriteMode="3" overrideOverwriteMode="true" />
       <fileEntry mountPoint="24" file="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/LICENSE.txt" />
       <fileEntry mountPoint="164" file="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/LICENSE.txt" />
       <fileEntry mountPoint="164" file="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/out/artifacts/Reddit_Wallpaper_jar/Reddit-Wallpaper.jar" overwriteMode="3" overrideOverwriteMode="true" />
-      <fileEntry mountPoint="165" file="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/RW.desktop" />
     </entries>
   </files>
   <launchers>
-    <launcher name="${compiler:sys.shortName}" id="51" excludeFromMenu="true">
+    <launcher name="Win Launcher" id="51" excludeFromMenu="true">
+      <executable name="${compiler:sys.shortName}" iconSet="true" iconFile="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/icons/icon.ico" stderrFile="utility/out.log" executableMode="gui" singleInstance="true">
+        <versionInfo include="true" fileDescription="${compiler:sys.fullName} ${compiler:sys.version} - ${compiler:sys.timestamp}" legalCopyright="MIT @ ${compiler:sys.publisher}" internalName="${compiler:sys.shortName}" />
+      </executable>
+      <java mainClass="Main.Main">
+        <classPath>
+          <archive location="Reddit-Wallpaper.jar" />
+        </classPath>
+      </java>
+      <iconImageFiles>
+        <file path="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/icons/ico16.png" />
+        <file path="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/icons/ico32.png" />
+        <file path="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/icons/ico128.png" />
+        <file path="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/icons/ico256.png" />
+        <file path="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/icons/ico512.png" />
+      </iconImageFiles>
+    </launcher>
+    <launcher name="Unix Launcher" id="433" excludeFromMenu="true" fileset="162">
       <executable name="${compiler:sys.shortName}" iconSet="true" iconFile="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/icons/icon.ico" stderrFile="utility/out.log" executableMode="gui" singleInstance="true">
         <versionInfo include="true" fileDescription="${compiler:sys.fullName} ${compiler:sys.version} - ${compiler:sys.timestamp}" legalCopyright="MIT @ ${compiler:sys.publisher}" internalName="${compiler:sys.shortName}" />
       </executable>
@@ -51,7 +67,7 @@
   </launchers>
   <installerGui autoUpdateDescriptorUrl="https://raw.githubusercontent.com/Mamiglia/Reddit-Wallpaper/main/.build/Install4j/updates.xml">
     <laf darkModeStrategy="dark" />
-    <autoUpdate useMinUpdatableVersion="true" minUpdatableVersion="0.4" />
+    <autoUpdate useMinUpdatableVersion="true" minUpdatableVersion="1.0" />
     <applications>
       <application id="installer" beanClass="com.install4j.runtime.beans.applications.InstallerApplication">
         <startup>
@@ -263,9 +279,15 @@ SOFTWARE.
           </screen>
           <screen id="20" beanClass="com.install4j.runtime.beans.screens.FinishedScreen" styleId="7" rollbackBarrierExitCode="0" finishScreen="true">
             <actions>
-              <action id="65" beanClass="com.install4j.runtime.beans.actions.finish.ExecuteLauncherAction" actionElevationType="none" rollbackBarrierExitCode="0">
+              <action name="Execute Launcher Win" id="65" beanClass="com.install4j.runtime.beans.actions.finish.ExecuteLauncherAction" actionElevationType="none" rollbackBarrierExitCode="0" failureStrategy="askRetryQuit">
                 <serializedBean>
                   <property name="launcherId" type="string">51</property>
+                </serializedBean>
+                <condition>context.getBooleanVariable("executeLauncherAction") &amp;&amp; (!context.isUnattended())</condition>
+              </action>
+              <action name="Execute Launcher Unix" id="443" beanClass="com.install4j.runtime.beans.actions.finish.ExecuteLauncherAction" actionElevationType="none" rollbackBarrierExitCode="0" failureStrategy="askRetryQuit">
+                <serializedBean>
+                  <property name="launcherId" type="string">433</property>
                 </serializedBean>
                 <condition>context.getBooleanVariable("executeLauncherAction") &amp;&amp; (!context.isUnattended())</condition>
               </action>
@@ -279,15 +301,18 @@ SOFTWARE.
                   <property name="name" type="string">Reddit-Wallpaper</property>
                 </serializedBean>
               </action>
-              <action id="157" beanClass="com.install4j.runtime.beans.actions.text.ReplaceInstallerVariablesAction" actionElevationType="elevated" rollbackBarrierExitCode="0">
+              <action name="Startup Unix" id="451" beanClass="com.install4j.runtime.beans.actions.text.WriteTextFileAction" actionElevationType="elevated" rollbackBarrierExitCode="0">
                 <serializedBean>
-                  <property name="files" type="array" class="java.io.File" length="1">
-                    <element index="0">
-                      <object class="java.io.File">
-                        <string>${installer:sys.userHome}/.config/autostart/RW.desktop</string>
-                      </object>
-                    </element>
+                  <property name="append" type="boolean" value="true" />
+                  <property name="file">
+                    <object class="java.io.File">
+                      <string>${installer:sys.userHome}/.profile</string>
+                    </object>
                   </property>
+                  <property name="text" type="string">
+# autostart Reddit-Wallpaper
+cd ${installer:sys.installationDir}
+sh ${compiler:sys.shortName}</property>
                 </serializedBean>
               </action>
             </actions>
@@ -381,7 +406,7 @@ return console.askYesNo(message, true);
           </screen>
         </screens>
       </application>
-      <application name="Update downloader with silent version check" id="77" beanClass="com.install4j.runtime.beans.applications.CustomApplication" automaticLauncherIntegration="true">
+      <application name="Update downloader with silent version check" id="77" beanClass="com.install4j.runtime.beans.applications.CustomApplication" automaticLauncherIntegration="true" launchMode="startupSync" launchSchedule="always">
         <serializedBean>
           <property name="customIconImageFiles">
             <add>
@@ -1133,20 +1158,50 @@ return true;</property>
     </styles>
   </installerGui>
   <mediaSets>
-    <windows name="Windows" id="36" installDir="${compiler:sys.fullName}" customInstallBaseDir="${installer:sys.programDataDir}">
+    <windows name="Windows 64" id="36" installDir="${compiler:sys.fullName}" customInstallBaseDir="${installer:sys.programDataDir}">
+      <excludedLaunchers>
+        <launcher id="433" />
+      </excludedLaunchers>
+      <excludedBeans>
+        <bean refId="443" />
+        <bean refId="451" />
+      </excludedBeans>
       <exclude>
         <entry filesetId="162" />
       </exclude>
       <jreBundle installOnlyIfNecessary="true" />
       <autoUpdate minUpdatableVersion="0.4" />
     </windows>
-    <unixInstaller name="Unix Installer" id="144" installDir=".${compiler:sys.shortName}">
+    <unixInstaller name="Unix Installer" id="144" installDir=".${compiler:sys.shortName}" customInstallBaseDir="${installer:sys.userHome}">
+      <excludedLaunchers>
+        <launcher id="51" />
+      </excludedLaunchers>
+      <excludedBeans>
+        <bean refId="65" />
+        <bean refId="67" />
+      </excludedBeans>
       <exclude>
         <entry defaultFileset="true" />
       </exclude>
     </unixInstaller>
+    <windows name="Windows 32" id="196" installDir="${compiler:sys.fullName}" jreBitType="32" customInstallBaseDir="${installer:sys.programDataDir}">
+      <excludedLaunchers>
+        <launcher id="433" />
+      </excludedLaunchers>
+      <excludedBeans>
+        <bean refId="443" />
+        <bean refId="451" />
+      </excludedBeans>
+      <exclude>
+        <entry filesetId="162" />
+      </exclude>
+      <jreBundle installOnlyIfNecessary="true" />
+      <autoUpdate minUpdatableVersion="0.4" />
+    </windows>
   </mediaSets>
   <buildIds buildAll="false">
     <mediaSet refId="36" />
+    <mediaSet refId="144" />
+    <mediaSet refId="196" />
   </buildIds>
 </install4j>
