@@ -2,7 +2,6 @@ package Utils;
 
 import Settings.Settings;
 import Wallpaper.Wallpaper;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -111,6 +110,8 @@ class Searcher {
 			String title = child.getString("title");
 			String permalink = child.getString("permalink");
 			String id = child.getString("id");
+
+
 
 			if (child.keySet().contains("crosspost_parent_list")) {
 				// some posts are crossposts

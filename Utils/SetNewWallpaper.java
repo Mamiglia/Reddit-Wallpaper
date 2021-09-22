@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 import com.sun.jna.win32.*;
 
 public class SetNewWallpaper implements Runnable {
-    private final static Logger log = DisplayLogger.getInstance("SetNewWallpaper");
+    static private final Logger log = DisplayLogger.getInstance("SetNewWallpaper");
     private boolean executed = false;
     private final Wallpaper wp;
 
