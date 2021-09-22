@@ -40,7 +40,7 @@ public class SetNewWallpaper implements Runnable {
             case "Linux":
                 String de = identifyDE();
                 if (de == null) {
-                    log.log(Level.SEVERE, "Couldn't identify your Desktop Environment");
+                    log.log(Level.SEVERE, String.format("Couldn't identify your Desktop Environment: {0}, {1}", System.getenv("XDG_CURRENT_DESKTOP"), System.getenv("$GDM_SESSION")));
                     break;
                 }
 

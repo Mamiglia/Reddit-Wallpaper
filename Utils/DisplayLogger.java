@@ -24,10 +24,9 @@ public class DisplayLogger {
                 Formatter formatter = new Formatter() {
                     @Override
                     public String format(LogRecord record) {
-                        StringBuilder strb = new StringBuilder();
-                        strb.append(record.getLevel()).append(": ");
-                        strb.append(record.getMessage()).append("\n");
-                        return strb.toString();
+                        String strb = record.getLevel() + ": " +
+                                record.getMessage() + "\n";
+                        return strb;
                     }
                 };
                 fh.setFormatter(formatter);
