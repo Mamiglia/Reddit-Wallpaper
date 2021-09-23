@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <updateDescriptor baseUrl="">
-  <entry targetMediaFileId="36" updatableVersionMin="1.0" updatableVersionMax="" fileName="RW_windows-x64_1_1.exe" newVersion="1.1" newMediaFileId="36" fileSize="39662592" md5Sum="d3d8d936dd8e41b2df35d5dd246a688b" sha256Sum="f90ac073b2a5ec4692c3e96c8b35705fb1d3635f2a61f92b1eadd36610f7b28b" bundledJre="windows-amd64-11.0.11.tar.gz" archive="false" singleBundle="false">
+  <entry targetMediaFileId="36" updatableVersionMin="1.0" updatableVersionMax="" fileName="RW_windows-x64_1_1.exe" newVersion="1.1" newMediaFileId="36" fileSize="39662080" md5Sum="2d5c59bcb8a5282d854fe6321bda1fc5" sha256Sum="4f3a6aa479efeb71f62e6b17230ed41da3eb0155d202be0fe9c299e2cf03dc4f" bundledJre="windows-amd64-11.0.11.tar.gz" archive="false" singleBundle="false">
     <comment language="en" />
   </entry>
-  <entry targetMediaFileId="144" updatableVersionMin="1.0" updatableVersionMax="" fileName="RW_unix_1_1.sh" newVersion="1.1" newMediaFileId="144" fileSize="39921430" md5Sum="ed1fe9729af8df4adbe1b8faec62d794" sha256Sum="43b36897c1e7991e10ad0154c10c1dd19077b6d7911dae1a6b10c9f17c88b8b5" bundledJre="linux-amd64-11.0.11.tar.gz" archive="false" singleBundle="false">
+  <entry targetMediaFileId="144" updatableVersionMin="1.0" updatableVersionMax="" fileName="RW_unix_1_1.sh" newVersion="1.1" newMediaFileId="144" fileSize="39920749" md5Sum="9a1213ea074450f4d167eaac2c23b2ec" sha256Sum="6feafb1aaa0de0b0020fcc5e80a17c3aaae19ef1ace3ecdf344d9eb547a8c8e9" bundledJre="linux-amd64-11.0.11.tar.gz" archive="false" singleBundle="false">
     <comment language="en" />
   </entry>
-  <entry targetMediaFileId="196" updatableVersionMin="1.0" updatableVersionMax="" fileName="RW_windows-x32_1_1.exe" newVersion="1.1" newMediaFileId="196" fileSize="37453312" md5Sum="8957d3a91d98be9290db94ebf0707bc9" sha256Sum="aebaa6060697412341c56441779a3ed99289e4f1d9bbeeb3fcb0fd55277b9c67" bundledJre="windows-x86-11.0.12.tar.gz" archive="false" singleBundle="false">
+  <entry targetMediaFileId="196" updatableVersionMin="1.0" updatableVersionMax="" fileName="RW_windows-x32_1_1.exe" newVersion="1.1" newMediaFileId="196" fileSize="37452800" md5Sum="c3231d3c9bc5b3c6f2053fbe294cd4a0" sha256Sum="c16778405545ac5e6f2b1d03a20ebc9885c537a3d8d425fa7dab56db13a81fef" bundledJre="windows-x86-11.0.12.tar.gz" archive="false" singleBundle="false">
     <comment language="en" />
   </entry>
 </updateDescriptor>

@@ -17,10 +17,10 @@
       <root id="163" fileset="162" />
     </roots>
     <mountPoints>
-      <mountPoint id="24" />
       <mountPoint id="441" location="utility" />
-      <mountPoint id="164" root="163" />
+      <mountPoint id="24" />
       <mountPoint id="442" root="163" location="utility" />
+      <mountPoint id="164" root="163" />
     </mountPoints>
     <entries>
       <fileEntry mountPoint="24" file="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/out/artifacts/Reddit_Wallpaper_jar/Reddit-Wallpaper.jar" overwriteMode="3" overrideOverwriteMode="true" />
@@ -1179,6 +1179,7 @@ return true;</property>
       <excludedBeans>
         <bean refId="65" />
         <bean refId="67" />
+        <bean refId="451" />
       </excludedBeans>
       <exclude>
         <entry defaultFileset="true" />
