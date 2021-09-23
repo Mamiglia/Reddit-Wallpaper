@@ -171,7 +171,7 @@ public class GUI extends JFrame{
 	}
 
 	private void createUIComponents() {
-		SpinnerNumberModel s = new SpinnerNumberModel(15, 0, 10000, 1);
+		SpinnerNumberModel s = new SpinnerNumberModel(15, 0, 1000000, 1);
 		periodField = new JSpinner(s);
 		s = new SpinnerNumberModel(1080, 0, 10000, 1);
 		heightField = new JSpinner(s);
@@ -205,7 +205,6 @@ public class GUI extends JFrame{
 		settings.setWallpaperPath(directory.toString() + File.separator);
 		loadSettings();
 	}
-
 
 	public static void setLookFeel() {
 		try {
