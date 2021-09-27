@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <updateDescriptor baseUrl="">
-  <entry targetMediaFileId="36" updatableVersionMin="1.0" updatableVersionMax="" fileName="RW_windows-x64_1_1.exe" newVersion="1.1" newMediaFileId="36" fileSize="39662080" md5Sum="2d5c59bcb8a5282d854fe6321bda1fc5" sha256Sum="4f3a6aa479efeb71f62e6b17230ed41da3eb0155d202be0fe9c299e2cf03dc4f" bundledJre="windows-amd64-11.0.11.tar.gz" archive="false" singleBundle="false">
-    <comment language="en" />
+  <entry targetMediaFileId="36" updatableVersionMin="1.0" updatableVersionMax="" fileName="RW_windows-x64_1_1_1.exe" newVersion="1.1.1" newMediaFileId="36" fileSize="39662080" md5Sum="f7993ed9222cf11196b453e6215c7c6e" sha256Sum="d52a5bd93fc7b25ba99d6a710d6be9abd03635137c5cfeb5e7d33953899277c0" bundledJre="windows-amd64-11.0.11.tar.gz" archive="false" singleBundle="false">
+    <comment language="en">[1.1.1 - 27/09/2021]
+ - Fix: GUI limiting period selector
+ - Fix: nsfwSlider doesn't stay in position </comment>
   </entry>
-  <entry targetMediaFileId="144" updatableVersionMin="1.0" updatableVersionMax="" fileName="RW_unix_1_1.sh" newVersion="1.1" newMediaFileId="144" fileSize="39920749" md5Sum="9a1213ea074450f4d167eaac2c23b2ec" sha256Sum="6feafb1aaa0de0b0020fcc5e80a17c3aaae19ef1ace3ecdf344d9eb547a8c8e9" bundledJre="linux-amd64-11.0.11.tar.gz" archive="false" singleBundle="false">
-    <comment language="en" />
+  <entry targetMediaFileId="144" updatableVersionMin="1.0" updatableVersionMax="" fileName="RW_unix_1_1_1.sh" newVersion="1.1.1" newMediaFileId="144" fileSize="39920838" md5Sum="8c120dee424b5af8e000bef82c3b1087" sha256Sum="8ac2e3fdeaf2282c9546b057e17e2cfbae4edc66f257426fa44cca04e26ae3cf" bundledJre="linux-amd64-11.0.11.tar.gz" archive="false" singleBundle="false">
+    <comment language="en">[1.1.1 - 27/09/2021]
+ - Fix: GUI limiting period selector
+ - Fix: nsfwSlider doesn't stay in position </comment>
   </entry>
-  <entry targetMediaFileId="196" updatableVersionMin="1.0" updatableVersionMax="" fileName="RW_windows-x32_1_1.exe" newVersion="1.1" newMediaFileId="196" fileSize="37452800" md5Sum="c3231d3c9bc5b3c6f2053fbe294cd4a0" sha256Sum="c16778405545ac5e6f2b1d03a20ebc9885c537a3d8d425fa7dab56db13a81fef" bundledJre="windows-x86-11.0.12.tar.gz" archive="false" singleBundle="false">
-    <comment language="en" />
+  <entry targetMediaFileId="196" updatableVersionMin="1.0" updatableVersionMax="" fileName="RW_windows-x32_1_1_1.exe" newVersion="1.1.1" newMediaFileId="196" fileSize="37452800" md5Sum="1afb1294b34ce4f6d4ba2f3f32c9a4c4" sha256Sum="c19f429dab52307daa9f310ab92bcef6c8e3c28d029dbcccf937c1bf7d78a6c7" bundledJre="windows-x86-11.0.12.tar.gz" archive="false" singleBundle="false">
+    <comment language="en">[1.1.1 - 27/09/2021]
+ - Fix: GUI limiting period selector
+ - Fix: nsfwSlider doesn't stay in position </comment>
   </entry>
 </updateDescriptor>
