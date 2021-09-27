@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="9.0.4" transformSequenceNumber="9">
-  <directoryPresets config="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/RW.sh" />
-  <application name="Reddit-Wallpaper" applicationId="8546-4710-8370-9653" mediaDir="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/Install4j" shortName="RW" publisher="Mamiglia@GuySittingInFrontOfComputerAllDay" publisherWeb="https://github.com/Mamiglia" version="1.1" macVolumeId="d9e0d729036b5893">
+  <directoryPresets config="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build" />
+  <application name="Reddit-Wallpaper" applicationId="8546-4710-8370-9653" mediaDir="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/Install4j" shortName="RW" publisher="Mamiglia@GuySittingInFrontOfComputerAllDay" publisherWeb="https://github.com/Mamiglia" version="1.1.1" macVolumeId="d9e0d729036b5893">
     <jreBundles jdkProviderId="AdoptOpenJDK" release="11/latest">
       <modules>
         <defaultModules set="minimum" />
@@ -67,7 +67,11 @@
   </launchers>
   <installerGui autoUpdateDescriptorUrl="https://raw.githubusercontent.com/Mamiglia/Reddit-Wallpaper/main/.build/Install4j/updates.xml">
     <laf darkModeStrategy="dark" />
-    <autoUpdate useMinUpdatableVersion="true" minUpdatableVersion="1.0" />
+    <autoUpdate useMinUpdatableVersion="true" minUpdatableVersion="1.0">
+      <commentFiles>
+        <file location="C:/Users/Archimede/Documents/GitHub/Reddit-Wallpaper/.build/changelog.txt" languageId="en" />
+      </commentFiles>
+    </autoUpdate>
     <applications>
       <application id="installer" beanClass="com.install4j.runtime.beans.applications.InstallerApplication">
         <startup>
