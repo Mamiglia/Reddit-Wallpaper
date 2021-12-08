@@ -39,8 +39,13 @@ class Searcher {
 				//removed this line from generateQuery() as it now gets inserted before titles. %20OR%20 format will not be used for subreddits with this solution
 						+ String.join("+", settings.getSubreddits()).replace("  ", "") //@Mamiglia please check if this should work
 						+ "/search.json?q="
-						+ generateQuery()
-						+ "&self:no" //this means no text-only posts
+						;
+		//checks to see if titles need to be included in search
+		if (settings.getTitles().equals(null)) {
+			searchQuery += generateQuery() + "&";
+		}
+		searchQuery +=
+				"self:no" //this means no text-only posts
 						+ "&sort=" + settings.getSearchBy().value //how to sort them (hot, new ...)
 						+ "&limit=" + QUERY_SIZE //how many posts
 						+ "&t=" + settings.getMaxOldness().value //how old can a post be at most
