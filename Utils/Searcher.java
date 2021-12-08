@@ -33,13 +33,19 @@ class Searcher {
 	 */
 	void generateSearchQuery() {
 		searchQuery =
-				"https://reddit.com/search.json?"
-						+ "q=" + generateQuery()
+		//Query now builds a multisub out of listed subreddits, this should prevent issues with very large lists of subs
+				"https://reddit.com/r/"
+
+				//removed this line from generateQuery() as it now gets inserted before titles. %20OR%20 format will not be used for subreddits with this solution
+						+ String.join("+", settings.getSubreddits()).replace("  ", "") //@Mamiglia please check if this should work
+						+ "/search.json?q="
+						+ generateQuery()
+						+ "&self:no" //this means no text-only posts
 						+ "&sort=" + settings.getSearchBy().value //how to sort them (hot, new ...)
 						+ "&limit=" + QUERY_SIZE //how many posts
 						+ "&t=" + settings.getMaxOldness().value //how old can a post be at most
 						+ "&type=t3" //only link type posts, no text-only
-						+ "&restrict_sr=true" //i don't think it's useful but still have to figure out what it does
+						+ "&restrict_sr=true" //i don't think it's useful but still have to figure out what it does (restricts results to SubReddit)
 						+ settings.getNsfwLevel().query
 		;
 		log.log(Level.INFO, () -> "Search Query is: "+ searchQuery);
@@ -50,13 +56,12 @@ class Searcher {
 		String s =
 				"title:("
 						+ String.join(" OR ", settings.getTitles()).replace("  ", " ")
-						+ ")+subreddit:("
-						+ String.join(" OR ", settings.getSubreddits()).replace("  ", " ")
+						//+ ")+subreddit:("
+						//+ String.join(" OR ", settings.getSubreddits()).replace("  ", " ")
 						+ ")"
-						+ "+self:no" //this means no text-only posts
 				// TODO add flairs?
 				;
-		s = s.replace("title:()+", "").replace("subreddits:()+", "");
+		s = s.replace("title:()+", "")//.replace("subreddits:()+", "");
 		//Removes title and subreddit field if they are void
 		//What happens if some dumbhead tries to put as keyword to search "title:() " or "subreddits:() "? Will it just break the program? Is this some sort of hijackable thing?
 		//I don't know for I myself am too dumb
