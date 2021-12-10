@@ -32,8 +32,8 @@ class Searcher {
 	 * It generates a search query for reddit query API
 	 */
 	void generateSearchQuery() {
-		String temp = ""; //temporary holder for title or flair portion of query
-		String test = ""; // populated to test if the hold field had anything added from getTitles() or getFlair()
+		String temp; //temporary holder for title or flair portion of query
+		String test = ""; // populated to test if the temp field has anything added from getTitles() or getFlair()
 
 		searchQuery =
 		//Query now builds a multisub out of listed subreddits, this should prevent issues with very large lists of subs
@@ -43,40 +43,30 @@ class Searcher {
 			searchQuery += temp + "/";
 		}
 		searchQuery += "search.json?q=";
-		for (int i = 0; i < 2; i++) {
-			temp = ""; // reset temp and test variables for the loop
-			test = "";
-			if (i==0) {
-				test = "title:(";
-			}
-			else {
-				test = "flair:(";
-			}
-			temp += test; //puts the start of the query into hold variable
-			test += ")&"; //finishes the testing string
 
-			if(i==0) {
-				//build temp string with title data
-				temp += String.join(" OR ", settings.getTitles()).replace("  ", " ");
-			} //no need to force %20 format as the reddit api changes space to %20 naturally
-			else {
-				//build temp string with flair data
+		for (int i = 0; i < 2; i++) { // this loop should only ever run twice per wallpaper change
+			if (i == 0) {// && !test.equals(temp)) { // if this is the first loop and the titles string isn't empty
+				// build temp string with title data for first loop
+				temp = String.join(" OR ", settings.getTitles()).replace("  ", " ");
+				if (!temp.equals(test)) {
+					searchQuery += "title:(" + temp + ")&";
+				}
+
+			}
+			else if (i == 1) { // if this is the second loop and the flair string isn't empty
+				// build temp string with flair data for second loop
+				temp = String.join("\" OR \"", settings.getFlair()).replace("  ", " ");
+				if (!temp.equals(test)) {
+
+					searchQuery += "flair:(\"" + temp + "\")&";
+				}
 				/* A note on flairs:
 					Flairs can be mulitword if they are wrapped in quotation marks. This code should work
 					for any single word flairs but extra work would need to be put in to handle multiword flairs.
-					TODO finish flair implementation. Does not currently read or write from the settings file and I'm lost in the code for it -Iinfragon
-				 */
-				temp += String.join(" OR ", settings.getFlair()).replace("  ", " ");
-				//temp += "\"I made this\""; //todo remover after testing
+					TODO finish flair implementation -Iinfragon
+				*/
 			}
-			temp += ")&"; //append standard closing to temp string
-
-			if (temp.equals(test)) { //if no title or flair data is added, skip to next loop
-				continue;
-			}
-			else { //otherwise, add it to the searchQuery
-				searchQuery += temp;
-			}
+			else break;
 
 		}
 
@@ -89,6 +79,12 @@ class Searcher {
 						+ "&restrict_sr=true" //restrict results to defined subreddits (leave on true)
 						+ settings.getNsfwLevel().query
 		;
+		searchQuery = searchQuery.replace("flair:()&", "");
+		searchQuery = searchQuery.replace("title:()&", "");
+		//Removes title and flair field if they are void and somehow made it in
+		//What happens if some dumbhead tries to put as keyword to search "title:() " or "flair:() "? Will it just break the program? Is this some sort of hijackable thing?
+		//I don't know for I myself am too dumb - Don't be so hard on yourself <3
+
 		log.log(Level.INFO, () -> "Search Query is: "+ searchQuery);
 	}
 /*	Removed this portion for now as it is all handled above - Iinfragon
