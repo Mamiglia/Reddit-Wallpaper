@@ -19,6 +19,7 @@ public class Settings {
 	public static final String PATH_TO_DATABASE = "utility/db";
 	private final File settingFile = new File(PATH_TO_SAVEFILE);
 	private String[] titles = {};
+	private String[] flair ={};
 	private String[] subreddits = {"wallpaper", "wallpapers"};
 	private SEARCH_BY searchBy = SEARCH_BY.HOT;
 	private NSFW_LEVEL nsfwLevel = NSFW_LEVEL.ALLOW;
@@ -148,6 +149,14 @@ public class Settings {
 		this.titles = titles;
 	}
 
+	public String[] getFlair() {
+		return flair;
+	}
+
+	public void setFlair(String[] flair) {
+		this.flair = flair;
+	}
+
 	public String[] getSubreddits() {
 		return subreddits;
 	}
@@ -249,6 +258,7 @@ public class Settings {
 	public String toString() {
 		return "titles=" + Arrays.toString(titles) +
 				"\nsubreddits=" + Arrays.toString(subreddits) +
+				"\nflair=" + Arrays.toString(flair) +
 				"\nsearchBy=" + searchBy +
 				"\nnsfwLevel=" + nsfwLevel.value +
 				"\nheight=" + height +
@@ -288,6 +298,9 @@ public class Settings {
 				break;
 			case "subreddits":
 				subreddits = split;
+				break;
+			case "flair":
+				flair = split;
 				break;
 			case "searchBy":
 				searchBy = SEARCH_BY.valueOf(value);
