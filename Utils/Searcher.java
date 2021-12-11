@@ -19,7 +19,7 @@ class Searcher {
 	private static final int MINIMUM_NUMBER_OF_UPVOTES = 15; // Number to not pick indecent wallpapers. This number is completely arbitrary, but it should be sufficient
 
 	private final Settings settings;
-	private String searchQuery;
+	private String searchQuery = "";
 	private Set<Wallpaper> proposed;
 	private static final Logger log = DisplayLogger.getInstance("Searcher");
 	private static final int QUERY_SIZE = 50;
@@ -32,18 +32,42 @@ class Searcher {
 	 * It generates a search query for reddit query API
 	 */
 	void generateSearchQuery() {
+		String temp; //temporary holder for title or flair portion of query
+		String test = ""; // populated to test if the temp field has anything added from getTitles() or getFlair()
+
 		searchQuery =
 		//Query now builds a multisub out of listed subreddits, this should prevent issues with very large lists of subs
-				"https://reddit.com/r/"
+				"https://reddit.com/r/";
+		temp = String.join("+", settings.getSubreddits()).replace(" ", ""); //@Mamiglia please check if this should work
+		if (!test.equals(temp)) {
+			searchQuery += temp + "/";
+		}
+		searchQuery += "search.json?q=";
 
-				//removed this line from generateQuery() as it now gets inserted before titles. %20OR%20 format will not be used for subreddits with this solution
-						+ String.join("+", settings.getSubreddits()).replace("  ", "") //@Mamiglia please check if this should work
-						+ "/search.json?q="
-						;
+		for (int i = 0; i < 2; i++) { // this loop should only ever run twice per wallpaper change
+			if (i == 0) {// && !test.equals(temp)) { // if this is the first loop and the titles string isn't empty
+				// build temp string with title data for first loop
+				temp = String.join(" OR ", settings.getTitles()).replace("  ", " ");
+				if (!temp.equals(test)) {
+					searchQuery += "title:(" + temp + ")&";
+				}
 
-		//checks to see if titles need to be included in search
-		if (settings.getTitles().equals(null)) {
-			searchQuery += generateQuery() + "&";
+			}
+			else if (i == 1) { // if this is the second loop and the flair string isn't empty
+				// build temp string with flair data for second loop
+				temp = String.join("\" OR \"", settings.getFlair()).replace("  ", " ");
+				if (!temp.equals(test)) {
+
+					searchQuery += "flair:(\"" + temp + "\")&";
+				}
+				/* A note on flairs:
+					Flairs can be mulitword if they are wrapped in quotation marks. This code should work
+					for any single word flairs but extra work would need to be put in to handle multiword flairs.
+					TODO finish flair implementation -Iinfragon
+				*/
+			}
+			else break;
+
 		}
 
 		searchQuery +=
@@ -52,11 +76,18 @@ class Searcher {
 						+ "&limit=" + QUERY_SIZE //how many posts
 						+ "&t=" + settings.getMaxOldness().value //how old can a post be at most
 						+ "&type=t3" //only link type posts, no text-only
-						+ "&restrict_sr=true" //i don't think it's useful but still have to figure out what it does (restricts results to SubReddit)
+						+ "&restrict_sr=true" //restrict results to defined subreddits (leave on true)
 						+ settings.getNsfwLevel().query
 		;
+		searchQuery = searchQuery.replace("flair:()&", "");
+		searchQuery = searchQuery.replace("title:()&", "");
+		//Removes title and flair field if they are void and somehow made it in
+		//What happens if some dumbhead tries to put as keyword to search "title:() " or "flair:() "? Will it just break the program? Is this some sort of hijackable thing?
+		//I don't know for I myself am too dumb - Don't be so hard on yourself <3
+
 		log.log(Level.INFO, () -> "Search Query is: "+ searchQuery);
 	}
+/*	Removed this portion for now as it is all handled above - Iinfragon
 
 	private String generateQuery() {
 		//Could be inserted in the other?
@@ -65,15 +96,15 @@ class Searcher {
 						+ String.join(" OR ", settings.getTitles()).replace("  ", " ")
 						//+ ")+subreddit:("
 						//+ String.join(" OR ", settings.getSubreddits()).replace("  ", " ")
-						+ ")"
+						+ ")&"
 				// TODO add flairs?
 				;
-		s = s.replace("title:()+", "");//.replace("subreddits:()+", "");
+		s = s.replace("title:()&", "");//.replace("subreddits:()+", "");
 		//Removes title and subreddit field if they are void
 		//What happens if some dumbhead tries to put as keyword to search "title:() " or "subreddits:() "? Will it just break the program? Is this some sort of hijackable thing?
-		//I don't know for I myself am too dumb
+		//I don't know for I myself am too dumb - Don't be so hard on yourself <3
 		return encodeURL(s);
-	}
+	}*/
 
 	/**
 	 * Manages the connection, connects to reddit, download the whole JSON, and refines it to make it useful
