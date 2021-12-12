@@ -26,7 +26,9 @@ public class GUI extends JFrame{
 	private JPanel settingPane;
 	private JPanel titlePane;
 	private JPanel subredditPane;
+	private JPanel flairPane;
 	private JTextField subredditField;
+	private JTextField flairField;
 	private JComboBox<SEARCH_BY> sortSelection;
 	private JTextArea logArea;
 	private JButton applyButton;
@@ -46,6 +48,7 @@ public class GUI extends JFrame{
 	private JTextField wallpaperPathText;
 	private JButton changeDirectoryButton;
 	private JSlider nsfwSlider;
+	private String regex = new String("(?<=,|\\A)\\s+(?=[\\w ]+\\b)|(?<=[\\w ]+\\b)\\s+(?=,|\\Z)");
 	static final Logger log = DisplayLogger.getInstance("GUI");
 	private final Act act;
 	private final Settings settings = Settings.getInstance();
@@ -92,8 +95,25 @@ public class GUI extends JFrame{
 	}
 
 	void saveSettings() {
-		settings.setTitles(titleField.getText().replace(" ", "").split(","));
-		settings.setSubreddits(subredditField.getText().replace(" ", "").split(","));
+		// instead of looking for and replacing space or double space, just remove all white space characters
+		// subreddits shouldn't have spaces anyway so I don't see it as being a potential issue
+		settings.setTitles(titleField.getText().replaceAll("\\s+", "").split(","));
+		settings.setSubreddits(subredditField.getText().replaceAll("\\s+", "").split(","));
+
+		/* regex: moved into variable for reuse if needed
+			(?<=,|\A)	look for comma OR the beginning of a string
+			\\s+		followed by any amount of white space which will be replaced
+			(?=[\w ]+\b)followed by any number or combination of alphanumeric characters and spaces, followed by
+							a word boundary
+						OR
+			(?<=[\w ]+\b)look for any combination of alphanumeric characters and spaces, followed by a word boundary
+			\\s+ 		followed by any amount of white space which will be replaced
+			(?=,|\Z) 	followed by a comma OR the end of a string
+
+		this allows for a comma separated list of flairs, including multiword flairs. Flairs can partially match
+		EG art will match with flairs art, fanart, fan art, fart, kart, etc. TODO Probably not an issue?
+		*/
+		settings.setFlair(flairField.getText().replaceAll(regex, "").split(","));
 		settings.setNsfwLevel(nsfwSlider.getValue());
 		settings.setHeight((int) heightField.getValue());
 		settings.setWidth((int) widthField.getValue());
@@ -109,6 +129,7 @@ public class GUI extends JFrame{
 	void loadSettings() {
 		titleField.setText(Arrays.toString(settings.getTitles()).replace("[", "").replace("]", ""));
 		subredditField.setText(Arrays.toString(settings.getSubreddits()).replace("[", "").replace("]", ""));
+		flairField.setText(Arrays.toString(settings.getFlair()).replace("[", "").replace("]", ""));
 		sortSelection.setSelectedItem(settings.getSearchBy());
 		heightField.setValue(settings.getHeight());
 		widthField.setValue(settings.getWidth());
