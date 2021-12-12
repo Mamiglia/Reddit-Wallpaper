@@ -35,25 +35,26 @@ class Searcher {
 		String temp; //temporary holder for title or flair portion of query
 		String test = ""; // populated to test if the temp field has anything added from getTitles() or getFlair()
 
-		searchQuery =
-		//Query now builds a multisub out of listed subreddits, this should prevent issues with very large lists of subs
+ 		searchQuery =
+				//Query now builds a multisub out of listed subreddits, this should prevent issues with very large lists of subs
 				"https://reddit.com/r/";
-		temp = String.join("+", settings.getSubreddits()).replace(" ", ""); //@Mamiglia please check if this should work
-		if (!test.equals(temp)) {
+
+		temp = String.join("+", settings.getSubreddits()).replace(" ", "");
+		if (!temp.equals(test)) {
 			searchQuery += temp + "/";
 		}
 		searchQuery += "search.json?q=";
 
 		for (int i = 0; i < 2; i++) { // this loop should only ever run twice per wallpaper change
-			if (i == 0) {// && !test.equals(temp)) { // if this is the first loop and the titles string isn't empty
+			if (i == 0) {
 				// build temp string with title data for first loop
-				temp = String.join(" OR ", settings.getTitles()).replace("  ", " ");
+				temp = String.join(" OR ", settings.getTitles()).replace("  ", " "); // is this needed?
 				if (!temp.equals(test)) {
 					searchQuery += "title:(" + temp + ")&";
 				}
 
 			}
-			else if (i == 1) { // if this is the second loop and the flair string isn't empty
+			else if (i == 1) {
 				// build temp string with flair data for second loop
 				temp = String.join("\" OR \"", settings.getFlair()).replace("  ", " ");
 				if (!temp.equals(test)) {
