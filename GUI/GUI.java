@@ -98,7 +98,7 @@ public class GUI extends JFrame{
 		// instead of looking for and replacing space or double space, just remove all white space characters
 		// subreddits shouldn't have spaces anyway so I don't see it as being a potential issue
 		settings.setTitles(titleField.getText().replaceAll("\\s+", "").split(","));
-		settings.setSubreddits(subredditField.getText().replaceAll("\\s+", "").split(","));
+		settings.setSubreddits(subredditField.getText().replaceAll(regex, "").split(","));
 
 		/* regex: moved into variable for reuse if needed
 			(?<=,|\A)	look for comma OR the beginning of a string
