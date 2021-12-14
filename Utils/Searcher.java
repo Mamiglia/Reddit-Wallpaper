@@ -146,6 +146,18 @@ class Searcher {
 
 			title = child.getString("title");
 			permalink = child.getString("permalink");
+			url = child.getString("url");
+			id = child.getString("id");
+
+			if (child.keySet().contains("crosspost_parent_list")) {
+				// some posts are crossposts
+				// reassign variables with correct values for crosspost
+				child = child.getJSONArray("crosspost_parent_list").getJSONObject(0);
+				title = child.getString("title");
+				permalink = child.getString("permalink");
+				url = child.getString("url");
+				id = child.getString("id");
+			}
 
 			// hand off gallery as soon as possible
 			// some posts can be in the form of galleries of wallpapers
@@ -158,19 +170,6 @@ class Searcher {
 						permalink);
 				res.addAll(gallery);
 				continue;
-			}
-
-			id = child.getString("id");
-			url = child.getString("url");
-
-			if (child.keySet().contains("crosspost_parent_list")) {
-				// some posts are crossposts
-				// reassign variables with correct values for crosspost
-				child = child.getJSONArray("crosspost_parent_list").getJSONObject(0);
-				title = child.getString("title");
-				permalink = child.getString("permalink");
-				url = child.getString("url");
-				id = child.getString("id");
 			}
 
 			child = child
