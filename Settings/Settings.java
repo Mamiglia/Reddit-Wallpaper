@@ -41,7 +41,8 @@ public class Settings {
 			OR	Select all white spaces that are:	1) Preceeded by a word end then one space AND (?<=\b )
 													2) Followed by a word start (?=\b)
 	 */
-	private static final String regex = "((?<=,|\\A)\\s+(?=[\\w]+\\b)|(?<=\\b)\\s+(?=,|\\Z)|(?<=\\b )\\s+(?=\\b))";
+	private static final String regWS = "((?<=,|\\A)\\s+(?=[\\w]+\\b)|(?<=\\b)\\s+(?=,|\\Z)|(?<=\\b )\\s+(?=\\b))";
+	private static final String regSB = "\\[|\\]"; // For removing square brackets
 
 	public enum TIME {
 		HOUR("hour"),
@@ -248,8 +249,12 @@ public class Settings {
 		return settingFile.lastModified();
 	}
 
-	public static String getRegex() {
-		return regex;
+	public static String getRegWS() {
+		return regWS;
+	}
+
+	public static String getRegSB() {
+		return regSB;
 	}
 
 	public void updateDate() {
@@ -293,7 +298,14 @@ public class Settings {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		Settings settings = (Settings) o;
-		return nsfwLevel == settings.nsfwLevel && height == settings.height && width == settings.width && period == settings.period && maxOldness == settings.maxOldness && Arrays.equals(titles, settings.titles) && Arrays.equals(subreddits, settings.subreddits) && searchBy == settings.searchBy;
+		return nsfwLevel == settings.nsfwLevel
+				&& height == settings.height
+				&& width == settings.width
+				&& period == settings.period
+				&& maxOldness == settings.maxOldness
+				&& Arrays.equals(titles, settings.titles)
+				&& Arrays.equals(subreddits, settings.subreddits)
+				&& searchBy == settings.searchBy;
 	}
 
 	@Override
@@ -305,7 +317,7 @@ public class Settings {
 	}
 
 	public boolean setProperty(String property, String value) {
-		String[] split = value.replaceAll("\\[|\\]", "").split(", ");
+		String[] split = value.replaceAll(regSB, "").split(", ");
 		switch (property) {
 			case "titles":
 				titles = split;
