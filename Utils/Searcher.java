@@ -35,27 +35,27 @@ class Searcher {
 		String test = ""; // populated to test if the temp field has anything added from getTitles() or getFlair()
 
  		searchQuery =
-				//Query now builds a multisub out of listed subreddits, this should prevent issues with very large lists of subs
+		//Query now builds a multisub out of listed subreddits, this should prevent issues with very large lists of subs
 				"https://reddit.com/r/";
 
 		 // TODO is there a better way to do this?
 		// it feels redundant calling the same if check 3 times
-		temp = String.join("+", settings.getSubreddits()).replace(" ", "");
+		temp = String.join("+", settings.getSubreddits()).replaceAll(Settings.getRegWS(), "");
 		if (!temp.equals(test)) {
 			searchQuery += temp + "/";
 		}
 		searchQuery += "search.json?q=";
 
 		// build temp string with title data
-		temp = String.join(" OR ", settings.getTitles()).replace("  ", " "); // is this replacement needed?
+		temp = String.join("\" OR \"", settings.getTitles()).replaceAll(Settings.getRegWS(), "");
 		if (!temp.equals(test)) {
-			searchQuery += "title:(" + temp + ")&";
+			searchQuery += "title:(\"" + temp + "\")&";
 		}
 
 		// build temp string with flair data
-		temp = String.join("\" OR \"", settings.getFlair()).replace("  ", " ");
+		temp = String.join("\" OR \"", settings.getFlair()).replaceAll(Settings.getRegWS(), "");
 		if (!temp.equals(test)) {
-			// Flair string is delimited by commas and automatically wrapped in quotation marks to handle multi-word flairs
+		// Flair string is delimited by commas and automatically wrapped in quotation marks to handle multi-word flairs
 			searchQuery += "flair:(\"" + temp + "\")&";
 		}
 
