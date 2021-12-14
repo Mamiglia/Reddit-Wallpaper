@@ -102,11 +102,7 @@ class Searcher {
 
 	private String getRawData(URLConnection connection) throws IOException {
 		// gets the raw JSON file in String form
-		// TODO replace these two lines when finished testing
-		File file = new File("../Testing/old response.json");
-		Scanner s = new Scanner(file).useDelimiter("\\A");
-		// TODO END REPLACEMENT
-		//Scanner s = new Scanner(connection.getInputStream()).useDelimiter("\\A");
+		Scanner s = new Scanner(connection.getInputStream()).useDelimiter("\\A");
 		return s.hasNext() ? s.next() : "";
 	}
 
