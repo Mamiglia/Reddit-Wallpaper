@@ -94,12 +94,12 @@ public class GUI extends JFrame{
 	}
 
 	void saveSettings() {
-		// Settings.regex holds the regex string as it's accessible from both places I currnetly have it
+		// Settings.regWS holds the whitespace regex string as it's accessible from both places I currnetly have it
 		// Selects any extra space before or after a string with comma delimitation
 		// Selects any extra space (any more than one) between words
-		settings.setTitles(titleField.getText().replaceAll(Settings.getRegex(), "").split(","));
-		settings.setSubreddits(subredditField.getText().replaceAll(Settings.getRegex(), "").split(","));
-		settings.setFlair(flairField.getText().replaceAll(Settings.getRegex(), "").split(","));
+		settings.setTitles(titleField.getText().replaceAll(Settings.getRegWS(), "").split(","));
+		settings.setSubreddits(subredditField.getText().replaceAll(Settings.getRegWS(), "").split(","));
+		settings.setFlair(flairField.getText().replaceAll(Settings.getRegWS(), "").split(","));
 		settings.setNsfwLevel(nsfwSlider.getValue());
 		settings.setHeight((int) heightField.getValue());
 		settings.setWidth((int) widthField.getValue());
@@ -113,9 +113,10 @@ public class GUI extends JFrame{
 	}
 
 	void loadSettings() {
-		titleField.setText(Arrays.toString(settings.getTitles()).replace("[", "").replace("]", ""));
-		subredditField.setText(Arrays.toString(settings.getSubreddits()).replace("[", "").replace("]", ""));
-		flairField.setText(Arrays.toString(settings.getFlair()).replace("[", "").replace("]", ""));
+		// Settings.regSB holds the regex string for removing square brackets
+		titleField.setText(Arrays.toString(settings.getTitles()).replaceAll(Settings.getRegSB(), ""));
+		subredditField.setText(Arrays.toString(settings.getSubreddits()).replaceAll(Settings.getRegSB(), ""));
+		flairField.setText(Arrays.toString(settings.getFlair()).replaceAll(Settings.getRegSB(), ""));
 		sortSelection.setSelectedItem(settings.getSearchBy());
 		heightField.setValue(settings.getHeight());
 		widthField.setValue(settings.getWidth());
