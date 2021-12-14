@@ -48,7 +48,6 @@ public class GUI extends JFrame{
 	private JTextField wallpaperPathText;
 	private JButton changeDirectoryButton;
 	private JSlider nsfwSlider;
-	private String regex = new String("(?<=,|\\A)\\s+(?=[\\w ]+\\b)|(?<=[\\w ]+\\b)\\s+(?=,|\\Z)");
 	static final Logger log = DisplayLogger.getInstance("GUI");
 	private final Act act;
 	private final Settings settings = Settings.getInstance();
@@ -95,25 +94,12 @@ public class GUI extends JFrame{
 	}
 
 	void saveSettings() {
-		// instead of looking for and replacing space or double space, just remove all white space characters
-		// subreddits shouldn't have spaces anyway so I don't see it as being a potential issue
-		settings.setTitles(titleField.getText().replaceAll(regex, "").split(","));
-		settings.setSubreddits(subredditField.getText().replaceAll(regex, "").split(","));
-
-		/* regex: moved into constant for reuse if needed
-			(?<=,|\A)	look for comma OR the beginning of a string
-			\\s+		followed by any amount of white space which will be replaced
-			(?=[\w ]+\b)followed by any number or combination of alphanumeric characters and spaces, followed by
-							a word boundary
-						OR
-			(?<=[\w ]+\b)look for any combination of alphanumeric characters and spaces, followed by a word boundary
-			\\s+ 		followed by any amount of white space which will be replaced
-			(?=,|\Z) 	followed by a comma OR the end of a string
-
-		this allows for a comma separated list of flairs, including multiword flairs. Flairs can partially match
-		EG art will match with flairs art, fanart, fan art, fart, kart, etc. TODO Probably not an issue?
-		*/
-		settings.setFlair(flairField.getText().replaceAll(regex, "").split(","));
+		// Settings.regex holds the regex string as it's accessible from both places I currnetly have it
+		// Selects any extra space before or after a string with comma delimitation
+		// Selects any extra space (any more than one) between words
+		settings.setTitles(titleField.getText().replaceAll(Settings.getRegex(), "").split(","));
+		settings.setSubreddits(subredditField.getText().replaceAll(Settings.getRegex(), "").split(","));
+		settings.setFlair(flairField.getText().replaceAll(Settings.getRegex(), "").split(","));
 		settings.setNsfwLevel(nsfwSlider.getValue());
 		settings.setHeight((int) heightField.getValue());
 		settings.setWidth((int) widthField.getValue());
