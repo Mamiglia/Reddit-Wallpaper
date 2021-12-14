@@ -33,6 +33,16 @@ public class Settings {
 	private static String wallpaperPath = "Saved-Wallpapers"; // path to wallpaper folder
 	private static final Logger log = DisplayLogger.getInstance("Settings");
 
+	/* selects leading or trailing spaces on strings, or double (or greater) spaces between words (used in GUI and Searcher)
+		\\s+:	Select all white spaces that are:	1) Preceeded by a comma OR start of a line AND (?<=,|\A)
+													2) Followed by alphanumeric characters followed by a word start/end (?=[\w]+\b)
+			OR	Select all white spaces that are:	1) Preceeded by the end of a word AND (?<=\b)
+													2) Followed by a comma OR the end of a line (?=,|\Z)
+			OR	Select all white spaces that are:	1) Preceeded by a word end then one space AND (?<=\b )
+													2) Followed by a word start (?=\b)
+	 */
+	private static final String regex = "((?<=,|\\A)\\s+(?=[\\w]+\\b)|(?<=\\b)\\s+(?=,|\\Z)|(?<=\\b )\\s+(?=\\b))";
+
 	public enum TIME {
 		HOUR("hour"),
 		DAY("day"),
@@ -238,6 +248,10 @@ public class Settings {
 		return settingFile.lastModified();
 	}
 
+	public static String getRegex() {
+		return regex;
+	}
+
 	public void updateDate() {
 		try {
 			Files.setLastModifiedTime(settingFile.toPath(), FileTime.fromMillis(System.currentTimeMillis()));
@@ -291,7 +305,7 @@ public class Settings {
 	}
 
 	public boolean setProperty(String property, String value) {
-		String[] split = value.replace("[", "").replace("]", "").split(", ");
+		String[] split = value.replaceAll("\\[|\\]", "").split(", ");
 		switch (property) {
 			case "titles":
 				titles = split;
@@ -335,5 +349,4 @@ public class Settings {
 		}
 		return true;
 	}
-
 }
