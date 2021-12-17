@@ -3,22 +3,26 @@ package Utils;
 import Settings.Settings;
 import Wallpaper.Wallpaper;
 
+import java.awt.*;
 import java.io.*;
 import java.sql.*;
 import java.util.*;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 class Selector implements Runnable{
     private final int maxDbSize;
     private final boolean keepWallpapers;
-    public static final String PATH_TO_DATABASE = "utility"+ File.separator + "db";
-    private static final String dbUrl = "jdbc:h2:file:" + System.getProperty("user.dir") + File.separator + PATH_TO_DATABASE;
+    private static final String dbUrl = "jdbc:h2:file:" + System.getProperty("user.dir")
+            + File.separator + Settings.PATH_TO_DATABASE;
+    private final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
     private static final Logger log = DisplayLogger.getInstance("Selector");
     private Connection conn = null;
     private Statement db = null;
     private boolean executed = false;
     private Wallpaper result = null;
+    private Set<Wallpaper> results = null;
     private final Settings settings = Settings.getInstance();
     private final Set<Wallpaper> proposal;
 
@@ -36,8 +40,9 @@ class Selector implements Runnable{
 
     @Override
     public void run() {
-        if (executed) return;
+        if (executed || proposal == null) return;
         executed = true;
+        int screens = ge.getScreenDevices().length;
         List<String> oldID = getOldWallpapersID();
 
         for (Wallpaper propWallpaper : proposal) {
@@ -49,9 +54,16 @@ class Selector implements Runnable{
                 }
                 log.log(Level.FINE, "Selected new wallpaper from those proposed");
                 insertDB(propWallpaper);
-                closeDB();
-                result = propWallpaper;
-                return;
+                if (screens == 1 || !settings.doDiffWallpapers()) {
+                    closeDB();
+                    result = propWallpaper;
+                    return;
+                } else if (results.size() < screens){
+                    results.add(propWallpaper);
+                    continue;
+                } else { //TODO finish this shit
+
+                }
             }
         }
         // OR No unused wallpapers are found, select oldest used wallpapers in the list
@@ -118,7 +130,11 @@ class Selector implements Runnable{
                     log.log(Level.FINEST, wp::toString);
                     log.log(Level.FINE, () -> "Cleaning of DB, removing " + wp.getID());
 
-                    new File(wp.getPath().toAbsolutePath().toString()).delete();
+                    if (new File(wp.getPath().toAbsolutePath().toString()).delete()) {
+                        log.log(Level.FINE, () -> "Success!");
+                    } else {
+                        log.log(Level.FINE, () -> "Something went wrong...");
+                    }
                 }
                 db.executeUpdate("DELETE FROM WALLPAPERS WHERE id IN (SELECT id FROM WALLPAPERS ORDER BY date fetch FIRST 20 PERCENT rows only)");
 
@@ -134,7 +150,7 @@ class Selector implements Runnable{
             p.setString(1, wp.getID());
             p.setObject(2, wp);
             p.executeUpdate();
-            log.log(Level.FINER, () -> "Successfully inserted entry:\n" + wp.toString());
+            log.log(Level.FINER, () -> "Successfully inserted entry:\n" + wp);
             cleanDB();
 
         } catch (SQLException e) {
@@ -144,7 +160,7 @@ class Selector implements Runnable{
 
     private void updateDate(Wallpaper wp) {
         try {
-            db.executeUpdate("UPDATE WALLPAPERS SET date=CURRENT_TIMESTAMP() WHERE id=\'"+wp.getID()+"\'");
+            db.executeUpdate("UPDATE WALLPAPERS SET date=CURRENT_TIMESTAMP() WHERE id='" + wp.getID() + "'");
         } catch (SQLException throwables) {
             // consider the case in which the wp isn't in the table
             log.log(Level.WARNING, "Query Error in updateDate()");
@@ -161,7 +177,9 @@ class Selector implements Runnable{
 
         } catch (SQLException e) {
             log.log(Level.SEVERE, "Query error: Couldn't create database");
-            log.log(Level.FINEST, e.getMessage());
+            log.log(Level.SEVERE, e.getMessage());
+        } catch (Exception e) {
+            log.log(Level.SEVERE, e.getMessage());
         }
     }
 
