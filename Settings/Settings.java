@@ -15,8 +15,8 @@ import java.util.logging.Logger;
 public class Settings {
 	//Singleton
 	private static Settings uniqueInstance;
-	public static final String PATH_TO_SAVEFILE = "utility/settings.txt";
-	public static final String PATH_TO_DATABASE = "utility/db";
+	public static final String PATH_TO_SAVEFILE = "utility" + File.separator + "settings.txt";
+	public static final String PATH_TO_DATABASE = "utility" + File.separator + "db";
 	private final File settingFile = new File(PATH_TO_SAVEFILE);
 	private String[] titles = {};
 	private String[] flair ={};
@@ -26,10 +26,12 @@ public class Settings {
 	private int height = 1080;
 	private int width = 1920;
 	private int period = 15; //mins
+	private int minScore = 15;
 	private TIME maxOldness = TIME.DAY;
 	private int maxDatabaseSize = 50;
 	private final Set<String> bannedList;
 	private boolean keepWallpapers = false; //keep wallpapers after eliminating them from db?
+	private boolean difWallpapers = false; //Different wallpaper per screen?
 	private static String wallpaperPath = "Saved-Wallpapers"; // path to wallpaper folder
 	private static final Logger log = DisplayLogger.getInstance("Settings");
 
@@ -41,8 +43,8 @@ public class Settings {
 			OR	Select all white spaces that are:	1) Preceeded by a word end then one space AND (?<=\b )
 													2) Followed by a word start (?=\b)
 	 */
-	private static final String regWS = "((?<=,|\\A)\\s+(?=[\\w]+\\b)|(?<=\\b)\\s+(?=,|\\Z)|(?<=\\b )\\s+(?=\\b))";
-	private static final String regSB = "\\[|\\]"; // For removing square brackets
+	private static final String REG_WS = "((?<=,|\\A)\\s+(?=[\\w]+\\b)|(?<=\\b)\\s+(?=,|\\Z)|(?<=\\b )\\s+(?=\\b))";
+	private static final String REG_SB = "[\\[\\]]"; // For removing square brackets
 
 	public enum TIME {
 		HOUR("hour"),
@@ -104,7 +106,9 @@ public class Settings {
 			log.log(Level.WARNING, "No settings file is found, generating a new stock one");
 			settingFile.getParentFile().mkdirs();
 			try {
-				settingFile.createNewFile();
+				if (settingFile.createNewFile()) {
+					log.log(Level.FINE, "Success!");
+				}
 				writeSettings();
 				Files.setLastModifiedTime(settingFile.toPath(), FileTime.fromMillis(0));
 			} catch (IOException e) {
@@ -220,6 +224,14 @@ public class Settings {
 		this.period = period;
 	}
 
+	public int getScore() {
+		return minScore;
+	}
+
+	public void setScore(int score) {
+		this.minScore = score;
+	}
+
 	public TIME getMaxOldness() {
 		return maxOldness;
 	}
@@ -240,6 +252,10 @@ public class Settings {
 		return keepWallpapers;
 	}
 
+	public boolean doDiffWallpapers() {
+		return difWallpapers;
+	}
+
 	public static String getWallpaperPath() {
 		return wallpaperPath;
 	}
@@ -250,11 +266,11 @@ public class Settings {
 	}
 
 	public static String getRegWS() {
-		return regWS;
+		return REG_WS;
 	}
 
 	public static String getRegSB() {
-		return regSB;
+		return REG_SB;
 	}
 
 	public void updateDate() {
@@ -283,6 +299,7 @@ public class Settings {
 				"\nheight=" + height +
 				"\nwidth=" + width +
 				"\nperiod=" + period +
+				"\nscore=" + minScore +
 				"\nmaxOldness=" + maxOldness +
 				"\nmaxDatabaseSize=" + maxDatabaseSize +
 				"\nkeepWallpapers=" + keepWallpapers +
@@ -302,9 +319,11 @@ public class Settings {
 				&& height == settings.height
 				&& width == settings.width
 				&& period == settings.period
+				&& minScore == settings.minScore
 				&& maxOldness == settings.maxOldness
 				&& Arrays.equals(titles, settings.titles)
 				&& Arrays.equals(subreddits, settings.subreddits)
+				&& Arrays.equals(flair, settings.flair)
 				&& searchBy == settings.searchBy;
 	}
 
@@ -317,7 +336,7 @@ public class Settings {
 	}
 
 	public boolean setProperty(String property, String value) {
-		String[] split = value.replaceAll(regSB, "").split(", ");
+		String[] split = value.replaceAll(REG_SB, "").split(", ");
 		switch (property) {
 			case "titles":
 				titles = split;
@@ -339,6 +358,9 @@ public class Settings {
 				break;
 			case "width":
 				width = Integer.parseInt(value);
+				break;
+			case "score":
+				minScore = Integer.parseInt(value);
 				break;
 			case "period":
 				period = Integer.parseInt(value);
