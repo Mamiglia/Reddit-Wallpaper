@@ -37,7 +37,7 @@ public class GetNewWallpaper implements Runnable {
 		}
 
 		//SELECTOR
-		Selector selector = null;
+		Selector selector;
 
 		try {
 			selector = new Selector(wallpapers, settings.doKeepWallpapers(), settings.getMaxDatabaseSize());
