@@ -38,6 +38,7 @@ public class GUI extends JFrame{
 	private JSpinner periodField;
 	private JSpinner widthField;
 	private JSpinner dbSizeField;
+	private JSpinner scoreField;
 	private JCheckBox keepCheckBox;
 	private JComboBox<TIME> oldSelection;
 	private JTextField titleField;
@@ -103,6 +104,7 @@ public class GUI extends JFrame{
 		settings.setNsfwLevel(nsfwSlider.getValue());
 		settings.setHeight((int) heightField.getValue());
 		settings.setWidth((int) widthField.getValue());
+		settings.setScore((int) scoreField.getValue());
 		settings.setMaxOldness((TIME) oldSelection.getSelectedItem());
 		settings.setPeriod((int) periodField.getValue());
 		settings.setSearchBy((SEARCH_BY) sortSelection.getSelectedItem());
@@ -120,6 +122,7 @@ public class GUI extends JFrame{
 		sortSelection.setSelectedItem(settings.getSearchBy());
 		heightField.setValue(settings.getHeight());
 		widthField.setValue(settings.getWidth());
+		scoreField.setValue(settings.getScore());
 		periodField.setValue(settings.getPeriod());
 		oldSelection.setSelectedItem(settings.getMaxOldness());
 		dbSizeField.setValue(settings.getMaxDatabaseSize());
@@ -162,19 +165,32 @@ public class GUI extends JFrame{
 			File dbFile = new File(Settings.PATH_TO_DATABASE);
 			File wallpaperFolder = new File(Settings.getWallpaperPath());
 			if (dbFile.exists()) {
-				dbFile.delete();
+				if (dbFile.delete()) {
+					log.log(Level.FINE, () -> "Database has been deleted.");
+				}
 				try {
-					dbFile.createNewFile();
+					if (dbFile.createNewFile()) {
+						log.log(Level.FINE, () -> "New database file created.");
+					}
 				} catch (IOException e) {
-					log.log(Level.WARNING, "Failed erasing the database");
+					log.log(Level.WARNING, "Failed erasing the database.");
 				}
 			}
-			if (wallpaperFolder.isDirectory()) {
-				for (File walp: Objects.requireNonNull(wallpaperFolder.listFiles())) {
-					walp.delete();
+			// Requires the directory exists and wallpapers should not be kept
+			if (wallpaperFolder.isDirectory() && !Settings.getInstance().doKeepWallpapers()) {
+				for (File walp : Objects.requireNonNull(wallpaperFolder.listFiles())) {
+					if (walp.delete()) {
+						log.log(Level.FINE, () -> walp + " deleted.");
+					}
 				}
+				log.log(Level.FINE, () -> "Wallpapers successfully purged.");
 			}
-
+			else if (Settings.getInstance().doKeepWallpapers()) {
+				log.log(Level.FINE, () -> "Wallpapers have not been removed by preference.");
+			}
+			else {
+				log.log(Level.FINE, () -> "Wallpapers directory is missing.");
+			}
 		}
 	}
 
@@ -185,6 +201,8 @@ public class GUI extends JFrame{
 		heightField = new JSpinner(s);
 		s = new SpinnerNumberModel(1920, 0, 10000, 1);
 		widthField = new JSpinner(s);
+		s = new SpinnerNumberModel(15, 0, 10000, 1);
+		scoreField = new JSpinner(s);
 		s = new SpinnerNumberModel(50, 5, 10000, 1);
 		dbSizeField = new JSpinner(s);
 		oldSelection = new JComboBox<>(TIME.values());
