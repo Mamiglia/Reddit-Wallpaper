@@ -58,7 +58,7 @@ public class Background implements Runnable {
 		t2.start();
 		settings.updateDate();
 		Tray.getInstance().populateTray(cosmetifyTitle(current.getTitle()));
-		log.log(Level.INFO, () -> "Wallpapers is successfully set to:\n" + current.toString());
+		log.log(Level.INFO, () -> "Wallpaper is successfully set to:\n" + current.toString());
 	}
 
 	@Override
@@ -85,9 +85,8 @@ public class Background implements Runnable {
 		String temp = title
 				.replace('_', ' ')
 				.replace("OC", "")
-				.replaceAll("[0-9]?[0-9][0-9][0-9] ?[*xX] ?[0-9][0-9][0-9][0-9]?", "")
-				.replaceAll("[^a-zA-Z0-9 ,-]", "")
-				.replaceAll(" [a-zA-Z]+[0-9]+[a-zA-Z0-9]*$", "");
+				.replaceAll("([0-9]{3,4} ?[*xX] ?[0-9]{3,4})|([^\\w ,-])|( [a-zA-Z]+[0-9]+[\\w]*$)",
+						"");
 		if (temp.length() > 23) {
 			temp = temp.substring(0, 20);
 			temp += "...";
