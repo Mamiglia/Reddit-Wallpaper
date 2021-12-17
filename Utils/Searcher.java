@@ -4,7 +4,6 @@ import Settings.Settings;
 import Wallpaper.Wallpaper;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -16,7 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 class Searcher {
-	private static final int MINIMUM_NUMBER_OF_UPVOTES = 15; // Number to not pick indecent wallpapers. This number is completely arbitrary, but it should be sufficient TODO could allow users to define minimum upvotes in the UI
+	//private static final int MINIMUM_NUMBER_OF_UPVOTES = 15; // Number to not pick indecent wallpapers. This number is completely arbitrary, but it should be sufficient TODO could allow users to define minimum upvotes in the UI
 	private final Settings settings;
 	private String searchQuery = "";
 	private Set<Wallpaper> proposed;
@@ -120,17 +119,6 @@ class Searcher {
 		int score;
 		boolean is_over_18;
 
-		// check if Reddit returned an error json
-		if (new JSONObject(rawData).keySet().contains("error")) {
-			log.log(Level.FINE, () ->
-				"Reddit returned error "
-						+ new JSONObject(rawData).getJSONObject("error").getJSONObject("message")
-						+ ". This can happen if you don't have any subbredits listed. "
-						+ "Please check your settings and try again."
-			);
-			return res;
-		}
-
 		JSONArray children = new JSONObject(rawData).getJSONObject("data").getJSONArray("children");
 
 		for (int i = 0; i < children.length(); i++) {
@@ -138,7 +126,7 @@ class Searcher {
 			score = child.getInt("score"); // # of upvotes
 			is_over_18 = child.getBoolean("over_18");
 
-			if (score < MINIMUM_NUMBER_OF_UPVOTES || (!is_over_18 && settings.getNsfwLevel() == Settings.NSFW_LEVEL.ONLY)) {
+			if (score < settings.getScore() || (!is_over_18 && settings.getNsfwLevel() == Settings.NSFW_LEVEL.ONLY)) {
 				// when a post has too few upvotes it's skipped
 				// or if only over_18 content is allowed - no need to check in the other sense, because the query excludes them
 				continue;
