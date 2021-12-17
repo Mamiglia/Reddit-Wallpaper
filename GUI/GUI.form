@@ -2,7 +2,7 @@
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="GUI.GUI">
   <grid id="27dc6" binding="rootPane" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
-      <xy x="21" y="55" width="330" height="394"/>
+      <xy x="21" y="55" width="369" height="394"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -72,8 +72,10 @@
                       <component id="6026a" class="javax.swing.JLabel">
                         <constraints/>
                         <properties>
+                          <opaque value="true"/>
                           <text value="Subreddits"/>
                           <toolTipText value="The subreddits where the wallpaper is searched"/>
+                          <verticalAlignment value="0"/>
                         </properties>
                       </component>
                       <hspacer id="8c85d">
@@ -193,7 +195,7 @@
                   </grid>
                 </children>
               </grid>
-              <grid id="74f67" layout-manager="GridLayoutManager" row-count="6" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+              <grid id="74f67" layout-manager="GridLayoutManager" row-count="7" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
                   <tabbedpane title="Database"/>
@@ -203,20 +205,13 @@
                 <children>
                   <grid id="788b" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
                     <constraints>
-                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                      <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <toolTipText value="Wallpapers may occupy much disk space. So only a certain number of wallpapers are kept, those exceeding will be eliminated"/>
                     </properties>
                     <border type="none"/>
                     <children>
-                      <component id="5b8d9" class="javax.swing.JLabel">
-                        <constraints/>
-                        <properties>
-                          <text value="Maximum Size of Database"/>
-                          <toolTipText value="Wallpapers may occupy much disk space. So only a certain number of wallpapers are kept, those exceeding will be eliminated"/>
-                        </properties>
-                      </component>
                       <component id="39ecf" class="javax.swing.JSpinner" binding="dbSizeField" custom-create="true">
                         <constraints/>
                         <properties>
@@ -228,12 +223,12 @@
                   </grid>
                   <vspacer id="8252d">
                     <constraints>
-                      <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                      <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
                     </constraints>
                   </vspacer>
                   <grid id="b6c8b" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
                     <constraints>
-                      <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                      <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <toolTipText value="If checked wallpapers will be kept indefinetely. Pay attention to your disk space!"/>
@@ -253,7 +248,7 @@
                   <grid id="c2559" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                     <margin top="0" left="0" bottom="0" right="0"/>
                     <constraints>
-                      <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                      <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties/>
                     <border type="none"/>
@@ -264,7 +259,7 @@
                         </constraints>
                         <properties>
                           <text value="Erase Wallpaper Database"/>
-                          <toolTipText value="Safely erases all the wallpapers in the folder"/>
+                          <toolTipText value="Safely erases database file and all the wallpapers in the folder unless above box is checked"/>
                         </properties>
                       </component>
                     </children>
@@ -348,9 +343,38 @@
                       </component>
                     </children>
                   </grid>
+                  <grid id="5fc57" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints>
+                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="5b8d9" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="Maximum Size of Database"/>
+                          <toolTipText value="Wallpapers may occupy much disk space. So only a certain number of wallpapers are kept, those exceeding will be eliminated"/>
+                        </properties>
+                      </component>
+                      <hspacer id="5fb12">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                      </hspacer>
+                      <hspacer id="8c01b">
+                        <constraints>
+                          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                      </hspacer>
+                    </children>
+                  </grid>
                 </children>
               </grid>
-              <grid id="e5247" layout-manager="GridLayoutManager" row-count="6" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+              <grid id="e5247" layout-manager="GridLayoutManager" row-count="7" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
                   <tabbedpane title="Advanced"/>
@@ -358,33 +382,9 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <grid id="edceb" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
-                    <constraints>
-                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <toolTipText value="Screen resolution in pixels. Default: 1080"/>
-                    </properties>
-                    <border type="none"/>
-                    <children>
-                      <component id="bafb2" class="javax.swing.JLabel">
-                        <constraints/>
-                        <properties>
-                          <text value="Screen Height"/>
-                        </properties>
-                      </component>
-                      <component id="e1767" class="javax.swing.JSpinner" binding="heightField" custom-create="true">
-                        <constraints/>
-                        <properties>
-                          <inheritsPopupMenu value="true"/>
-                          <toolTipText value="Screen resolution in pixels. Default: 1080"/>
-                        </properties>
-                      </component>
-                    </children>
-                  </grid>
                   <grid id="39960" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
                     <constraints>
-                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <toolTipText value="Screen resolution in pixels. Default: 1920"/>
@@ -406,9 +406,57 @@
                       </component>
                     </children>
                   </grid>
-                  <grid id="f718f" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+                  <grid id="edceb" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+                    <constraints>
+                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <toolTipText value="Screen resolution in pixels. Default: 1080"/>
+                    </properties>
+                    <border type="none"/>
+                    <children>
+                      <component id="bafb2" class="javax.swing.JLabel">
+                        <constraints/>
+                        <properties>
+                          <text value="Screen Height"/>
+                        </properties>
+                      </component>
+                      <component id="e1767" class="javax.swing.JSpinner" binding="heightField" custom-create="true">
+                        <constraints/>
+                        <properties>
+                          <inheritsPopupMenu value="true"/>
+                          <toolTipText value="Screen resolution in pixels. Default: 1080"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
+                  <grid id="422d6" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
                     <constraints>
                       <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <toolTipText value="Screen resolution in pixels. Default: 1080"/>
+                    </properties>
+                    <border type="none"/>
+                    <children>
+                      <component id="5566f" class="javax.swing.JLabel">
+                        <constraints/>
+                        <properties>
+                          <text value="Minimum score"/>
+                        </properties>
+                      </component>
+                      <component id="afcc9" class="javax.swing.JSpinner" binding="scoreField" custom-create="true">
+                        <constraints/>
+                        <properties>
+                          <inheritsPopupMenu value="true"/>
+                          <toolTipText value="Minimum upvotes to select post. Default: 15"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
+                  <grid id="f718f" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+                    <constraints>
+                      <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <requestFocusEnabled value="true"/>
@@ -428,10 +476,11 @@
                   </grid>
                   <grid id="ae23a" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
                     <constraints>
-                      <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                      <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <toolTipText value="Never: no NSFW wallpaper will ever be shown\nAllow: NSFW Wallpapers might be shown \nOnly: only NSFW will be shown, warning: Horny!"/>
+                      <visible value="true"/>
                     </properties>
                     <border type="none"/>
                     <children>
@@ -455,13 +504,14 @@
                           <snapToTicks value="true"/>
                           <toolTipText value="NEVER: no nsfw wallpaper will ever be shown. ALLOW: nsfw wallpapers might be shown. ONLY: only nsfw will be shown, warning: Horny!"/>
                           <value value="0"/>
+                          <visible value="true"/>
                         </properties>
                       </component>
                     </children>
                   </grid>
-                  <vspacer id="bbd96">
+                  <vspacer id="f5948">
                     <constraints>
-                      <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                      <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
                     </constraints>
                   </vspacer>
                 </children>
