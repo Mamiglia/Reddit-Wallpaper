@@ -35,6 +35,7 @@ public class SetNewWallpaper implements Runnable {
         String os = System.getProperty("os.name");
         switch (os) {
             case "Windows 10":
+            case "Windows 11": // just in case
                 windowsChange(wpPath);
                 break;
             case "Linux":
@@ -138,7 +139,7 @@ public class SetNewWallpaper implements Runnable {
     public static String executeProcess(String s) {
         ProcessBuilder pb = new ProcessBuilder("bash", "-c", s);
         pb.redirectErrorStream(true);
-        Process p = null;
+        Process p;
         try {
             p = pb.start();
         } catch (IOException e) {
@@ -164,13 +165,14 @@ public class SetNewWallpaper implements Runnable {
 
     interface User32 extends Library {
         User32 INSTANCE = Native.load("user32", User32.class, W32APIOptions.DEFAULT_OPTIONS);
-
         boolean SystemParametersInfo(int one, int two, String s, int three);
     }
 
     void windowsChange(String path) {
         log.log(Level.FINE, () -> "Detected Windows, setting wallpaper in " + path);
-        User32.INSTANCE.SystemParametersInfo(0x0014, 0, path, 1);
+        if (User32.INSTANCE.SystemParametersInfo(0x0014, 0, path, 1)) {
+            log.log(Level.FINE, "Success!");
+        }
         // Note: result of this ^ function is useless
     }
 
