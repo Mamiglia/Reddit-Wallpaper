@@ -105,7 +105,7 @@ public class Wallpaper implements Serializable {
 
     public static String cleanTitle(String title) {
         title = title.replace(' ', '_')
-                .replaceAll("[^a-zA-Z0-9_]", "");
+                .replaceAll("[\\W]", "");
         title = title.substring(0, Math.min(MAX_TITLE_SIZE, title.length()));
         return title;
     }
