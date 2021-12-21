@@ -161,23 +161,12 @@ public class GUI extends JFrame{
 		int selectedOption = JOptionPane.showConfirmDialog(this, "You are going to remove your wallpaper database", "Alert", JOptionPane.OK_CANCEL_OPTION);
 
 		if (selectedOption == JOptionPane.OK_OPTION) {
-			//TODO actually reset the DB
-			File dbFile = new File(Settings.PATH_TO_DATABASE);
+
 			File wallpaperFolder = new File(Settings.getWallpaperPath());
-			if (dbFile.exists()) {
-				if (dbFile.delete()) {
-					log.log(Level.FINE, () -> "Database has been deleted.");
-				}
-				try {
-					if (dbFile.createNewFile()) {
-						log.log(Level.FINE, () -> "New database file created.");
-					}
-				} catch (IOException e) {
-					log.log(Level.WARNING, "Failed erasing the database.");
-				}
-			}
+			Settings.eraseDB();
+
 			// Requires the directory exists and wallpapers should not be kept
-			if (wallpaperFolder.isDirectory() && !Settings.getInstance().doKeepWallpapers()) {
+			if (wallpaperFolder.isDirectory() && !settings.doKeepWallpapers()) {
 				for (File walp : Objects.requireNonNull(wallpaperFolder.listFiles())) {
 					if (walp.delete()) {
 						log.log(Level.FINE, () -> walp + " deleted.");
@@ -185,7 +174,7 @@ public class GUI extends JFrame{
 				}
 				log.log(Level.FINE, () -> "Wallpapers successfully purged.");
 			}
-			else if (Settings.getInstance().doKeepWallpapers()) {
+			else if (settings.doKeepWallpapers()) {
 				log.log(Level.FINE, () -> "Wallpapers have not been removed by preference.");
 			}
 			else {
