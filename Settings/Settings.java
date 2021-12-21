@@ -20,6 +20,7 @@ public class Settings {
 	public static final String PATH_TO_SAVEFILE = "utility" + File.separator + "settings.txt";
 	public static final String PATH_TO_DATABASE = "utility" + File.separator + "database";
 	private final File settingFile = new File(PATH_TO_SAVEFILE);
+	public boolean keepBlacklist = false;
 	private String[] titles = {};
 	private String[] flair ={};
 	private String[] subreddits = {"wallpaper", "wallpapers"};
@@ -272,6 +273,10 @@ public class Settings {
 		return keepWallpapers;
 	}
 
+	public boolean doKeepBlacklist() {
+		return keepBlacklist;
+	}
+
 	public boolean doDiffWallpapers() {
 		return diffWallpapers;
 	}
@@ -331,11 +336,16 @@ public class Settings {
 				"\nmaxOldness=" + maxOldness +
 				"\nmaxDatabaseSize=" + maxDatabaseSize +
 				"\nkeepWallpapers=" + keepWallpapers +
+				"\nkeepBlacklist=" + keepBlacklist +
 				"\nwallpaperPath=" + wallpaperPath;
 	}
 
 	public void setKeepWallpapers(boolean keepWallpapers) {
 		this.keepWallpapers = keepWallpapers;
+	}
+
+	public void setKeepBlacklist(boolean keepBlacklist) {
+		this.keepBlacklist = keepBlacklist;
 	}
 
 	@Override
@@ -401,6 +411,9 @@ public class Settings {
 				break;
 			case "keepWallpapers":
 				keepWallpapers = Boolean.parseBoolean(value);
+				break;
+			case "keepBlacklist":
+				keepBlacklist = Boolean.parseBoolean(value);
 				break;
 			case "wallpaperPath":
 				wallpaperPath = split[0];
