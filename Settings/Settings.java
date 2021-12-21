@@ -18,7 +18,7 @@ public class Settings {
 	//Singleton
 	private static Settings uniqueInstance;
 	public static final String PATH_TO_SAVEFILE = "utility" + File.separator + "settings.txt";
-	public static final String PATH_TO_DATABASE = "utility" + File.separator + "db";
+	public static final String PATH_TO_DATABASE = "utility" + File.separator + "database";
 	private final File settingFile = new File(PATH_TO_SAVEFILE);
 	private String[] titles = {};
 	private String[] flair ={};
@@ -49,6 +49,19 @@ public class Settings {
 	 */
 	private static final String REG_WS = "((?<=,|\\A)\\s+(?=[\\w]+\\b)|(?<=\\b)\\s+(?=,|\\Z)|(?<=\\b )\\s+(?=\\b))";
 	private static final String REG_SB = "[\\[\\]]"; // For removing square brackets
+
+	public static void eraseDB() {
+		File dbFile = new File(PATH_TO_DATABASE + ".mv.db");
+		if (dbFile.exists()) {
+			if (dbFile.delete()) {
+				log.log(Level.WARNING, () -> "Database has been deleted.");
+			} else {
+				log.log(Level.WARNING, () -> "Database remains.");
+			}
+		} else {
+			log.log(Level.WARNING, () -> "Could not find database file.");
+		}
+	}
 
 	public enum TIME {
 		HOUR("hour"),
