@@ -5,4 +5,6 @@
  - Change: RW now queries a multireddit. This makes it more stable for large lists of subreddits (Go wild!)
  - Enhancement: Added option for searching flairs
  - Enhancement: Added a check for keeping blacklisted wallpapers
+ - Enhancement: Wallpaper directory will be cleared with the database if "Keep wallpapers in database" is not checked
+ - Enhancement: Added option for setting the minimum post score (default 15)
  - Fix: Check that the database has the right data types
