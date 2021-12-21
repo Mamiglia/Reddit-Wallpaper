@@ -31,8 +31,38 @@ class Selector implements Runnable{
         this.maxDbSize = maxDbSize;
         this.screens = screens;
         this.diff = diff;
+        boolean flag = false;
 
-        loadDB();
+        for (int i = 1; i < 4; i++) {
+            loadDB();
+            try (ResultSet dataTypes = db.executeQuery("SELECT DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where" +
+                    " table_name = 'WALLPAPERS'")) { // Pull the data type information
+                while (dataTypes.next()) {
+                    String check = dataTypes.getString(1); // there is only 1 collumn
+
+                    // List of data types as integers can be found at https://www.geeksforgeeks.org/how-to-get-the-datatype-of-a-column-of-a-table-using-jdbc/
+                    if (!((check.equals("12") && dataTypes.getRow() == 1) || // VARCHAR
+                            (check.equals("1111") && dataTypes.getRow() == 2) || // OTHER
+                            (check.equals("93") && dataTypes.getRow() == 3))) { // TIMESTAMP
+
+                        closeDB(); // if the data types don't match
+                        log.log(Level.WARNING, "DB data types are incorrect. Resetting database, this will keep images but they may be downloaded again.");
+                        flag = true; // flag to repeat the loop. Loop isn't based on this just in case this doesn't fix the issue.
+                        Settings.eraseDB(); // Erases the database file
+                        break;
+                    } else flag = false;
+                    log.log(Level.FINEST, check); // this will output any data types integer value
+                }
+                if (flag) {
+                    log.log(Level.WARNING, "Attempting to correct database. Attempt " + i + " of 3");
+                } else if (i == 3) {
+                    log.log(Level.SEVERE, "Could not create database with correct data types.");
+                } else break;
+            } catch (SQLException throwables) {
+                log.log(Level.WARNING, "SQL error in database check.");
+                log.log(Level.FINEST, throwables.getMessage());
+            }
+        }
 
         if (conn == null) {
             throw new IOException();
