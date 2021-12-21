@@ -4,83 +4,129 @@ import Wallpaper.Wallpaper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import com.sun.jna.Library;
 import com.sun.jna.Native;
 import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.sun.jna.win32.*;
+import com.sun.jna.Platform;
 
 public class SetNewWallpaper implements Runnable {
     static private final Logger log = DisplayLogger.getInstance("SetNewWallpaper");
     private boolean executed = false;
     private final Wallpaper wp;
+    private int i = 0; //counter for multi screen
+    private int screens;
+    private final boolean diff;
 
-    public SetNewWallpaper(Wallpaper wp) {
+    public SetNewWallpaper(Wallpaper wp, boolean diff) {
         this.wp = wp;
+        this.diff = diff;
+    }
+
+    public SetNewWallpaper(Wallpaper wp, int screens) {
+        this.wp = wp;
+        this.screens = screens;
+        this.diff = true;
     }
 
 
     @Override
     public void run() {
         if (executed) return;
-        executed = true;
-
+        i++;
+        if (screens == 1 || !diff || i == screens) {
+            executed = true;
+        }
 
         if (!wp.isDownloaded()) {
             log.log(Level.WARNING, "Wallpaper file not found");
             return;
         }
         String wpPath = wp.getPath().toAbsolutePath().toString();
-        String os = System.getProperty("os.name");
+        int os = Platform.getOSType(); // included in jna package, may as well use it right?
         switch (os) {
-            case "Windows 10":
-            case "Windows 11": // just in case
-                windowsChange(wpPath);
-                break;
-            case "Linux":
+//            case 0: // Mac
+            case 1: // Other Linux
                 String de = identifyDE();
+
                 if (de == null) {
-                    log.log(Level.SEVERE, String.format("Couldn't identify your Desktop Environment: {0}, {1}", System.getenv("XDG_CURRENT_DESKTOP"), System.getenv("$GDM_SESSION")));
+                    log.log(Level.SEVERE, "Couldn't identify your Desktop Environment: {0}, {1}");
                     break;
                 }
 
                 switch (de) {
                     // Thanks StackOverflow
                     case "xfce":
-                        executeProcess("xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorVGA-1/workspace0/last-image -s \"" + wpPath + "\"");
-                        // May not work on different XFCE installations??
+                        executeProcess(
+                            "xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorVGA-1/workspace0/last-image -s \"" + wpPath + "\"");
                         break;
-                    case "gnome":
-                        executeProcess("gsettings set org.gnome.desktop.background draw-background false && gsettings set org.gnome.desktop.background picture-uri \"file://" + wpPath + "\" && gsettings set org.gnome.desktop.background draw-background true");
-                        // not tested
-                        break;
+                    // May not work on different XFCE installations??
+
                     case "kde":
-                        executeProcess("qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'var allDesktops = desktops();print (allDesktops);for (i=0;i<allDesktops.length;i++) {d = allDesktops[i];d.wallpaperPlugin = \"org.kde.image\";d.currentConfigGroup = Array(\"Wallpaper\", \"org.kde.image\", \"General\");d.writeConfig(\"Image\", \"" + wpPath + "\")}'");
+                        executeProcess(
+                            "qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'var allDesktops = desktops();print (allDesktops);for (i=0;i<allDesktops.length;i++) {d = allDesktops[i];d.wallpaperPlugin = \"org.kde.image\";d.currentConfigGroup = Array(\"Wallpaper\", \"org.kde.image\", \"General\");d.writeConfig(\"Image\", \"" + wpPath + "\")}'");
+                        break;
+
+                    // not tested
+                    case "gnome":
+                        executeProcess(
+                            "gsettings set org.gnome.desktop.background draw-background false && gsettings set org.gnome.desktop.background picture-uri \"file://" + wpPath + "\" && gsettings set org.gnome.desktop.background draw-background true");
                         break;
                     case "unity":
-                        executeProcess("gsettings set org.gnome.desktop.background picture-uri \"file://" + wpPath + "\"");
-                        // not tested
+                        executeProcess(
+                            "gsettings set org.gnome.desktop.background picture-uri \"file://" + wpPath + "\"");
                         break;
                     case "cinnamon":
-                        executeProcess("gsettings set org.cinnamon.desktop.background picture-uri  \"file://" + wpPath + "\"");
-                        // not tested
+                        executeProcess(
+                            "gsettings set org.cinnamon.desktop.background picture-uri  \"file://" + wpPath + "\"");
                         break;
-                    default:
-                        log.log(Level.SEVERE, "Your DE is currently not supported: " + de);
+                    default: log.log(Level.SEVERE, "Your DE is currently not supported: " + de);
                 }
                 break;
-            default:
+            case 2: // Other Windows
+                if (!diff || screens == 1) {
+                    windowsChange(wpPath);
+                } else {
+                    windowsChange(wpPath, i);
+                }
+                break;
+//            case 3: // Solaris
+//            case 4: // Free BSD
+//            case 5: // Open BSD
+//            case 6: // Windows CE
+//            case 7: // AIX
+//            case 8: // Android
+//            case 9: // GNU
+//            case 10: // GNU/kFreeBSD
+//            case 11: // NetBSD
+            default: //
                 log.log(Level.WARNING, () -> "Can't recognize OS: " + os);
         }
     }
 
     public static String identifyDE() {
-        String de;
-        de = System.getenv("XDG_CURRENT_DESKTOP");
+        int flag = 0;
+        String de = null;
+
+        try {
+            de = System.getenv("XDG_CURRENT_DESKTOP").toLowerCase();
+            flag = 1;
+        } catch (NullPointerException e) {
+            log.log(Level.FINE, "Not identifiable with: echo $XDG_CURRENT_DESKTOP: {1}" + e);
+        } catch (SecurityException e) {
+            log.log(Level.SEVERE, "Forbidden by security policy: " + e);
+        }
+        try {
+            de = System.getenv("$GDM_SESSION").toLowerCase();
+            flag = 2;
+        } catch (NullPointerException e) {
+            log.log(Level.FINE, "Not identifiable with: echo $GDM_SESSION" + e);
+        } catch (SecurityException e) {
+            log.log(Level.SEVERE, "Forbidden by security policy: " + e);
+        }
 
         if (de != null) {
-            de = de.toLowerCase();
             if (de.contains("xfce")) {
                 return "xfce";
             } else if (de.contains("kde")) {
@@ -100,39 +146,17 @@ public class SetNewWallpaper implements Runnable {
             } else if (de.contains("lxqt")) {
                 return "lxqt";
             } else {
-                log.log(Level.FINE, "Not identifiable with: echo $XDG_CURRENT_DESKTOP: {1}", de);
+                switch (flag) {
+                    case 1:
+                        log.log(Level.FINE, "Not identifiable with: echo $XDG_CURRENT_DESKTOP: {1}", de);
+                        break;
+                    case 2:
+                        log.log(Level.FINE, "Not identifiable with: echo $GDM_SESSION");
+                        break;
+                    default: log.log(Level.SEVERE, "Desktop environment not identifiable!");
+                }
             }
         }
-
-
-        de = System.getenv("$GDM_SESSION");
-
-        if (de != null) {
-            de = de.toLowerCase();
-            if (de.contains("xfce")) {
-                return "xfce";
-            } else if (de.contains("kde")) {
-                return "kde";
-            } else if (de.contains("unity")) {
-                return "unity";
-            } else if (de.contains("gnome")) {
-                return "gnome";
-            } else if (de.contains("cinnamon")) {
-                return "cinnamon";
-            }  else if (de.contains("mate")) {
-                return "mate";
-            } else if (de.contains("deepin")) {
-                return "deepin";
-            } else if (de.contains("budgie")) {
-                return "budgie";
-            } else if (de.contains("lxqt")) {
-                return "lxqt";
-            } else {
-                log.log(Level.FINE, "Not identifiable with: echo $GDM_SESSION");
-            }
-        }
-
-
         return null;
     }
 
@@ -147,7 +171,6 @@ public class SetNewWallpaper implements Runnable {
             return null;
         }
         BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-
         StringBuilder res = new StringBuilder();
         String line;
 
@@ -158,22 +181,28 @@ public class SetNewWallpaper implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
         return res.toString();
     }
 
-    interface User32 extends Library {
+    interface User32 extends StdCallLibrary {
         User32 INSTANCE = Native.load("user32", User32.class, W32APIOptions.DEFAULT_OPTIONS);
-        boolean SystemParametersInfo(int one, int two, String s, int three);
+        int SETDESKWALLPAPER = 0x0014;
+
+        boolean SystemParametersInfo(
+                int uiAction,
+                int uiParam,
+                String pvParam,
+                int fWinIni);
     }
 
     void windowsChange(String path) {
         log.log(Level.FINE, () -> "Detected Windows, setting wallpaper in " + path);
-        if (User32.INSTANCE.SystemParametersInfo(0x0014, 0, path, 1)) {
-            log.log(Level.FINE, "Success!");
-        }
-        // Note: result of this ^ function is useless
+        User32.INSTANCE.SystemParametersInfo(User32.SETDESKWALLPAPER, 0, path, 1);
     }
 
+    void windowsChange(String path, int i) {
+        log.log(Level.FINE, () -> "Detected Windows, setting wallpaper in " + path);
+        User32.INSTANCE.SystemParametersInfo(User32.SETDESKWALLPAPER, 0, path, 1);
+    }
 }
+
