@@ -2,6 +2,8 @@ package Settings;
 
 import Utils.DisplayLogger;
 
+import java.awt.GraphicsEnvironment;
+import java.awt.HeadlessException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -31,9 +33,11 @@ public class Settings {
 	private int maxDatabaseSize = 50;
 	private final Set<String> bannedList;
 	private boolean keepWallpapers = false; //keep wallpapers after eliminating them from db?
-	private boolean difWallpapers = false; //Different wallpaper per screen?
+	private boolean diffWallpapers = false; //Different wallpaper per screen?
 	private static String wallpaperPath = "Saved-Wallpapers"; // path to wallpaper folder
 	private static final Logger log = DisplayLogger.getInstance("Settings");
+	private static final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+	private static int screens; // Number of physical screens connected to the system
 
 	/* selects leading or trailing spaces on strings, or double (or greater) spaces between words (used in GUI and Searcher)
 		\\s+:	Select all white spaces that are:	1) Preceeded by a comma OR start of a line AND (?<=,|\A)
@@ -117,7 +121,10 @@ public class Settings {
 
 		}
 		bannedList = new HashSet<>();
-
+		try {screens = ge.getScreenDevices().length;}
+		catch (HeadlessException e) {
+			log.log(Level.WARNING, "Could not get screens: " + e.getMessage());
+		}
 	}
 
 	public static synchronized Settings getInstance() {
@@ -253,7 +260,7 @@ public class Settings {
 	}
 
 	public boolean doDiffWallpapers() {
-		return difWallpapers;
+		return diffWallpapers;
 	}
 
 	public static String getWallpaperPath() {
@@ -265,12 +272,20 @@ public class Settings {
 		return settingFile.lastModified();
 	}
 
-	public static String getRegWS() {
+	public String getRegWS() {
 		return REG_WS;
 	}
 
-	public static String getRegSB() {
+	public String getRegSB() {
 		return REG_SB;
+	}
+	
+	public int getScreens() {
+		try {screens = ge.getScreenDevices().length;}// update the number of screens just in case a screen has been unplugged/replugged
+		catch (HeadlessException e) {
+			log.log(Level.WARNING, "Could not check screens: " + e.getMessage());
+		}
+		return screens;
 	}
 
 	public void updateDate() {
