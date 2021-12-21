@@ -3,11 +3,9 @@ package Utils;
 import Settings.Settings;
 import Wallpaper.Wallpaper;
 
-import java.awt.*;
 import java.io.*;
 import java.sql.*;
 import java.util.*;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,20 +14,23 @@ class Selector implements Runnable{
     private final boolean keepWallpapers;
     private static final String dbUrl = "jdbc:h2:file:" + System.getProperty("user.dir")
             + File.separator + Settings.PATH_TO_DATABASE;
-    private final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
     private static final Logger log = DisplayLogger.getInstance("Selector");
     private Connection conn = null;
     private Statement db = null;
     private boolean executed = false;
     private Wallpaper result = null;
-    private Set<Wallpaper> results = null;
+    private Set<Wallpaper> results = new HashSet<>();
     private final Settings settings = Settings.getInstance();
     private final Set<Wallpaper> proposal;
+    private int screens;
+    private boolean diff;
 
-    public Selector(Set<Wallpaper> proposal, boolean keepWallpapers, int maxDbSize) throws IOException {
+    public Selector(Set<Wallpaper> proposal, boolean keepWallpapers, int maxDbSize, int screens, boolean diff) throws IOException {
         this.proposal = proposal;
         this.keepWallpapers = keepWallpapers;
         this.maxDbSize = maxDbSize;
+        this.screens = screens;
+        this.diff = diff;
 
         loadDB();
 
@@ -42,7 +43,6 @@ class Selector implements Runnable{
     public void run() {
         if (executed || proposal == null) return;
         executed = true;
-        int screens = ge.getScreenDevices().length;
         List<String> oldID = getOldWallpapersID();
 
         for (Wallpaper propWallpaper : proposal) {
@@ -54,33 +54,42 @@ class Selector implements Runnable{
                 }
                 log.log(Level.FINE, "Selected new wallpaper from those proposed");
                 insertDB(propWallpaper);
-                if (screens == 1 || !settings.doDiffWallpapers()) {
+                if (screens == 1 || !diff) {
                     closeDB();
                     result = propWallpaper;
                     return;
-                } else if (results.size() < screens){
+                } else if (results == null || results.size() < screens){
                     results.add(propWallpaper);
                     continue;
-                } else { //TODO finish this shit
-
+                } else {
+					closeDB();
+					return;
                 }
             }
         }
-        // OR No unused wallpapers are found, select oldest used wallpapers in the list
+		
+        // OR Not enough unused wallpapers are found //select oldest used wallpapers in the list
         if (proposal.isEmpty()) {
-            log.log(Level.WARNING, "No new wallpaper is proposed, setting a recent wallpaper. Maybe your query is too restrictive?");
+            log.log(Level.WARNING, "Not enough new wallpapers were proposed, setting from recent wallpapers. Maybe your query is too restrictive?");
         } else {
-            log.log(Level.INFO, "No unused wallpaper is found, setting the oldest from those found");
+            log.log(Level.INFO, "No unused wallpapers were found, setting from the oldest of those found");
         }
 
         while (true) {
             try (ResultSet rs = db.executeQuery("SELECT wp FROM WALLPAPERS ORDER BY date LIMIT 1")) {
                 rs.next();
-                result = (Wallpaper) rs.getObject("wp");
-                if (result != null && !settings.isBanned(result.getID())) {
-                    updateDate(result);
-                    break;
-                } else if (result==null) break;
+				result = (Wallpaper) rs.getObject("wp");
+				if (result == null || results.size() == screens) break;
+				else if (!settings.isBanned(result.getID())) {
+					if (screens == 1) {
+						updateDate(result);
+						break;
+					} else if (results.size() < screens) {
+						results.add(result);
+						updateDate(result);
+						continue;
+					} else break;
+				}
                 removeWp(result.getID());
             } catch (SQLException throwables) {
                 log.log(Level.WARNING, "DB Query error in select()");
@@ -88,20 +97,33 @@ class Selector implements Runnable{
             }
         }
 
-        if (result == null ) {
-            log.log(Level.WARNING, "Database is void, no wallpaper can be set");
-        }
+		if (results.size() != screens && screens > 1) {
+            log.log(Level.WARNING, "Not enough images available to set one per screen.");
+		} else if (result == null) {
+            log.log(Level.WARNING, "Database is void, no wallpaper can be set.");
+		}
         closeDB();
     }
 
     public Wallpaper getResult() {
         if (!executed) {
             log.log(Level.INFO, "Result was requested but the functor was never executed");
-        } else if (result == null) {
-            log.log(Level.INFO, "Selector didn't select any wallpaper");
+		} else if (result == null) {
+            log.log(Level.INFO, "Selector didn't select any wallpapers");
         }
         return result;
     }
+	
+	public Set<Wallpaper> getResult(int screens) {
+		if (!executed) {
+            log.log(Level.INFO, "Result was requested but the functor was never executed.");
+		} else if (results == null || results.size() == 0) {
+            log.log(Level.INFO, "Selector didn't select any wallpapers.");
+        } else if (results.size() < screens) {
+			log.log(Level.INFO, "Selector didn't find enough images for your screen.");
+		}
+        return results;
+	}
 
     public List<String> getOldWallpapersID() {
         ArrayList<String> arr = new ArrayList<>();
