@@ -35,13 +35,6 @@ public class Background implements Runnable {
 
 	public void banWallpaper() {
 		settings.addBanned(current.getID());
-		if (!settings.keepBlacklist) {
-			if (current.delete()) {
-				log.log(Level.INFO, "Blacklisted image removed.");
-			} else {
-				log.log(Level.INFO, "Blacklisted image was not removed.");
-			}
-		}
 	}
 
 	public void changeWallpaper() {
