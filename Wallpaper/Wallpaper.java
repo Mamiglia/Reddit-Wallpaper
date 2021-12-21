@@ -110,4 +110,7 @@ public class Wallpaper implements Serializable {
         return title;
     }
 
+    public boolean delete() {
+        return Objects.requireNonNull(file).delete();
+    }
 }
