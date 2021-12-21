@@ -1,3 +1,8 @@
 [1.1.1 - 27/09/2021]
  - Fix: GUI limiting period selector
  - Fix: nsfwSlider doesn't stay in position 
+[1.2.1 - 21/12/2021]
+ - Change: RW now queries a multireddit. This makes it more stable for large lists of subreddits (Go wild!)
+ - Enhancement: Added option for searching flairs
+ - Enhancement: Added a check for keeping blacklisted wallpapers
+ - Fix: Check that the database has the right data types
