@@ -40,6 +40,7 @@ public class GUI extends JFrame{
 	private JSpinner dbSizeField;
 	private JSpinner scoreField;
 	private JCheckBox keepCheckBox;
+	private JCheckBox blacklistCheckBox;
 	private JComboBox<TIME> oldSelection;
 	private JTextField titleField;
 	private JPanel logTab;
@@ -109,6 +110,7 @@ public class GUI extends JFrame{
 		settings.setPeriod((int) periodField.getValue());
 		settings.setSearchBy((SEARCH_BY) sortSelection.getSelectedItem());
 		settings.setKeepWallpapers(keepCheckBox.isSelected());
+		settings.setKeepBlacklist(blacklistCheckBox.isSelected());
 		settings.setMaxDatabaseSize((int) dbSizeField.getValue());
 
 		settings.writeSettings();
@@ -127,6 +129,7 @@ public class GUI extends JFrame{
 		oldSelection.setSelectedItem(settings.getMaxOldness());
 		dbSizeField.setValue(settings.getMaxDatabaseSize());
 		keepCheckBox.setSelected(settings.doKeepWallpapers());
+		blacklistCheckBox.setSelected(settings.doKeepBlacklist());
 		wallpaperPathText.setText(Settings.getWallpaperPath());
 		nsfwSlider.setValue(settings.getNsfwLevel().value);
 	}
