@@ -39,20 +39,20 @@ class Searcher {
 
 		 // TODO is there a better way to do this?
 		// it feels redundant calling the same if check 3 times
-		temp = String.join("+", settings.getSubreddits()).replaceAll(Settings.getRegWS(), "");
+		temp = String.join("+", settings.getSubreddits()).replaceAll(settings.getRegWS(), "");
 		if (!temp.equals(test)) {
 			searchQuery += temp + "/";
 		}
 		searchQuery += "search.json?q=";
 
 		// build temp string with title data
-		temp = String.join("\" OR \"", settings.getTitles()).replaceAll(Settings.getRegWS(), "");
+		temp = String.join("\" OR \"", settings.getTitles()).replaceAll(settings.getRegWS(), "");
 		if (!temp.equals(test)) {
 			searchQuery += "title:(\"" + temp + "\")&";
 		}
 
 		// build temp string with flair data
-		temp = String.join("\" OR \"", settings.getFlair()).replaceAll(Settings.getRegWS(), "");
+		temp = String.join("\" OR \"", settings.getFlair()).replaceAll(settings.getRegWS(), "");
 		if (!temp.equals(test)) {
 		// Flair string is delimited by commas and automatically wrapped in quotation marks to handle multi-word flairs
 			searchQuery += "flair:(\"" + temp + "\")&";
