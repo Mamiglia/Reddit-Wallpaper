@@ -98,9 +98,9 @@ public class GUI extends JFrame{
 		// Settings.regWS holds the whitespace regex string as it's accessible from both places I currnetly have it
 		// Selects any extra space before or after a string with comma delimitation
 		// Selects any extra space (any more than one) between words
-		settings.setTitles(titleField.getText().replaceAll(Settings.getRegWS(), "").split(","));
-		settings.setSubreddits(subredditField.getText().replaceAll(Settings.getRegWS(), "").split(","));
-		settings.setFlair(flairField.getText().replaceAll(Settings.getRegWS(), "").split(","));
+		settings.setTitles(titleField.getText().replaceAll(settings.getRegWS(), "").split(","));
+		settings.setSubreddits(subredditField.getText().replaceAll(settings.getRegWS(), "").split(","));
+		settings.setFlair(flairField.getText().replaceAll(settings.getRegWS(), "").split(","));
 		settings.setNsfwLevel(nsfwSlider.getValue());
 		settings.setHeight((int) heightField.getValue());
 		settings.setWidth((int) widthField.getValue());
@@ -116,9 +116,9 @@ public class GUI extends JFrame{
 
 	void loadSettings() {
 		// Settings.regSB holds the regex string for removing square brackets
-		titleField.setText(Arrays.toString(settings.getTitles()).replaceAll(Settings.getRegSB(), ""));
-		subredditField.setText(Arrays.toString(settings.getSubreddits()).replaceAll(Settings.getRegSB(), ""));
-		flairField.setText(Arrays.toString(settings.getFlair()).replaceAll(Settings.getRegSB(), ""));
+		titleField.setText(Arrays.toString(settings.getTitles()).replaceAll(settings.getRegSB(), ""));
+		subredditField.setText(Arrays.toString(settings.getSubreddits()).replaceAll(settings.getRegSB(), ""));
+		flairField.setText(Arrays.toString(settings.getFlair()).replaceAll(settings.getRegSB(), ""));
 		sortSelection.setSelectedItem(settings.getSearchBy());
 		heightField.setValue(settings.getHeight());
 		widthField.setValue(settings.getWidth());
@@ -214,8 +214,6 @@ public class GUI extends JFrame{
 		try {
 			reader = new FileReader(DisplayLogger.LOG_PATH);
 			logArea.read(reader, DisplayLogger.LOG_PATH);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
