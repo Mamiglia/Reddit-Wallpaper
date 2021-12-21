@@ -40,7 +40,7 @@ I need help, I need feedbacks, I need people to tell me that they like this/disl
 - [ ] Add a way to check for updates
 - [x] Improve memory usage (was ca. 200MB) -> improved to 150MB
 - [ ] Add Linux support!
-- [ ] Add an option to search from single subreddits with specific flairs
+- [x] Add an option to search from single subreddits with specific flairs
 - [x] Feature request: add "save" button that saves the wallpapers you like in a specific folder
 - [ ] Feature request: add option to apply different wallpapers for different monitors
 - [ ] Consider turning the application in a service
