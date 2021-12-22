@@ -139,7 +139,10 @@
                       </component>
                       <component id="3aa01" class="javax.swing.JSpinner" binding="periodField" custom-create="true">
                         <constraints/>
-                        <properties/>
+                        <properties>
+                          <maximumSize width="88" height="30"/>
+                          <minimumSize width="88" height="30"/>
+                        </properties>
                       </component>
                       <component id="c32c5" class="javax.swing.JLabel">
                         <constraints/>
@@ -393,7 +396,7 @@
                   </grid>
                 </children>
               </grid>
-              <grid id="e5247" layout-manager="GridLayoutManager" row-count="7" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+              <grid id="e5247" layout-manager="GridLayoutManager" row-count="8" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
                   <tabbedpane title="Advanced"/>
@@ -475,7 +478,7 @@
                   </grid>
                   <grid id="f718f" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
                     <constraints>
-                      <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                      <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <requestFocusEnabled value="true"/>
@@ -493,12 +496,17 @@
                       </component>
                     </children>
                   </grid>
+                  <vspacer id="f5948">
+                    <constraints>
+                      <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                  </vspacer>
                   <grid id="ae23a" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
                     <constraints>
-                      <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                      <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <toolTipText value="Never: no NSFW wallpaper will ever be shown\nAllow: NSFW Wallpapers might be shown \nOnly: only NSFW will be shown, warning: Horny!"/>
+                      <toolTipText value="Never: no NSFW wallpaper will ever be shown&#10;Allow: NSFW Wallpapers might be shown&#10;Only: only NSFW will be shown, warning: Horny!"/>
                       <visible value="true"/>
                     </properties>
                     <border type="none"/>
@@ -521,18 +529,59 @@
                           <paintTicks value="false"/>
                           <paintTrack value="true"/>
                           <snapToTicks value="true"/>
-                          <toolTipText value="NEVER: no nsfw wallpaper will ever be shown. ALLOW: nsfw wallpapers might be shown. ONLY: only nsfw will be shown, warning: Horny!"/>
+                          <toolTipText value="NEVER: no nsfw wallpaper will ever be shown&#10;ALLOW: nsfw wallpapers might be shown&#10;ONLY: only nsfw will be shown, warning: Horny!"/>
                           <value value="0"/>
                           <visible value="true"/>
                         </properties>
                       </component>
                     </children>
                   </grid>
-                  <vspacer id="f5948">
+                  <grid id="dd68d" layout-manager="GridLayoutManager" row-count="1" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
                     <constraints>
-                      <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                      <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
-                  </vspacer>
+                    <properties>
+                      <toolTipText value="Strict: Exact match to chosen resolution ratio&#10;Relaxed: From chosen resolution to square&#10;None: Any ratio"/>
+                    </properties>
+                    <border type="none"/>
+                    <children>
+                      <component id="1f1c7" class="javax.swing.JComboBox" binding="ratio">
+                        <constraints>
+                          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <foreground color="-4473925"/>
+                          <model>
+                            <item value="Strict"/>
+                            <item value="Relaxed"/>
+                            <item value="None"/>
+                          </model>
+                          <toolTipText value="Strict: Exact match to chosen resolution ratio&#10;Relaxed: From chosen resolution to square&#10;None: Any ratio"/>
+                        </properties>
+                      </component>
+                      <component id="22fe2" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <horizontalAlignment value="10"/>
+                          <text value="Aspect ratio:"/>
+                          <toolTipText value="Strict: Exact match to chosen resolution ratio&#10;Relaxed: From chosen resolution to square&#10;None: Any ratio"/>
+                        </properties>
+                      </component>
+                      <hspacer id="d4bb3">
+                        <constraints>
+                          <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                      </hspacer>
+                      <hspacer id="467d">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                      </hspacer>
+                    </children>
+                  </grid>
                 </children>
               </grid>
               <grid id="21e7" binding="logTab" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
