@@ -11,7 +11,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
@@ -50,6 +49,7 @@ public class GUI extends JFrame{
 	private JTextField wallpaperPathText;
 	private JButton changeDirectoryButton;
 	private JSlider nsfwSlider;
+	private JComboBox ratio;
 	static final Logger log = DisplayLogger.getInstance("GUI");
 	private final Act act;
 	private final Settings settings = Settings.getInstance();
@@ -112,6 +112,7 @@ public class GUI extends JFrame{
 		settings.setKeepWallpapers(keepCheckBox.isSelected());
 		settings.setKeepBlacklist(blacklistCheckBox.isSelected());
 		settings.setMaxDatabaseSize((int) dbSizeField.getValue());
+		settings.setRatioLimit(ratio.getSelectedItem());
 
 		settings.writeSettings();
 	}
@@ -128,10 +129,11 @@ public class GUI extends JFrame{
 		periodField.setValue(settings.getPeriod());
 		oldSelection.setSelectedItem(settings.getMaxOldness());
 		dbSizeField.setValue(settings.getMaxDatabaseSize());
-		keepCheckBox.setSelected(settings.doKeepWallpapers());
-		blacklistCheckBox.setSelected(settings.doKeepBlacklist());
+		keepCheckBox.setSelected(settings.getKeepWallpapers());
+		blacklistCheckBox.setSelected(settings.getKeepBlacklist());
 		wallpaperPathText.setText(Settings.getWallpaperPath());
 		nsfwSlider.setValue(settings.getNsfwLevel().value);
+		ratio.setSelectedItem(settings.getRatioLimit());
 	}
 
 	void changeWallpaper() {
@@ -169,7 +171,7 @@ public class GUI extends JFrame{
 			Settings.eraseDB();
 
 			// Requires the directory exists and wallpapers should not be kept
-			if (wallpaperFolder.isDirectory() && !settings.doKeepWallpapers()) {
+			if (wallpaperFolder.isDirectory() && !settings.getKeepWallpapers()) {
 				for (File walp : Objects.requireNonNull(wallpaperFolder.listFiles())) {
 					if (walp.delete()) {
 						log.log(Level.FINE, () -> walp + " deleted.");
@@ -177,7 +179,7 @@ public class GUI extends JFrame{
 				}
 				log.log(Level.FINE, () -> "Wallpapers successfully purged.");
 			}
-			else if (settings.doKeepWallpapers()) {
+			else if (settings.getKeepWallpapers()) {
 				log.log(Level.FINE, () -> "Wallpapers have not been removed by preference.");
 			}
 			else {
@@ -202,7 +204,7 @@ public class GUI extends JFrame{
 	}
 
 	private void showLog() {
-		FileReader reader = null;
+		FileReader reader;
 		try {
 			reader = new FileReader(DisplayLogger.LOG_PATH);
 			logArea.read(reader, DisplayLogger.LOG_PATH);
