@@ -30,7 +30,7 @@ public class GetNewWallpaper implements Runnable {
 	@Override
 	public void run() {
 		if (executed) return;
-		executed = true;;
+		executed = true;
 
 		Searcher s = new Searcher(settings);
 		s.generateSearchQuery();
@@ -45,7 +45,7 @@ public class GetNewWallpaper implements Runnable {
 		Selector selector;
 
 		try {
-			selector = new Selector(wallpapers, settings.doKeepWallpapers(), settings.getMaxDatabaseSize(), screens, diff);
+			selector = new Selector(wallpapers, settings.getKeepWallpapers(), settings.getMaxDatabaseSize(), screens, diff);
 		} catch (IOException e) {
 			log.log(Level.SEVERE, "Loading DB is impossible. Aborting wallpaper set up");
 			abort();
@@ -82,7 +82,7 @@ public class GetNewWallpaper implements Runnable {
 				}
 			}
 		}
-		if (result == null && results == null){
+		if ((result == null && (screens == 1 || !diff) || (results == null && diff && screens > 1))){
 			log.log(Level.SEVERE, "The selection process found no wallpaper");
 			abort();
 		}
@@ -97,7 +97,7 @@ public class GetNewWallpaper implements Runnable {
 		if (!executed) {
 			log.log(Level.INFO, "Result was requested but the functor was never executed");
 		} else if (result == null) {
-			log.log(Level.INFO, "No wallpaper was selected single");
+			log.log(Level.INFO, "No wallpaper was selected.");
 		}
 		return result;
 	}
@@ -106,7 +106,7 @@ public class GetNewWallpaper implements Runnable {
 		if (!executed) {
 			log.log(Level.INFO, "Result was requested but the functor was never executed");
 		} else if (results == null) {
-			log.log(Level.INFO, "No wallpaper was selected multi");
+			log.log(Level.INFO, "No wallpapers were selected.");
 		} else if (results.size() < i) {
 			log.log(Level.INFO, "Not enough wallpapers found for your screens");
 		}
