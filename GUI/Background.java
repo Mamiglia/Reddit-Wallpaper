@@ -46,7 +46,7 @@ public class Background implements Runnable {
 
 	public void changeWallpaper() {
 		int screens = settings.getScreens();
-		boolean diff = settings.doDiffWallpapers();
+		boolean diff = settings.getDiffWallpapers();
 		GetNewWallpaper g = new GetNewWallpaper(settings, screens, diff);
 		Thread t1 = new Thread(g);
 		t1.start();
@@ -59,7 +59,7 @@ public class Background implements Runnable {
 		if (screens > 1 && diff) {
 			int i = 0;
 			for (Wallpaper c : g.getResult(screens)) {
-				SetNewWallpaper set = new SetNewWallpaper(c, i);
+				SetNewWallpaper set = new SetNewWallpaper(c, screens);
 				Thread t2 = new Thread(set);
 				t2.start();
 				settings.updateDate();
