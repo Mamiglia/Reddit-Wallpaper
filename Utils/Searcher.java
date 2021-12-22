@@ -66,6 +66,7 @@ class Searcher {
 				+ "&type=t3" //only link type posts, no text-only
 				+ "&restrict_sr=true" //restrict results to defined subreddits (leave on true)
 				+ settings.getNsfwLevel().query
+				+ "&rawjson=1"
 		;
 		
 		searchQuery = searchQuery.replace("flair:()&", "");
@@ -119,6 +120,11 @@ class Searcher {
 		int score;
 		boolean is_over_18;
 
+		if (rawData.contains("error")) {
+			log.log(Level.WARNING, "Reddit returned an error:\n" + rawData);
+			return null;
+		}
+
 		JSONArray children = new JSONObject(rawData).getJSONObject("data").getJSONArray("children");
 
 		for (int i = 0; i < children.length(); i++) {
@@ -136,6 +142,11 @@ class Searcher {
 			permalink = child.getString("permalink");
 			url = child.getString("url");
 			id = child.getString("id");
+
+			if (url.contains("v.redd.it") || url.contains("www.youtube.com")) {
+				log.log(Level.FINER, "This post isn't a valid wallpaper. Skipping.");
+				continue;
+			}
 
 			if (child.keySet().contains("crosspost_parent_list")) {
 				// some posts are crossposts
@@ -157,6 +168,17 @@ class Searcher {
 						title,
 						permalink);
 				res.addAll(gallery);
+				continue;
+			}
+
+			// if the url is a video link or doesn't have a file extension (a web page)
+			if (!(url.matches("(.*)\\.\\w+"))) {
+				log.log(Level.FINER, "This post isn't a valid wallpaper. Skipping.");
+				continue;
+			}
+
+			if (!child.keySet().contains("preview")) {
+				log.log(Level.FINER, "This entry is problematic. Skipping.");
 				continue;
 			}
 
@@ -214,12 +236,17 @@ class Searcher {
 	 * URL is required for output to the log
 	 */
 	private boolean imageSize(int x, int y, String url) {
-		if (settings.getWidth() > x || settings.getHeight() > y) {
+		int width = settings.getWidth();
+		int height = settings.getHeight();
+		float ratio = (float) width/height;
+		if ((width > x || height > y) ||
+				(ratio != (float) x/y && settings.getRatioLimit().equals("Strict")) ||
+				(((ratio > 1 && 1 > (float) x/y) || (ratio < 1 && 1 < (float) x/y)) && settings.getRatioLimit().equals("Relaxed"))) {
 			log.log(Level.FINE, () ->
 				"Detected wallpaper not compatible with screen dimensions: "
-					+ x + "x" + y
+					+ x + "x" + y + " ratio: " + x/y
 					+  " Instead of "
-					+ settings.getWidth() + "x" + settings.getHeight()
+					+ width + "x" + height + " ratio: " + ratio
 					+ ". Searching for another..."
 				);
 			log.log(Level.FINER, () -> "Wallpaper rejected was: " + url);
