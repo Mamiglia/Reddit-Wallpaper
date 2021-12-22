@@ -33,42 +33,37 @@ class Selector implements Runnable{
         this.diff = diff;
         boolean flag = false;
 
-        for (int i = 1; i < 4; i++) {
-            loadDB();
-            try (ResultSet dataTypes = db.executeQuery("SELECT DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where" +
-                    " table_name = 'WALLPAPERS'")) { // Pull the data type information
-                while (dataTypes.next()) {
-                    String check = dataTypes.getString(1); // there is only 1 collumn
+        loadDB();
+        try (ResultSet dataTypes = db.executeQuery("SELECT DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where" +
+                " table_name = 'WALLPAPERS'")) { // Pull the data type information
+            while (dataTypes.next()) {
+                String check = dataTypes.getString(1); // there is only 1 collumn
 
-                    // List of data types as integers can be found at https://www.geeksforgeeks.org/how-to-get-the-datatype-of-a-column-of-a-table-using-jdbc/
-                    if (!((check.equals("12") && dataTypes.getRow() == 1) || // VARCHAR
-                            (check.equals("1111") && dataTypes.getRow() == 2) || // OTHER
-                            (check.equals("93") && dataTypes.getRow() == 3))) { // TIMESTAMP
+                // List of data types as integers can be found at https://www.geeksforgeeks.org/how-to-get-the-datatype-of-a-column-of-a-table-using-jdbc/
+                if (!((check.equals("12") && dataTypes.getRow() == 1) || // VARCHAR
+                        (check.equals("1111") && dataTypes.getRow() == 2) || // OTHER (Wallpaper)
+                        (check.equals("93") && dataTypes.getRow() == 3))) { // TIMESTAMP
 
-                        closeDB(); // if the data types don't match
-                        log.log(Level.WARNING, "DB data types are incorrect. Resetting database, this will keep images but they may be downloaded again.");
-                        flag = true; // flag to repeat the loop. Loop isn't based on this just in case this doesn't fix the issue.
-                        Settings.eraseDB(); // Erases the database file
-                        break;
-                    } else flag = false;
-                    log.log(Level.FINEST, check); // this will output any data types integer value
+                    log.log(Level.WARNING, "DB data types are incorrect. Please delete database.");
+                    break;
                 }
-                if (flag) {
-                    log.log(Level.WARNING, "Attempting to correct database. Attempt " + i + " of 3");
-                } else if (i == 3) {
-                    log.log(Level.SEVERE, "Could not create database with correct data types.");
-                } else break;
-            } catch (SQLException throwables) {
-                log.log(Level.WARNING, "SQL error in database check.");
-                log.log(Level.FINEST, throwables.getMessage());
+                log.log(Level.FINEST, check); // this will output any data types integer value
             }
+        } catch (SQLException throwables) {
+            log.log(Level.WARNING, "SQL error in database check.");
+            log.log(Level.FINEST, throwables.getMessage());
         }
+
 
         if (conn == null) {
             throw new IOException();
         }
     }
 
+    //TODO Add multi monitor support (wallpaper per screen, tray icon support)
+    //TODO Multi monitor alignment options
+    //TODO Add image title to image bottom left (possibly restrict to certain subreddits?)
+    //TODO Imgur gallery handling
     @Override
     public void run() {
         if (executed || proposal == null) return;
@@ -111,7 +106,7 @@ class Selector implements Runnable{
 				result = (Wallpaper) rs.getObject("wp");
 				if (result == null || results.size() == screens) break;
 				else if (!settings.isBanned(result.getID())) {
-					if (screens == 1) {
+					if (screens == 1 || !diff) {
 						updateDate(result);
 						break;
 					} else if (results.size() < screens) {
@@ -124,10 +119,11 @@ class Selector implements Runnable{
             } catch (SQLException throwables) {
                 log.log(Level.WARNING, "DB Query error in select()");
                 log.log(Level.FINEST, throwables.getMessage());
+                break;
             }
         }
 
-		if (results.size() != screens && screens > 1) {
+		if (results.size() != screens && screens > 1 && diff) {
             log.log(Level.WARNING, "Not enough images available to set one per screen.");
 		} else if (result == null) {
             log.log(Level.WARNING, "Database is void, no wallpaper can be set.");
