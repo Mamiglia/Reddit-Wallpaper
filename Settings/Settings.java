@@ -36,6 +36,7 @@ public class Settings {
 	private boolean keepWallpapers = false; //keep wallpapers after eliminating them from db?
 	private boolean diffWallpapers = false; //Different wallpaper per screen?
 	private static String wallpaperPath = "Saved-Wallpapers"; // path to wallpaper folder
+	private Object ratioLimit = "Relaxed";
 	private static final Logger log = DisplayLogger.getInstance("Settings");
 	private static final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 	private static int screens; // Number of physical screens connected to the system
@@ -225,10 +226,6 @@ public class Settings {
 		this.height = height;
 	}
 
-	public void setWallpaperPath(String path) {
-		wallpaperPath = path;
-	}
-
 	public int getWidth() {
 		return width;
 	}
@@ -269,25 +266,45 @@ public class Settings {
 		this.maxDatabaseSize = maxDatabaseSize;
 	}
 
-	public boolean doKeepWallpapers() {
+	public static String getWallpaperPath() {
+		return wallpaperPath;
+	}
+
+	public void setWallpaperPath(String path) {
+		wallpaperPath = path;
+	}
+
+	public void setKeepWallpapers(boolean keepWallpapers) {
+		this.keepWallpapers = keepWallpapers;
+	}
+
+	public boolean getKeepWallpapers() {
 		return keepWallpapers;
 	}
 
-	public boolean doKeepBlacklist() {
+	public void setKeepBlacklist(boolean keepBlacklist) {
+		this.keepBlacklist = keepBlacklist;
+	}
+
+	public boolean getKeepBlacklist() {
 		return keepBlacklist;
 	}
 
-	public boolean doDiffWallpapers() {
+	public boolean getDiffWallpapers() {
 		return diffWallpapers;
-	}
-
-	public static String getWallpaperPath() {
-		return wallpaperPath;
 	}
 
 	public long getLastTimeWallpaperChanged() {
 		// The settings file is updated each time a wallpaper is changed
 		return settingFile.lastModified();
+	}
+
+	public Object getRatioLimit() {
+		return ratioLimit;
+	}
+
+	public void setRatioLimit(Object ratioLimit) {
+		this.ratioLimit = ratioLimit;
 	}
 
 	public String getRegWS() {
@@ -338,14 +355,6 @@ public class Settings {
 				"\nkeepWallpapers=" + keepWallpapers +
 				"\nkeepBlacklist=" + keepBlacklist +
 				"\nwallpaperPath=" + wallpaperPath;
-	}
-
-	public void setKeepWallpapers(boolean keepWallpapers) {
-		this.keepWallpapers = keepWallpapers;
-	}
-
-	public void setKeepBlacklist(boolean keepBlacklist) {
-		this.keepBlacklist = keepBlacklist;
 	}
 
 	@Override
