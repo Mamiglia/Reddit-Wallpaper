@@ -14,8 +14,8 @@ public class GetNewWallpaper implements Runnable {
 	private static final Logger log = DisplayLogger.getInstance("Get New Wallpaper");
 	private final Settings settings;
 	public static final Wallpaper ERROR_VALUE = null;
-	private int screens;
-	private boolean diff;
+	private final int screens;
+	private final boolean diff;
 
 	private Wallpaper result;
 	private Set<Wallpaper> results;
