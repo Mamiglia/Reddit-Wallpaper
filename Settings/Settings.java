@@ -34,7 +34,7 @@ public class Settings {
 	private int maxDatabaseSize = 50;
 	private final Set<String> bannedList;
 	private boolean keepWallpapers = false; //keep wallpapers after eliminating them from db?
-	private boolean diffWallpapers = false; //Different wallpaper per screen?
+	private final boolean diffWallpapers = false; //Different wallpaper per screen?
 	private static String wallpaperPath = "Saved-Wallpapers"; // path to wallpaper folder
 	private Object ratioLimit = "Relaxed";
 	private static final Logger log = DisplayLogger.getInstance("Settings");
