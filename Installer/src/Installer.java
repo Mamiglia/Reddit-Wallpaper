@@ -86,15 +86,15 @@ public class Installer {
 		File bat = createAutostartFile();
 		File resources = new File(resDir);
 		if (!exe.exists()) {
-			print(exe.toString() + " was not found, can't complete installation process");
+			print(exe + " was not found, can't complete installation process");
 			abort();
 		}
 		if (!bat.exists()) {
-			print(bat.toString() + " was not found, can't complete installation process");
+			print(bat + " was not found, can't complete installation process");
 			abort();
 		}
 		if (!resources.exists()) {
-			print(resources.toString() + " was not found, can't complete installation process");
+			print(resources + " was not found, can't complete installation process");
 			abort();
 		}
 		long filesSize = 0;
@@ -125,7 +125,7 @@ public class Installer {
 					print("Input not recognized, please select a number from either 1 or 2");
 			}
 		}
-		print("Current Directory: " + from.toString());
+		print("Current Directory: " + from);
 
 		exe = move(mainExe, INSTALLATION_PATH);
 		bat = move(batch, getStartupFolder());
@@ -206,7 +206,7 @@ public class Installer {
 					print("Input not recognized, please select a number from either 0 or 1");
 			}
 		}
-		print("Current Directory: " + from.toString());
+		print("Current Directory: " + from);
 
 		print("Please, now close RW if it's running. Then press enter");
 		pause();
@@ -303,7 +303,7 @@ public class Installer {
 	}
 
 	static File move(String name, String destination) {
-		File f = new File(from.toString() +File.separator+ name);
+		File f = new File(from +File.separator+ name);
 		File to = new File(destination);
 
 		return move(f, to);
@@ -314,12 +314,12 @@ public class Installer {
 			System.err.println(f.getName() + " not found in current directory: " + f.getPath());
 			return to;
 		}
-		System.out.print("Transferring this file: " + f.toString());
+		System.out.print("Transferring this file: " + f);
 		System.out.println(" to this location: "+ to.toString());
 
 		to.mkdirs();
 		to.mkdir();
-		File dest = new File(to.toString() + File.separator + f.getName());
+		File dest = new File(to + File.separator + f.getName());
 		try {
 			Files.copy(f.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		} catch (FileSystemException e) {
@@ -357,7 +357,7 @@ public class Installer {
 	}
 
 	public static File createAutostartFile() {
-		File f = new File(from.toString() + "/" + batch);
+		File f = new File(from + "/" + batch);
 		String code =
 				"@echo off\n" +
 						"cd \""+ INSTALLATION_PATH + "\"\n" +
