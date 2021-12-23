@@ -566,7 +566,7 @@
                         </constraints>
                         <properties>
                           <horizontalAlignment value="10"/>
-                          <text value="Aspect ratio:"/>
+                          <text value="Aspect ratio filter:"/>
                           <toolTipText value="Strict: Exact match to chosen resolution ratio&#10;Relaxed: From chosen resolution to square&#10;None: Any ratio"/>
                         </properties>
                       </component>
