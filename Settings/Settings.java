@@ -348,6 +348,7 @@ public class Settings {
 				"\nnsfwLevel=" + nsfwLevel.value +
 				"\nheight=" + height +
 				"\nwidth=" + width +
+				"\nratioLimit=" + ratioLimit +
 				"\nperiod=" + period +
 				"\nscore=" + minScore +
 				"\nmaxOldness=" + maxOldness +
@@ -368,6 +369,7 @@ public class Settings {
 				&& period == settings.period
 				&& minScore == settings.minScore
 				&& maxOldness == settings.maxOldness
+				&& ratioLimit.equals(settings.ratioLimit)
 				&& Arrays.equals(titles, settings.titles)
 				&& Arrays.equals(subreddits, settings.subreddits)
 				&& Arrays.equals(flair, settings.flair)
@@ -376,9 +378,10 @@ public class Settings {
 
 	@Override
 	public int hashCode() {
-		int result = Objects.hash(searchBy, nsfwLevel, height, width, period, maxOldness);
+		int result = Objects.hash(searchBy, nsfwLevel, height, width, period, maxOldness, minScore, ratioLimit);
 		result = 31 * result + Arrays.hashCode(titles);
 		result = 31 * result + Arrays.hashCode(subreddits);
+		result = 31 * result + Arrays.hashCode(flair);
 		return result;
 	}
 
@@ -411,6 +414,9 @@ public class Settings {
 				break;
 			case "period":
 				period = Integer.parseInt(value);
+				break;
+			case "ratioLimit":
+				ratioLimit = value;
 				break;
 			case "maxOldness":
 				maxOldness = TIME.valueOf(value);
