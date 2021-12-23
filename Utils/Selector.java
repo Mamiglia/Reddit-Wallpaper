@@ -19,11 +19,11 @@ class Selector implements Runnable{
     private Statement db = null;
     private boolean executed = false;
     private Wallpaper result = null;
-    private Set<Wallpaper> results = new HashSet<>();
+    private final Set<Wallpaper> results = new HashSet<>();
     private final Settings settings = Settings.getInstance();
     private final Set<Wallpaper> proposal;
-    private int screens;
-    private boolean diff;
+    private final int screens;
+    private final boolean diff;
 
     public Selector(Set<Wallpaper> proposal, boolean keepWallpapers, int maxDbSize, int screens, boolean diff) throws IOException {
         this.proposal = proposal;
@@ -31,7 +31,6 @@ class Selector implements Runnable{
         this.maxDbSize = maxDbSize;
         this.screens = screens;
         this.diff = diff;
-        boolean flag = false;
 
         loadDB();
         try (ResultSet dataTypes = db.executeQuery("SELECT DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where" +
@@ -83,9 +82,8 @@ class Selector implements Runnable{
                     closeDB();
                     result = propWallpaper;
                     return;
-                } else if (results == null || results.size() < screens){
+                } else if (results.size() < screens){
                     results.add(propWallpaper);
-                    continue;
                 } else {
 					closeDB();
 					return;
