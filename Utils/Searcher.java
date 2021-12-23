@@ -15,7 +15,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 class Searcher {
-	//private static final int MINIMUM_NUMBER_OF_UPVOTES = 15; // Number to not pick indecent wallpapers. This number is completely arbitrary, but it should be sufficient TODO could allow users to define minimum upvotes in the UI
 	private final Settings settings;
 	private String searchQuery = "";
 	private Set<Wallpaper> proposed;
@@ -37,7 +36,6 @@ class Searcher {
 		//Query now builds a multisub out of listed subreddits, this should prevent issues with very large lists of subs
 				"https://reddit.com/r/";
 
-		 // TODO is there a better way to do this?
 		// it feels redundant calling the same if check 3 times
 		temp = String.join("+", settings.getSubreddits()).replaceAll(settings.getRegWS(), "");
 		if (!temp.equals(test)) {
@@ -110,7 +108,6 @@ class Searcher {
 		// converts the String JSON into a HashMap JSON, then selects the only things
 		// we are interested in: the ID and the photo link
 		Set<Wallpaper> res = new HashSet<>();
-		Set<Wallpaper> gallery;
 		Wallpaper wallpaper;
 		String id;
 		String title;
@@ -129,6 +126,15 @@ class Searcher {
 
 		for (int i = 0; i < children.length(); i++) {
 			child = children.getJSONObject(i).getJSONObject("data");
+
+			// If the post isn't an image, we don't want it
+			if (child.keySet().contains("post_hint")) { // gallaries don't have a post hint
+				if (!child.getString("post_hint").equals("image")) {
+					log.log(Level.FINER, "This post isn't a valid wallpaper. Skipping.");
+					continue;
+				}
+			}
+
 			score = child.getInt("score"); // # of upvotes
 			is_over_18 = child.getBoolean("over_18");
 
@@ -142,11 +148,6 @@ class Searcher {
 			permalink = child.getString("permalink");
 			url = child.getString("url");
 			id = child.getString("id");
-
-			if (url.contains("v.redd.it") || url.contains("www.youtube.com")) {
-				log.log(Level.FINER, "This post isn't a valid wallpaper. Skipping.");
-				continue;
-			}
 
 			if (child.keySet().contains("crosspost_parent_list")) {
 				// some posts are crossposts
@@ -163,20 +164,22 @@ class Searcher {
 			if (child.keySet().contains("is_gallery")) {
 				//we are going to add all the posts from this gallery
 				//note that in this way the proposed wallpapers will be slightly more than the QUERY_SIZE
-				gallery = processGallery(
-						child.getJSONObject("media_metadata"),
-						title,
-						permalink);
-				res.addAll(gallery);
+				res.addAll(
+						processGallery(
+								child.getJSONObject("media_metadata"),
+								title,
+								permalink));
 				continue;
 			}
 
-			// if the url is a video link or doesn't have a file extension (a web page)
+			// if the url doesn't have a file extension (a web page)
 			if (!(url.matches("(.*)\\.\\w+"))) {
 				log.log(Level.FINER, "This post isn't a valid wallpaper. Skipping.");
 				continue;
 			}
 
+			// preview keyword is required for the rest of the json handling. If preview is missing the program will
+			// throw an error. Easiest just to exclude these results
 			if (!child.keySet().contains("preview")) {
 				log.log(Level.FINER, "This entry is problematic. Skipping.");
 				continue;
@@ -239,9 +242,9 @@ class Searcher {
 		int width = settings.getWidth();
 		int height = settings.getHeight();
 		float ratio = (float) width/height;
-		if ((width > x || height > y) ||
-				(ratio != (float) x/y && settings.getRatioLimit().equals("Strict")) ||
-				(((ratio > 1 && 1 > (float) x/y) || (ratio < 1 && 1 < (float) x/y)) && settings.getRatioLimit().equals("Relaxed"))) {
+		if ((width > x || height > y) || // image doesn't meet resolution
+				(ratio != (float) x/y && settings.getRatioLimit().equals("Strict")) || // image doesn't meet exact screen ratio
+				(((ratio > 1 && 1 > (float) x/y) || (ratio < 1 && 1 < (float) x/y)) && settings.getRatioLimit().equals("Relaxed"))) { // image isn't somewhere between screen ratio and square
 			log.log(Level.FINE, () ->
 				"Detected wallpaper not compatible with screen dimensions: "
 					+ x + "x" + y + " ratio: " + x/y
@@ -250,10 +253,10 @@ class Searcher {
 					+ ". Searching for another..."
 				);
 			log.log(Level.FINER, () -> "Wallpaper rejected was: " + url);
-			// if the image is too small
+			// if the image is rejected
 			return true;
 		}
-		// if the image is large enough
+		// if the image is accepted
 		return false;
 	}
 
