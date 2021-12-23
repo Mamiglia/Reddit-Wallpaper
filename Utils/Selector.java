@@ -62,7 +62,7 @@ class Selector implements Runnable{
     //TODO Add multi monitor support (wallpaper per screen, tray icon support)
     //TODO Multi monitor alignment options
     //TODO Add image title to image bottom left (possibly restrict to certain subreddits?)
-    //TODO Imgur gallery handling
+    //TODO Imgur gallery handling???
     @Override
     public void run() {
         if (executed || proposal == null) return;
