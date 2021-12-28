@@ -4,6 +4,8 @@ import Wallpaper.Wallpaper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+
+import com.sun.jna.Library;
 import com.sun.jna.Native;
 import java.io.InputStreamReader;
 import java.util.logging.Level;
@@ -39,7 +41,7 @@ public class SetNewWallpaper implements Runnable {
             executed = true;
         }
 
-        if (!wp.isDownloaded()) {
+        if (wp.isDownloaded()) {
             log.log(Level.WARNING, "Wallpaper file not found");
             return;
         }
@@ -160,7 +162,7 @@ public class SetNewWallpaper implements Runnable {
         return null;
     }
 
-    public static String executeProcess(String s) {
+    public static void executeProcess(String s) {
         ProcessBuilder pb = new ProcessBuilder("bash", "-c", s);
         pb.redirectErrorStream(true);
         Process p;
@@ -168,7 +170,7 @@ public class SetNewWallpaper implements Runnable {
             p = pb.start();
         } catch (IOException e) {
             log.log(Level.WARNING, () -> "Error while executing command: " + s);
-            return null;
+            return;
         }
         BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
         StringBuilder res = new StringBuilder();
@@ -181,14 +183,13 @@ public class SetNewWallpaper implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return res.toString();
     }
 
-    interface User32 extends StdCallLibrary {
+    interface User32 extends Library {
         User32 INSTANCE = Native.load("user32", User32.class, W32APIOptions.DEFAULT_OPTIONS);
         int SETDESKWALLPAPER = 0x0014;
 
-        boolean SystemParametersInfo(
+        void SystemParametersInfo(
                 int uiAction,
                 int uiParam,
                 String pvParam,
@@ -201,7 +202,7 @@ public class SetNewWallpaper implements Runnable {
     }
 
     void windowsChange(String path, int i) {
-        log.log(Level.FINE, () -> "Detected Windows, setting wallpaper in " + path);
+        log.log(Level.FINE, () -> "Detected Windows, setting wallpaper in " + path + " to screen " + i);
         User32.INSTANCE.SystemParametersInfo(User32.SETDESKWALLPAPER, 0, path, 1);
     }
 }
