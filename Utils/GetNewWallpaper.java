@@ -56,7 +56,7 @@ public class GetNewWallpaper implements Runnable {
 		if (!diff || screens == 1) {
 			result = selector.getResult();
 			if (result != null) {
-				if (!result.isDownloaded()) {
+				if (result.isDownloaded()) {
 					try {
 						result.download();
 					} catch (IOException e) {
@@ -70,7 +70,7 @@ public class GetNewWallpaper implements Runnable {
 			results = selector.getResult(screens);
 			if (results != null) {
 				for (Wallpaper r : results) {
-					if (!r.isDownloaded()) {
+					if (r.isDownloaded()) {
 						try {
 							r.download();
 						} catch (IOException e) {
@@ -82,7 +82,7 @@ public class GetNewWallpaper implements Runnable {
 				}
 			}
 		}
-		if ((result == null && (screens == 1 || !diff) || (results == null && diff && screens > 1))){
+		if (result == null && (screens == 1 || !diff) || (results == null && diff && screens > 1)) {
 			log.log(Level.SEVERE, "The selection process found no wallpaper");
 			abort();
 		}
