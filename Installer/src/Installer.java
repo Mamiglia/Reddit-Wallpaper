@@ -3,8 +3,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.Locale;
-import java.util.Objects;
 import java.util.Scanner;
 
 public class Installer {
