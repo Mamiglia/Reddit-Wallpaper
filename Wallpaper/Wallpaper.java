@@ -15,7 +15,6 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public class Wallpaper implements Serializable {
     private static final int MAX_TITLE_SIZE = 100;
-    private final String format;
     private final String id;
     private final File file;
     private final String title;
@@ -26,7 +25,7 @@ public class Wallpaper implements Serializable {
     public Wallpaper(String id, String title, String url, String postUrl) {
         this.id = id;
         this.title = title;
-        this.format = url.replaceAll("^.*(?=\\.\\w+$)" , "");
+        String format = url.replaceAll("^.*(?=\\.\\w+$)", "");
         file = new File(getWallpaperDirectory() + cleanTitle(title) + format);
         this.url = url;
         if (postUrl.contains("https://www.reddit.com")) this.postUrl = postUrl;
@@ -41,7 +40,7 @@ public class Wallpaper implements Serializable {
     }
 
     public boolean isDownloaded() {
-        return file.exists();
+        return !file.exists();
     }
 
 
