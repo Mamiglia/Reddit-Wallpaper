@@ -4,7 +4,7 @@ import Utils.DisplayLogger;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+//import java.awt.event.*;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -70,31 +70,23 @@ public class Tray {
 
 		if (title != null) {
 			MenuItem titleItem = new MenuItem(title);
-			titleItem.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					openWebpage(background.getCurrent().getPostUrl());
-				}
-			});
+			titleItem.addActionListener(e -> openWebpage(background.getCurrent().getPostUrl()));
 			trayPopupMenu.add(titleItem);
 
 			MenuItem saveItem = new MenuItem("Save Wallpaper");
-			saveItem.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					JFileChooser chooser = new JFileChooser();
-					chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-					chooser.setSelectedFile(background.getCurrent().getPath().toFile());
-					chooser.setDialogTitle("Select where to save wallpaper");
-					chooser.setAcceptAllFileFilterUsed(false);
-					int ret = chooser.showSaveDialog(null);
-					if (ret == JFileChooser.APPROVE_OPTION) {
-						Path path = chooser.getSelectedFile().toPath();
-						try {
-							Files.copy(background.getCurrent().getPath(), path, StandardCopyOption.REPLACE_EXISTING);
-						} catch (IOException ioException) {
-							ioException.printStackTrace();
-						}
+			saveItem.addActionListener(e -> {
+				JFileChooser chooser = new JFileChooser();
+				chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+				chooser.setSelectedFile(background.getCurrent().getPath().toFile());
+				chooser.setDialogTitle("Select where to save wallpaper");
+				chooser.setAcceptAllFileFilterUsed(false);
+				int ret = chooser.showSaveDialog(null);
+				if (ret == JFileChooser.APPROVE_OPTION) {
+					Path path = chooser.getSelectedFile().toPath();
+					try {
+						Files.copy(background.getCurrent().getPath(), path, StandardCopyOption.REPLACE_EXISTING);
+					} catch (IOException ioException) {
+						ioException.printStackTrace();
 					}
 				}
 			});
@@ -115,43 +107,32 @@ public class Tray {
 		}
 
 		MenuItem changeItem = new MenuItem("Change Wallpaper");
-		changeItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (backThread.getState() == Thread.State.TIMED_WAITING) {
-					backThread.interrupt(); //interrupting it makes it wake up and load new wallpaper
-				} else {
-					log.log(Level.INFO, "Change button was pressed too early, still occupied changing wallpaper from the last time");
-				}
-				//interrupting the thread means waking it up. When it's awake it will automatically start searching for a new Wallpaper
+		changeItem.addActionListener(e -> {
+			if (backThread.getState() == Thread.State.TIMED_WAITING) {
+				backThread.interrupt(); //interrupting it makes it wake up and load new wallpaper
+			} else {
+				log.log(Level.INFO, "Change button was pressed too early, still occupied changing wallpaper from the last time");
 			}
+			//interrupting the thread means waking it up. When it's awake it will automatically start searching for a new Wallpaper
 		});
 		trayPopupMenu.add(changeItem);
 
 		MenuItem guiItem = new MenuItem("Settings");
-		guiItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				new GUI(backThread);
-			}
-		});
+		guiItem.addActionListener(e -> new GUI(backThread));
 		trayPopupMenu.add(guiItem);
 
 		MenuItem closeItem = new MenuItem("Close");
-		closeItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				background.stop();
-				backThread.interrupt();
+		closeItem.addActionListener(e -> {
+			background.stop();
+			backThread.interrupt();
 
-				try {
-					backThread.join();
-				} catch (InterruptedException interruptedException) {
-					interruptedException.printStackTrace();
-				}
-
-				System.exit(0);
+			try {
+				backThread.join();
+			} catch (InterruptedException interruptedException) {
+				interruptedException.printStackTrace();
 			}
+
+			System.exit(0);
 		});
 		trayPopupMenu.add(closeItem);
 
