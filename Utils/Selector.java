@@ -123,7 +123,7 @@ class Selector implements Runnable{
 
 		if (results.size() != screens && screens > 1 && diff) {
             log.log(Level.WARNING, "Not enough images available to set one per screen.");
-		} else if (result == null) {
+        } else if (result == null) {
             log.log(Level.WARNING, "Database is void, no wallpaper can be set.");
 		}
         closeDB();
@@ -141,10 +141,10 @@ class Selector implements Runnable{
 	public Set<Wallpaper> getResult(int screens) {
 		if (!executed) {
             log.log(Level.INFO, "Result was requested but the functor was never executed.");
-		} else if (results == null || results.size() == 0) {
+		} else if (results.size() == 0) {
             log.log(Level.INFO, "Selector didn't select any wallpapers.");
         } else if (results.size() < screens) {
-			log.log(Level.INFO, "Selector didn't find enough images for your screen.");
+			log.log(Level.INFO, "Selector didn't find enough images for your screens.");
 		}
         return results;
 	}
@@ -246,7 +246,6 @@ class Selector implements Runnable{
             log.log(Level.FINEST, throwables.getMessage());
         }
         return null;
-
     }
 
     public void closeDB() {
