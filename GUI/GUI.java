@@ -49,9 +49,8 @@ public class GUI extends JFrame{
 	private JTextField wallpaperPathText;
 	private JButton changeDirectoryButton;
 	private JSlider nsfwSlider;
-	private JComboBox ratio;
+	private JComboBox<String> ratio;
 	static final Logger log = DisplayLogger.getInstance("GUI");
-	private final Act act;
 	private final Settings settings = Settings.getInstance();
 	private final Thread backThread;
 
@@ -60,7 +59,7 @@ public class GUI extends JFrame{
 		this.setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource(Tray.PATH_TO_TRAY_ICON)));/* icon by https://www.freepik.com */
 		this.backThread = backThread;
 		add(rootPane);
-		act = new Act(this);
+		Act act = new Act(this);
 		applyButton.addActionListener(act);
 		folderButton.addActionListener(act);
 		resetButton.addActionListener(act);
@@ -76,13 +75,11 @@ public class GUI extends JFrame{
 		// TODO was useless!
 		logCheckBox.setVisible(false);
 
-		tabbedPane.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent changeEvent) {
-				JTabbedPane src = (JTabbedPane) changeEvent.getSource();
-				int index = src.getSelectedIndex();
-				if (src.getComponentAt(index).equals(logTab)) {
-					showLog();
-				}
+		tabbedPane.addChangeListener(changeEvent -> {
+			JTabbedPane src = (JTabbedPane) changeEvent.getSource();
+			int index = src.getSelectedIndex();
+			if (src.getComponentAt(index).equals(logTab)) {
+				showLog();
 			}
 		});
 
