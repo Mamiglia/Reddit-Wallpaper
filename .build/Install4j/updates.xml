@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <updateDescriptor baseUrl="">
-  <entry targetMediaFileId="36" updatableVersionMin="1.0" updatableVersionMax="" fileName="RW_windows-x64_1_2_1.exe" newVersion="1.2.1" newMediaFileId="36" fileSize="271963136" md5Sum="139a1aed18332558507e4e215f2bfde6" sha256Sum="8bce62cbed536d6c3031151a69a41befa35ed295066c14dba36be17dd4b21a21" bundledJre="windows-amd64-11.0.13.tar.gz" archive="false" singleBundle="false">
+  <entry targetMediaFileId="36" updatableVersionMin="1.0" updatableVersionMax="" fileName="RW_windows-x64_1_2_1.exe" newVersion="1.2.1" newMediaFileId="36" fileSize="39775744" md5Sum="91f32c7484103a9aa2d634b0a0aa2756" sha256Sum="f142e3b17f41fbcbd63d8f8421eb32e11ca998514821c1bacf2fe91fbdea25c0" bundledJre="windows-amd64-11.0.13.tar.gz" archive="false" singleBundle="false">
     <comment language="en">[1.1.1 - 27/09/2021]&#xD;
  - Fix: GUI limiting period selector&#xD;
  - Fix: nsfwSlider doesn't stay in position &#xD;
-[1.2.1 - 21/12/2021]&#xD;
+[1.2.0 - 21/12/2021]&#xD;
  - Change: RW now queries a multireddit. This makes it more stable for large lists of subreddits (Go wild!)&#xD;
  - Enhancement: Added option for searching flairs&#xD;
  - Enhancement: Added a check for keeping blacklisted wallpapers&#xD;
- - Fix: Check that the database has the right data types</comment>
+ - Enhancement: Wallpaper directory will be cleared with the database if "Keep wallpapers in database" is not checked&#xD;
+ - Enhancement: Added option for setting the minimum post score (default 15)&#xD;
+ - Fix: Check that the database has the right data types&#xD;
+ - Fix: Erase database button functions as intended&#xD;
+[1.2.1 - 22/12/2021]&#xD;
+ - Fix: Breaking bug involving an infinite loop and null pointers related to multiscreen handling&#xD;
+ - Enhancement: Added option to filter by aspect ratio.&#xD;
+   - Strict: Rejects any image that doesn't exactly match your chosen resolution's ratio&#xD;
+   - Relaxed: Allows images that are the same orientation as your chosen resolution (landscape or portait)&#xD;
+   - None: No ratio filtering</comment>
   </entry>
 </updateDescriptor>
