@@ -37,4 +37,4 @@ Test.java
 autostartRW.bat
 /Saved-Wallpapers/
 .build/Install4j/RW_unix_0_4.sh
-*.install4j
+.build/Install4j/RW.install4j
