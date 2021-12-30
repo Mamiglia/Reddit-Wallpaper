@@ -1,7 +1,7 @@
 [1.1.1 - 27/09/2021]
  - Fix: GUI limiting period selector
  - Fix: nsfwSlider doesn't stay in position 
-[1.2.1 - 21/12/2021] (local)
+[1.2.0 - 21/12/2021]
  - Change: RW now queries a multireddit. This makes it more stable for large lists of subreddits (Go wild!)
  - Enhancement: Added option for searching flairs
  - Enhancement: Added a check for keeping blacklisted wallpapers
@@ -9,7 +9,7 @@
  - Enhancement: Added option for setting the minimum post score (default 15)
  - Fix: Check that the database has the right data types
  - Fix: Erase database button functions as intended
-[1.2.2 - 22/12/2021] (local)
+[1.2.1 - 22/12/2021]
  - Fix: Breaking bug involving an infinite loop and null pointers related to multiscreen handling
  - Enhancement: Added option to filter by aspect ratio.
    - Strict: Rejects any image that doesn't exactly match your chosen resolution's ratio
