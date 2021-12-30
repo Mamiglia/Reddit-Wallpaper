@@ -416,7 +416,7 @@
                       <component id="49c9d" class="javax.swing.JLabel">
                         <constraints/>
                         <properties>
-                          <text value="Screen Width"/>
+                          <text value="Minimum Width"/>
                         </properties>
                       </component>
                       <component id="c2496" class="javax.swing.JSpinner" binding="widthField" custom-create="true">
@@ -440,7 +440,7 @@
                       <component id="bafb2" class="javax.swing.JLabel">
                         <constraints/>
                         <properties>
-                          <text value="Screen Height"/>
+                          <text value="Minimum Height"/>
                         </properties>
                       </component>
                       <component id="e1767" class="javax.swing.JSpinner" binding="heightField" custom-create="true">
