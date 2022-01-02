@@ -10,6 +10,15 @@ import com.sun.jna.Native;
 import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sun.jna.Pointer;
+import com.sun.jna.platform.win32.COM.COMException;
+import com.sun.jna.platform.win32.COM.COMUtils;
+import com.sun.jna.platform.win32.Ole32;
+import com.sun.jna.platform.win32.WTypes;
+import com.sun.jna.platform.win32.WinDef;
+import com.sun.jna.platform.win32.WinNT;
+import com.sun.jna.ptr.PointerByReference;
 import com.sun.jna.win32.*;
 import com.sun.jna.Platform;
 
@@ -203,7 +212,32 @@ public class SetNewWallpaper implements Runnable {
 
     void windowsChange(String path, int i) {
         log.log(Level.FINE, () -> "Detected Windows, setting wallpaper in " + path + " to screen " + i);
-        User32.INSTANCE.SystemParametersInfo(User32.SETDESKWALLPAPER, 0, path, 1);
+
+        // Copy pasted from https://github.com/matthiasblaesing/JNA-Demos/blob/master/IDesktopWallpaper/src/main/java/eu/doppel_helix/dev/blaesing/IDesktopWallpaper/Main.java
+        WinNT.HRESULT result = Ole32.INSTANCE.CoInitializeEx(Pointer.NULL, Ole32.COINIT_MULTITHREADED);
+        COMUtils.checkRC(result);
+        try {
+            PointerByReference wallpaperBuffer = new PointerByReference();
+            result = Ole32.INSTANCE.CoCreateInstance(
+                    DesktopWallpaper.CLSID,
+                    Pointer.NULL,
+                    WTypes.CLSCTX_SERVER,
+                    DesktopWallpaper.IID,
+                    wallpaperBuffer);
+            COMUtils.checkRC(result);
+            DesktopWallpaper wallpaper = new DesktopWallpaper(wallpaperBuffer.getValue());
+            try {
+                    String deviceName = wallpaper.GetMonitorDevicePathAt(i);
+                    wallpaper.SetWallpaper(deviceName, path);
+            } catch(COMException e) {
+                log.log(Level.WARNING, () -> "COM failed to use windows API, maybe you don't have that many monitors?");
+            } finally {
+                wallpaper.Release();
+            }
+        } finally {
+            // Uninitialize COM
+            Ole32.INSTANCE.CoUninitialize();
+        }
     }
 }
 
