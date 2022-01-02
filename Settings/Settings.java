@@ -2,6 +2,8 @@ package Settings;
 
 import Utils.DisplayLogger;
 
+import java.awt.GraphicsEnvironment;
+import java.awt.HeadlessException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -15,9 +17,10 @@ import java.util.logging.Logger;
 public class Settings {
 	//Singleton
 	private static Settings uniqueInstance;
-	public static final String PATH_TO_SAVEFILE = "utility/settings.txt";
-	public static final String PATH_TO_DATABASE = "utility/db";
+	public static final String PATH_TO_SAVEFILE = "utility" + File.separator + "settings.txt";
+	public static final String PATH_TO_DATABASE = "utility" + File.separator + "database";
 	private final File settingFile = new File(PATH_TO_SAVEFILE);
+	public boolean keepBlacklist = false;
 	private String[] titles = {};
 	private String[] flair ={};
 	private String[] subreddits = {"wallpaper", "wallpapers"};
@@ -26,12 +29,41 @@ public class Settings {
 	private int height = 1080;
 	private int width = 1920;
 	private int period = 15; //mins
+	private int minScore = 15;
 	private TIME maxOldness = TIME.DAY;
 	private int maxDatabaseSize = 50;
 	private final Set<String> bannedList;
 	private boolean keepWallpapers = false; //keep wallpapers after eliminating them from db?
+	private final boolean diffWallpapers = false; //Different wallpaper per screen?
 	private static String wallpaperPath = "Saved-Wallpapers"; // path to wallpaper folder
+	private Object ratioLimit = "Relaxed";
 	private static final Logger log = DisplayLogger.getInstance("Settings");
+	private static final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+	private static int screens; // Number of physical screens connected to the system
+
+	/* selects leading or trailing spaces on strings, or double (or greater) spaces between words (used in GUI and Searcher)
+		\\s+:	Select all white spaces that are:	1) Preceeded by a comma OR start of a line AND (?<=,|\A)
+													2) Followed by alphanumeric characters followed by a word start/end (?=[\w]+\b)
+			OR	Select all white spaces that are:	1) Preceeded by the end of a word AND (?<=\b)
+													2) Followed by a comma OR the end of a line (?=,|\Z)
+			OR	Select all white spaces that are:	1) Preceeded by a word end then one space AND (?<=\b )
+													2) Followed by a word start (?=\b)
+	 */
+	private static final String REG_WS = "((?<=,|\\A)\\s+(?=[\\w]+\\b)|(?<=\\b)\\s+(?=,|\\Z)|(?<=\\b )\\s+(?=\\b))";
+	private static final String REG_SB = "[\\[\\]]"; // For removing square brackets
+
+	public static void eraseDB() {
+		File dbFile = new File(PATH_TO_DATABASE + ".mv.db");
+		if (dbFile.exists()) {
+			if (dbFile.delete()) {
+				log.log(Level.WARNING, () -> "Database has been deleted.");
+			} else {
+				log.log(Level.WARNING, () -> "Database remains.");
+			}
+		} else {
+			log.log(Level.WARNING, () -> "Could not find database file.");
+		}
+	}
 
 	public enum TIME {
 		HOUR("hour"),
@@ -93,7 +125,9 @@ public class Settings {
 			log.log(Level.WARNING, "No settings file is found, generating a new stock one");
 			settingFile.getParentFile().mkdirs();
 			try {
-				settingFile.createNewFile();
+				if (settingFile.createNewFile()) {
+					log.log(Level.FINE, "Success!");
+				}
 				writeSettings();
 				Files.setLastModifiedTime(settingFile.toPath(), FileTime.fromMillis(0));
 			} catch (IOException e) {
@@ -102,7 +136,10 @@ public class Settings {
 
 		}
 		bannedList = new HashSet<>();
-
+		try {screens = ge.getScreenDevices().length;}
+		catch (HeadlessException e) {
+			log.log(Level.WARNING, "Could not get screens: " + e.getMessage());
+		}
 	}
 
 	public static synchronized Settings getInstance() {
@@ -189,10 +226,6 @@ public class Settings {
 		this.height = height;
 	}
 
-	public void setWallpaperPath(String path) {
-		wallpaperPath = path;
-	}
-
 	public int getWidth() {
 		return width;
 	}
@@ -207,6 +240,14 @@ public class Settings {
 
 	public void setPeriod(int period) {
 		this.period = period;
+	}
+
+	public int getScore() {
+		return minScore;
+	}
+
+	public void setScore(int score) {
+		this.minScore = score;
 	}
 
 	public TIME getMaxOldness() {
@@ -225,17 +266,61 @@ public class Settings {
 		this.maxDatabaseSize = maxDatabaseSize;
 	}
 
-	public boolean doKeepWallpapers() {
+	public static String getWallpaperPath() {
+		return wallpaperPath;
+	}
+
+	public void setWallpaperPath(String path) {
+		wallpaperPath = path;
+	}
+
+	public void setKeepWallpapers(boolean keepWallpapers) {
+		this.keepWallpapers = keepWallpapers;
+	}
+
+	public boolean getKeepWallpapers() {
 		return keepWallpapers;
 	}
 
-	public static String getWallpaperPath() {
-		return wallpaperPath;
+	public void setKeepBlacklist(boolean keepBlacklist) {
+		this.keepBlacklist = keepBlacklist;
+	}
+
+	public boolean getKeepBlacklist() {
+		return keepBlacklist;
+	}
+
+	public boolean getDiffWallpapers() {
+		return diffWallpapers;
 	}
 
 	public long getLastTimeWallpaperChanged() {
 		// The settings file is updated each time a wallpaper is changed
 		return settingFile.lastModified();
+	}
+
+	public Object getRatioLimit() {
+		return ratioLimit;
+	}
+
+	public void setRatioLimit(Object ratioLimit) {
+		this.ratioLimit = ratioLimit;
+	}
+
+	public String getRegWS() {
+		return REG_WS;
+	}
+
+	public String getRegSB() {
+		return REG_SB;
+	}
+	
+	public int getScreens() {
+		try {screens = ge.getScreenDevices().length;}// update the number of screens just in case a screen has been unplugged/replugged
+		catch (HeadlessException e) {
+			log.log(Level.WARNING, "Could not check screens: " + e.getMessage());
+		}
+		return screens;
 	}
 
 	public void updateDate() {
@@ -263,15 +348,14 @@ public class Settings {
 				"\nnsfwLevel=" + nsfwLevel.value +
 				"\nheight=" + height +
 				"\nwidth=" + width +
+				"\nratioLimit=" + ratioLimit +
 				"\nperiod=" + period +
+				"\nscore=" + minScore +
 				"\nmaxOldness=" + maxOldness +
 				"\nmaxDatabaseSize=" + maxDatabaseSize +
 				"\nkeepWallpapers=" + keepWallpapers +
+				"\nkeepBlacklist=" + keepBlacklist +
 				"\nwallpaperPath=" + wallpaperPath;
-	}
-
-	public void setKeepWallpapers(boolean keepWallpapers) {
-		this.keepWallpapers = keepWallpapers;
 	}
 
 	@Override
@@ -279,19 +363,30 @@ public class Settings {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		Settings settings = (Settings) o;
-		return nsfwLevel == settings.nsfwLevel && height == settings.height && width == settings.width && period == settings.period && maxOldness == settings.maxOldness && Arrays.equals(titles, settings.titles) && Arrays.equals(subreddits, settings.subreddits) && searchBy == settings.searchBy;
+		return nsfwLevel == settings.nsfwLevel
+				&& height == settings.height
+				&& width == settings.width
+				&& period == settings.period
+				&& minScore == settings.minScore
+				&& maxOldness == settings.maxOldness
+				&& ratioLimit.equals(settings.ratioLimit)
+				&& Arrays.equals(titles, settings.titles)
+				&& Arrays.equals(subreddits, settings.subreddits)
+				&& Arrays.equals(flair, settings.flair)
+				&& searchBy == settings.searchBy;
 	}
 
 	@Override
 	public int hashCode() {
-		int result = Objects.hash(searchBy, nsfwLevel, height, width, period, maxOldness);
+		int result = Objects.hash(searchBy, nsfwLevel, height, width, period, maxOldness, minScore, ratioLimit);
 		result = 31 * result + Arrays.hashCode(titles);
 		result = 31 * result + Arrays.hashCode(subreddits);
+		result = 31 * result + Arrays.hashCode(flair);
 		return result;
 	}
 
 	public boolean setProperty(String property, String value) {
-		String[] split = value.replace("[", "").replace("]", "").split(", ");
+		String[] split = value.replaceAll(REG_SB, "").split(", ");
 		switch (property) {
 			case "titles":
 				titles = split;
@@ -314,8 +409,14 @@ public class Settings {
 			case "width":
 				width = Integer.parseInt(value);
 				break;
+			case "score":
+				minScore = Integer.parseInt(value);
+				break;
 			case "period":
 				period = Integer.parseInt(value);
+				break;
+			case "ratioLimit":
+				ratioLimit = value;
 				break;
 			case "maxOldness":
 				maxOldness = TIME.valueOf(value);
@@ -326,6 +427,9 @@ public class Settings {
 			case "keepWallpapers":
 				keepWallpapers = Boolean.parseBoolean(value);
 				break;
+			case "keepBlacklist":
+				keepBlacklist = Boolean.parseBoolean(value);
+				break;
 			case "wallpaperPath":
 				wallpaperPath = split[0];
 				break;
@@ -335,5 +439,4 @@ public class Settings {
 		}
 		return true;
 	}
-
 }

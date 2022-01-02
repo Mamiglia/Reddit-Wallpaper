@@ -4,7 +4,6 @@ import Settings.Settings;
 import Wallpaper.Wallpaper;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -16,8 +15,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 class Searcher {
-	private static final int MINIMUM_NUMBER_OF_UPVOTES = 15; // Number to not pick indecent wallpapers. This number is completely arbitrary, but it should be sufficient
-
 	private final Settings settings;
 	private String searchQuery = "";
 	private Set<Wallpaper> proposed;
@@ -35,81 +32,55 @@ class Searcher {
 		String temp; //temporary holder for title or flair portion of query
 		String test = ""; // populated to test if the temp field has anything added from getTitles() or getFlair()
 
-		searchQuery =
+ 		searchQuery =
 		//Query now builds a multisub out of listed subreddits, this should prevent issues with very large lists of subs
 				"https://reddit.com/r/";
-		temp = String.join("+", settings.getSubreddits()).replace(" ", ""); //@Mamiglia please check if this should work
-		if (!test.equals(temp)) {
+
+		// it feels redundant calling the same if check 3 times
+		temp = String.join("+", settings.getSubreddits()).replaceAll(settings.getRegWS(), "");
+		if (!temp.equals(test)) {
 			searchQuery += temp + "/";
 		}
 		searchQuery += "search.json?q=";
 
-		for (int i = 0; i < 2; i++) { // this loop should only ever run twice per wallpaper change
-			if (i == 0) {// && !test.equals(temp)) { // if this is the first loop and the titles string isn't empty
-				// build temp string with title data for first loop
-				temp = String.join(" OR ", settings.getTitles()).replace("  ", " ");
-				if (!temp.equals(test)) {
-					searchQuery += "title:(" + temp + ")&";
-				}
+		// build temp string with title data
+		temp = String.join("\" OR \"", settings.getTitles()).replaceAll(settings.getRegWS(), "");
+		if (!temp.equals(test)) {
+			searchQuery += "title:(\"" + temp + "\")&";
+		}
 
-			}
-			else if (i == 1) { // if this is the second loop and the flair string isn't empty
-				// build temp string with flair data for second loop
-				temp = String.join("\" OR \"", settings.getFlair()).replace("  ", " ");
-				if (!temp.equals(test)) {
-
-					searchQuery += "flair:(\"" + temp + "\")&";
-				}
-				/* A note on flairs:
-					Flairs can be mulitword if they are wrapped in quotation marks. This code should work
-					for any single word flairs but extra work would need to be put in to handle multiword flairs.
-					TODO finish flair implementation -Iinfragon
-				*/
-			}
-			else break;
-
+		// build temp string with flair data
+		temp = String.join("\" OR \"", settings.getFlair()).replaceAll(settings.getRegWS(), "");
+		if (!temp.equals(test)) {
+		// Flair string is delimited by commas and automatically wrapped in quotation marks to handle multi-word flairs
+			searchQuery += "flair:(\"" + temp + "\")&";
 		}
 
 		searchQuery +=
-				"self:no" //this means no text-only posts
-						+ "&sort=" + settings.getSearchBy().value //how to sort them (hot, new ...)
-						+ "&limit=" + QUERY_SIZE //how many posts
-						+ "&t=" + settings.getMaxOldness().value //how old can a post be at most
-						+ "&type=t3" //only link type posts, no text-only
-						+ "&restrict_sr=true" //restrict results to defined subreddits (leave on true)
-						+ settings.getNsfwLevel().query
+			"self:no" //this means no text-only posts
+				+ "&sort=" + settings.getSearchBy().value //how to sort them (hot, new ...)
+				+ "&limit=" + QUERY_SIZE //how many posts
+				+ "&t=" + settings.getMaxOldness().value //how old can a post be at most
+				+ "&type=t3" //only link type posts, no text-only
+				+ "&restrict_sr=true" //restrict results to defined subreddits (leave on true)
+				+ settings.getNsfwLevel().query
+				+ "&rawjson=1"
 		;
+		
 		searchQuery = searchQuery.replace("flair:()&", "");
 		searchQuery = searchQuery.replace("title:()&", "");
 		//Removes title and flair field if they are void and somehow made it in
-		//What happens if some dumbhead tries to put as keyword to search "title:() " or "flair:() "? Will it just break the program? Is this some sort of hijackable thing?
+		//What happens if some dumbhead tries to put as keyword to search "title:() "
+		//or "flair:() "? Will it just break the program? Is this some sort of hijackable thing?
 		//I don't know for I myself am too dumb - Don't be so hard on yourself <3
 
 		log.log(Level.INFO, () -> "Search Query is: "+ searchQuery);
 	}
-/*	Removed this portion for now as it is all handled above - Iinfragon
-
-	private String generateQuery() {
-		//Could be inserted in the other?
-		String s =
-				"title:("
-						+ String.join(" OR ", settings.getTitles()).replace("  ", " ")
-						//+ ")+subreddit:("
-						//+ String.join(" OR ", settings.getSubreddits()).replace("  ", " ")
-						+ ")&"
-				// TODO add flairs?
-				;
-		s = s.replace("title:()&", "");//.replace("subreddits:()+", "");
-		//Removes title and subreddit field if they are void
-		//What happens if some dumbhead tries to put as keyword to search "title:() " or "subreddits:() "? Will it just break the program? Is this some sort of hijackable thing?
-		//I don't know for I myself am too dumb - Don't be so hard on yourself <3
-		return encodeURL(s);
-	}*/
 
 	/**
 	 * Manages the connection, connects to reddit, download the whole JSON, and refines it to make it useful
 	 * @return the JSON containing the db with search results
-	 * @throws IOException if unable to connect or download the JSON. Reasons: bad internet connection, dirty input string (smth like trying to research for "//" or "title:() "
+	 * @throws IOException if unable to connect or download the JSON. Reasons: bad internet connection, dirty input string something like trying to research for "//" or "title:()"
 	 */
 	public Set<Wallpaper> getSearchResults() throws IOException {
 		if (proposed == null) {
@@ -136,128 +107,157 @@ class Searcher {
 	private Set<Wallpaper> refineData(String rawData) {
 		// converts the String JSON into a HashMap JSON, then selects the only things
 		// we are interested in: the ID and the photo link
+		Set<Wallpaper> res = new HashSet<>();
+		Wallpaper wallpaper;
+		String id;
+		String title;
+		String url;
+		String permalink;
+		JSONObject child;
+		int score;
+		boolean is_over_18;
+
+		if (rawData.contains("error")) {
+			log.log(Level.WARNING, "Reddit returned an error:\n" + rawData);
+			return null;
+		}
+
 		JSONArray children = new JSONObject(rawData).getJSONObject("data").getJSONArray("children");
 
-		Set<Wallpaper> res = new HashSet<>();
-		for (int i=0; i<children.length(); i++) {
-			JSONObject child = children.getJSONObject(i).getJSONObject("data");
-			int score = child.getInt("score"); // # of upvotes
-			boolean is_over_18 = child.getBoolean("over_18");
-			if (score < MINIMUM_NUMBER_OF_UPVOTES || (!is_over_18 && settings.getNsfwLevel() == Settings.NSFW_LEVEL.ONLY)) {
+		for (int i = 0; i < children.length(); i++) {
+			child = children.getJSONObject(i).getJSONObject("data");
+
+			// If the post isn't an image, we don't want it
+			if (child.keySet().contains("post_hint")) { // gallaries don't have a post hint
+				if (!child.getString("post_hint").equals("image")) {
+					log.log(Level.FINER, "This post isn't a valid wallpaper. Skipping.");
+					continue;
+				}
+			}
+
+			score = child.getInt("score"); // # of upvotes
+			is_over_18 = child.getBoolean("over_18");
+
+			if (score < settings.getScore() || (!is_over_18 && settings.getNsfwLevel() == Settings.NSFW_LEVEL.ONLY)) {
 				// when a post has too few upvotes it's skipped
-				// or if only over_18 content is allowed		- no need to check in the other sense, because the query excludes them
+				// or if only over_18 content is allowed - no need to check in the other sense, because the query excludes them
 				continue;
 			}
 
-			String url = child.getString("url");
-			String title = child.getString("title");
-			String permalink = child.getString("permalink");
-			String id = child.getString("id");
-
-
+			title = child.getString("title");
+			permalink = child.getString("permalink");
+			url = child.getString("url");
+			id = child.getString("id");
 
 			if (child.keySet().contains("crosspost_parent_list")) {
 				// some posts are crossposts
+				// reassign variables with correct values for crosspost
 				child = child.getJSONArray("crosspost_parent_list").getJSONObject(0);
+				title = child.getString("title");
+				permalink = child.getString("permalink");
+				url = child.getString("url");
+				id = child.getString("id");
 			}
 
-			// some posts can be in the form of galleries of wallpapers.
-			// in such cases we are going to
+			// hand off gallery as soon as possible
+			// some posts can be in the form of galleries of wallpapers
 			if (child.keySet().contains("is_gallery")) {
 				//we are going to add all the posts from this gallery
 				//note that in this way the proposed wallpapers will be slightly more than the QUERY_SIZE
-				processGallery(
-						child.getJSONObject("media_metadata"),
-						title,
-						permalink,
-						res);
-
-			} else {
-				//case in which there's a single wallpaper (not a gallery)
-				Wallpaper wallpaper = new Wallpaper(
-						id,
-						title,
-						url,
-						permalink
-				);
-				//this mess/nightmare is only fault of reddit nested JSON. I don't think there's a better way to do this
-
-				JSONObject source =  child
-						.getJSONObject("preview")
-						.getJSONArray("images")
-						.getJSONObject(0)
-						.getJSONObject("source");
-
-				int width = source.getInt("width");
-				int height = source.getInt("height");
-
-				if (settings.getWidth() <= width && settings.getHeight() <= height) {
-					res.add(wallpaper);
-				} else {
-					log.log(Level.FINE, () ->
-							"Detected wallpaper not compatible with screen dimensions: "
-									+ width + "x" + height
-									+  " Instead of "
-									+ settings.getWidth() + "x" + settings.getHeight()
-									+ ". Searching for another..."
-					);
-					log.log(Level.FINER, () -> "Wallpaper rejected was: " + wallpaper.getPostUrl());
-				}
-				//TODO should I merge this repeating part with the part above? they are really similar
+				res.addAll(
+						processGallery(
+								child.getJSONObject("media_metadata"),
+								title,
+								permalink));
+				continue;
 			}
+
+			// if the url doesn't have a file extension (a web page)
+			if (!(url.matches("(.*)\\.\\w+"))) {
+				log.log(Level.FINER, "This post isn't a valid wallpaper. Skipping.");
+				continue;
+			}
+
+			// preview keyword is required for the rest of the json handling. If preview is missing the program will
+			// throw an error. Easiest just to exclude these results
+			if (!child.keySet().contains("preview")) {
+				log.log(Level.FINER, "This entry is problematic. Skipping.");
+				continue;
+			}
+
+			child = child
+					.getJSONObject("preview")
+					.getJSONArray("images")
+					.getJSONObject(0)
+					.getJSONObject("source");
+
+			if (imageSize(child.getInt("width"), child.getInt("height"), url)) {
+				// if image doesn't meet minimum size, restart loop
+				continue;
+			}
+
+			wallpaper = new Wallpaper(id, title, url, permalink);
+			res.add(wallpaper);
 		}
 		return res;
 	}
 
-	private void processGallery(JSONObject mediaMetadata, String title, String permalink, Set<Wallpaper> res) {
-		int j=0;
-		for (String idGallery : mediaMetadata.keySet()) {
-			JSONObject galleryItem = mediaMetadata.getJSONObject(idGallery);
-			int height = galleryItem.getJSONObject("s").getInt("y");
-			int width = galleryItem.getJSONObject("s").getInt("x");
-			if (settings.getWidth() > width || settings.getHeight() > height) {
-				log.log(Level.FINE, () ->
-						"Detected wallpaper not compatible with screen dimensions: "
-								+ width + "x" + height
-								+  " Instead of "
-								+ settings.getWidth() + "x" + settings.getHeight()
-								+ ". Searching for another..."
-				);
-				return;
+	private Set<Wallpaper> processGallery(JSONObject mediaMetadata, String title, String permalink) {
+		Wallpaper wallpaper;
+		Set<Wallpaper> res = new HashSet<>();
+		JSONObject item;
+		int height;
+		int width;
+		String type;
+		String url;
+		String titleGallery;
+
+		for (String id : mediaMetadata.keySet()) {
+			item = mediaMetadata.getJSONObject(id);
+			height = item.getJSONObject("s").getInt("y");
+			width = item.getJSONObject("s").getInt("x");
+			type = item.getString("m");
+			type = type.replace("image/", "");
+			url = "https://i.redd.it/" + id + "." + type;
+
+			if (imageSize(width, height, url)) {
+				continue;
 			}
 
-			String type = galleryItem.getString("m");
-			type = type.replace("image/", "");
-
-			String urlGallery = "https://i.redd.it/" + idGallery + "." + type;
-			String titleGallery = title + " " + idGallery;
-
-			Wallpaper wallpaper = new Wallpaper(
-					idGallery,
-					titleGallery,
-					urlGallery,
-					permalink
-			);
-
+			titleGallery = title + " " + id;
+			wallpaper = new Wallpaper(id, titleGallery, url, permalink);
 			res.add(wallpaper);
 		}
+		return res;
 	}
 
-	private static String encodeURL(String value) {
-		return value.replace(" ", "%20");
-//        try {
-//            return URLEncoder.encode(value, StandardCharsets.UTF_8.toString()).replace("+", "%20");
-//            //if you leave + as space sign it's counted as AND by reddit query, so you must use %20
-//        } catch (UnsupportedEncodingException ex) {
-//            throw new RuntimeException(ex.getCause());
-//        }
+	/**
+	 * Tests to see if an image is an acceptable size
+	 * Returns false if is at least minimum size
+	 * Returns true if image is too small
+	 * It seems a bit backwards but it prevents using a negative modifier on every portion that I've used it
+	 * URL is required for output to the log
+	 */
+	private boolean imageSize(int x, int y, String url) {
+		int width = settings.getWidth();
+		int height = settings.getHeight();
+		float ratio = (float) width/height;
+		if ((width > x || height > y) || // image doesn't meet resolution
+				(ratio != (float) x/y && settings.getRatioLimit().equals("Strict")) || // image doesn't meet exact screen ratio
+				(((ratio > 1 && 1 > (float) x/y) || (ratio < 1 && 1 < (float) x/y)) && settings.getRatioLimit().equals("Relaxed"))) { // image isn't somewhere between screen ratio and square
+			log.log(Level.FINE, () ->
+				"Detected wallpaper not compatible with screen dimensions: "
+					+ x + "x" + y + " ratio: " + x/y
+					+  " Instead of "
+					+ width + "x" + height + " ratio: " + ratio
+					+ ". Searching for another..."
+				);
+			log.log(Level.FINER, () -> "Wallpaper rejected was: " + url);
+			// if the image is rejected
+			return true;
+		}
+		// if the image is accepted
+		return false;
 	}
-
-	// Getter
-
-	public String getSearchQuery() {
-		return searchQuery;
-	}
-
 
 }

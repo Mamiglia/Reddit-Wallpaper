@@ -12,31 +12,60 @@ import java.util.logging.Logger;
 class Selector implements Runnable{
     private final int maxDbSize;
     private final boolean keepWallpapers;
-    public static final String PATH_TO_DATABASE = "utility"+ File.separator + "db";
-    private static final String dbUrl = "jdbc:h2:file:" + System.getProperty("user.dir") + File.separator + PATH_TO_DATABASE;
+    private static final String dbUrl = "jdbc:h2:file:" + System.getProperty("user.dir")
+            + File.separator + Settings.PATH_TO_DATABASE;
     private static final Logger log = DisplayLogger.getInstance("Selector");
     private Connection conn = null;
     private Statement db = null;
     private boolean executed = false;
     private Wallpaper result = null;
+    private final Set<Wallpaper> results = new HashSet<>();
     private final Settings settings = Settings.getInstance();
     private final Set<Wallpaper> proposal;
+    private final int screens;
+    private final boolean diff;
 
-    public Selector(Set<Wallpaper> proposal, boolean keepWallpapers, int maxDbSize) throws IOException {
+    public Selector(Set<Wallpaper> proposal, boolean keepWallpapers, int maxDbSize, int screens, boolean diff) throws IOException {
         this.proposal = proposal;
         this.keepWallpapers = keepWallpapers;
         this.maxDbSize = maxDbSize;
+        this.screens = screens;
+        this.diff = diff;
 
         loadDB();
+        try (ResultSet dataTypes = db.executeQuery("SELECT DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where" +
+                " table_name = 'WALLPAPERS'")) { // Pull the data type information
+            while (dataTypes.next()) {
+                String check = dataTypes.getString(1); // there is only 1 collumn
+
+                // List of data types as integers can be found at https://www.geeksforgeeks.org/how-to-get-the-datatype-of-a-column-of-a-table-using-jdbc/
+                if (!((check.equals("12") && dataTypes.getRow() == 1) || // VARCHAR
+                        (check.equals("1111") && dataTypes.getRow() == 2) || // OTHER (Wallpaper)
+                        (check.equals("93") && dataTypes.getRow() == 3))) { // TIMESTAMP
+
+                    log.log(Level.WARNING, "DB data types are incorrect. Please delete database.");
+                    break;
+                }
+                log.log(Level.FINEST, check); // this will output any data types integer value
+            }
+        } catch (SQLException throwables) {
+            log.log(Level.WARNING, "SQL error in database check.");
+            log.log(Level.FINEST, throwables.getMessage());
+        }
+
 
         if (conn == null) {
             throw new IOException();
         }
     }
 
+    //TODO Add multi monitor support (wallpaper per screen, tray icon support)
+    //TODO Multi monitor alignment options
+    //TODO Add image title to image bottom left (possibly restrict to certain subreddits?)
+    //TODO Imgur gallery handling???
     @Override
     public void run() {
-        if (executed) return;
+        if (executed || proposal == null) return;
         executed = true;
         List<String> oldID = getOldWallpapersID();
 
@@ -49,47 +78,76 @@ class Selector implements Runnable{
                 }
                 log.log(Level.FINE, "Selected new wallpaper from those proposed");
                 insertDB(propWallpaper);
-                closeDB();
-                result = propWallpaper;
-                return;
+                if (screens == 1 || !diff) {
+                    closeDB();
+                    result = propWallpaper;
+                    return;
+                } else if (results.size() < screens){
+                    results.add(propWallpaper);
+                } else {
+					closeDB();
+					return;
+                }
             }
         }
-        // OR No unused wallpapers are found, select oldest used wallpapers in the list
+		
+        // OR Not enough unused wallpapers are found //select oldest used wallpapers in the list
         if (proposal.isEmpty()) {
-            log.log(Level.WARNING, "No new wallpaper is proposed, setting a recent wallpaper. Maybe your query is too restrictive?");
+            log.log(Level.WARNING, "Not enough new wallpapers were proposed, setting from recent wallpapers. Maybe your query is too restrictive?");
         } else {
-            log.log(Level.INFO, "No unused wallpaper is found, setting the oldest from those found");
+            log.log(Level.INFO, "No unused wallpapers were found, setting from the oldest of those found");
         }
 
         while (true) {
             try (ResultSet rs = db.executeQuery("SELECT wp FROM WALLPAPERS ORDER BY date LIMIT 1")) {
                 rs.next();
-                result = (Wallpaper) rs.getObject("wp");
-                if (result != null && !settings.isBanned(result.getID())) {
-                    updateDate(result);
-                    break;
-                } else if (result==null) break;
+				result = (Wallpaper) rs.getObject("wp");
+				if (result == null || results.size() == screens) break;
+				else if (!settings.isBanned(result.getID())) {
+					if (screens == 1 || !diff) {
+						updateDate(result);
+						break;
+					} else if (results.size() < screens) {
+						results.add(result);
+						updateDate(result);
+						continue;
+					} else break;
+				}
                 removeWp(result.getID());
             } catch (SQLException throwables) {
                 log.log(Level.WARNING, "DB Query error in select()");
                 log.log(Level.FINEST, throwables.getMessage());
+                break;
             }
         }
 
-        if (result == null ) {
-            log.log(Level.WARNING, "Database is void, no wallpaper can be set");
-        }
+		if (results.size() != screens && screens > 1 && diff) {
+            log.log(Level.WARNING, "Not enough images available to set one per screen.");
+        } else if (result == null) {
+            log.log(Level.WARNING, "Database is void, no wallpaper can be set.");
+		}
         closeDB();
     }
 
     public Wallpaper getResult() {
         if (!executed) {
             log.log(Level.INFO, "Result was requested but the functor was never executed");
-        } else if (result == null) {
-            log.log(Level.INFO, "Selector didn't select any wallpaper");
+		} else if (result == null) {
+            log.log(Level.INFO, "Selector didn't select any wallpapers");
         }
         return result;
     }
+	
+	public Set<Wallpaper> getResult(int screens) {
+		if (!executed) {
+            log.log(Level.INFO, "Result was requested but the functor was never executed.");
+		} else if (results.size() == 0) {
+            log.log(Level.INFO, "Selector didn't select any wallpapers.");
+        } else if (results.size() < screens) {
+			log.log(Level.INFO, "Selector didn't find enough images for your screens.");
+		}
+        return results;
+	}
 
     public List<String> getOldWallpapersID() {
         ArrayList<String> arr = new ArrayList<>();
@@ -118,7 +176,11 @@ class Selector implements Runnable{
                     log.log(Level.FINEST, wp::toString);
                     log.log(Level.FINE, () -> "Cleaning of DB, removing " + wp.getID());
 
-                    new File(wp.getPath().toAbsolutePath().toString()).delete();
+                    if (new File(wp.getPath().toAbsolutePath().toString()).delete()) {
+                        log.log(Level.FINE, () -> "Success!");
+                    } else {
+                        log.log(Level.FINE, () -> "Something went wrong...");
+                    }
                 }
                 db.executeUpdate("DELETE FROM WALLPAPERS WHERE id IN (SELECT id FROM WALLPAPERS ORDER BY date fetch FIRST 20 PERCENT rows only)");
 
@@ -134,7 +196,7 @@ class Selector implements Runnable{
             p.setString(1, wp.getID());
             p.setObject(2, wp);
             p.executeUpdate();
-            log.log(Level.FINER, () -> "Successfully inserted entry:\n" + wp.toString());
+            log.log(Level.FINER, () -> "Successfully inserted entry:\n" + wp);
             cleanDB();
 
         } catch (SQLException e) {
@@ -144,7 +206,7 @@ class Selector implements Runnable{
 
     private void updateDate(Wallpaper wp) {
         try {
-            db.executeUpdate("UPDATE WALLPAPERS SET date=CURRENT_TIMESTAMP() WHERE id=\'"+wp.getID()+"\'");
+            db.executeUpdate("UPDATE WALLPAPERS SET date=CURRENT_TIMESTAMP() WHERE id='" + wp.getID() + "'");
         } catch (SQLException throwables) {
             // consider the case in which the wp isn't in the table
             log.log(Level.WARNING, "Query Error in updateDate()");
@@ -161,7 +223,9 @@ class Selector implements Runnable{
 
         } catch (SQLException e) {
             log.log(Level.SEVERE, "Query error: Couldn't create database");
-            log.log(Level.FINEST, e.getMessage());
+            log.log(Level.SEVERE, e.getMessage());
+        } catch (Exception e) {
+            log.log(Level.SEVERE, e.getMessage());
         }
     }
 
@@ -182,7 +246,6 @@ class Selector implements Runnable{
             log.log(Level.FINEST, throwables.getMessage());
         }
         return null;
-
     }
 
     public void closeDB() {

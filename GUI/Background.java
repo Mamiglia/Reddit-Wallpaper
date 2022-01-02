@@ -35,10 +35,19 @@ public class Background implements Runnable {
 
 	public void banWallpaper() {
 		settings.addBanned(current.getID());
+		if (!settings.keepBlacklist) {
+			if (current.delete()) {
+				log.log(Level.INFO, "Blacklisted image removed.");
+			} else {
+				log.log(Level.INFO, "Blacklisted image was not removed.");
+			}
+		}
 	}
 
 	public void changeWallpaper() {
-		GetNewWallpaper g = new GetNewWallpaper(settings);
+		int screens = settings.getScreens();
+		boolean diff = settings.getDiffWallpapers();
+		GetNewWallpaper g = new GetNewWallpaper(settings, screens, diff);
 		Thread t1 = new Thread(g);
 		t1.start();
 		try {
@@ -47,18 +56,27 @@ public class Background implements Runnable {
 			log.log(Level.SEVERE, "Thread GetNewWallpaper was interrupted by unknown error");
 		}
 
-		if (g.getResult() == null) {
-			log.log(Level.WARNING, "No Wallpaper found, aborting...");
-			return;
+		if (screens > 1 && diff) {
+			int i = 0;
+			for (Wallpaper c : g.getResult(screens)) {
+				SetNewWallpaper set = new SetNewWallpaper(c, screens);
+				Thread t2 = new Thread(set);
+				t2.start();
+				settings.updateDate();
+				Tray.getInstance().populateTray(cosmetifyTitle(c.getTitle()));
+				log.log(Level.INFO, () -> "Wallpaper is successfully set to:\n" + c);
+				i++;
+				if (i == screens) break;
+			}
+		} else {
+			current = g.getResult();
+			SetNewWallpaper set = new SetNewWallpaper(current, diff);
+			Thread t2 = new Thread(set);
+			t2.start();
+			settings.updateDate();
+			Tray.getInstance().populateTray(cosmetifyTitle(current.getTitle()));
+			log.log(Level.INFO, () -> "Wallpaper is successfully set to:\n" + current);
 		}
-		current = g.getResult();
-
-		SetNewWallpaper set = new SetNewWallpaper(current);
-		Thread t2 = new Thread(set);
-		t2.start();
-		settings.updateDate();
-		Tray.getInstance().populateTray(cosmetifyTitle(current.getTitle()));
-		log.log(Level.INFO, () -> "Wallpapers is successfully set to:\n" + current.toString());
 	}
 
 	@Override
@@ -85,9 +103,8 @@ public class Background implements Runnable {
 		String temp = title
 				.replace('_', ' ')
 				.replace("OC", "")
-				.replaceAll("[0-9]?[0-9][0-9][0-9] ?[*xX] ?[0-9][0-9][0-9][0-9]?", "")
-				.replaceAll("[^a-zA-Z0-9 ,-]", "")
-				.replaceAll(" [a-zA-Z]+[0-9]+[a-zA-Z0-9]*$", "");
+				.replaceAll("([0-9]{3,4} ?[*xX] ?[0-9]{3,4})|([^\\w ,-])|( [a-zA-Z]+[0-9]+[\\w]*$)",
+						"");
 		if (temp.length() > 23) {
 			temp = temp.substring(0, 20);
 			temp += "...";

@@ -11,7 +11,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
@@ -26,7 +25,9 @@ public class GUI extends JFrame{
 	private JPanel settingPane;
 	private JPanel titlePane;
 	private JPanel subredditPane;
+	private JPanel flairPane;
 	private JTextField subredditField;
+	private JTextField flairField;
 	private JComboBox<SEARCH_BY> sortSelection;
 	private JTextArea logArea;
 	private JButton applyButton;
@@ -36,7 +37,9 @@ public class GUI extends JFrame{
 	private JSpinner periodField;
 	private JSpinner widthField;
 	private JSpinner dbSizeField;
+	private JSpinner scoreField;
 	private JCheckBox keepCheckBox;
+	private JCheckBox blacklistCheckBox;
 	private JComboBox<TIME> oldSelection;
 	private JTextField titleField;
 	private JPanel logTab;
@@ -46,8 +49,8 @@ public class GUI extends JFrame{
 	private JTextField wallpaperPathText;
 	private JButton changeDirectoryButton;
 	private JSlider nsfwSlider;
+	private JComboBox<String> ratio;
 	static final Logger log = DisplayLogger.getInstance("GUI");
-	private final Act act;
 	private final Settings settings = Settings.getInstance();
 	private final Thread backThread;
 
@@ -56,7 +59,7 @@ public class GUI extends JFrame{
 		this.setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource(Tray.PATH_TO_TRAY_ICON)));/* icon by https://www.freepik.com */
 		this.backThread = backThread;
 		add(rootPane);
-		act = new Act(this);
+		Act act = new Act(this);
 		applyButton.addActionListener(act);
 		folderButton.addActionListener(act);
 		resetButton.addActionListener(act);
@@ -72,13 +75,11 @@ public class GUI extends JFrame{
 		// TODO was useless!
 		logCheckBox.setVisible(false);
 
-		tabbedPane.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent changeEvent) {
-				JTabbedPane src = (JTabbedPane) changeEvent.getSource();
-				int index = src.getSelectedIndex();
-				if (src.getComponentAt(index).equals(logTab)) {
-					showLog();
-				}
+		tabbedPane.addChangeListener(changeEvent -> {
+			JTabbedPane src = (JTabbedPane) changeEvent.getSource();
+			int index = src.getSelectedIndex();
+			if (src.getComponentAt(index).equals(logTab)) {
+				showLog();
 			}
 		});
 
@@ -92,32 +93,44 @@ public class GUI extends JFrame{
 	}
 
 	void saveSettings() {
-		settings.setTitles(titleField.getText().replace(" ", "").split(","));
-		settings.setSubreddits(subredditField.getText().replace(" ", "").split(","));
+		// Settings.regWS holds the whitespace regex string as it's accessible from both places I currnetly have it
+		// Selects any extra space before or after a string with comma delimitation
+		// Selects any extra space (any more than one) between words
+		settings.setTitles(titleField.getText().replaceAll(settings.getRegWS(), "").split(","));
+		settings.setSubreddits(subredditField.getText().replaceAll(settings.getRegWS(), "").split(","));
+		settings.setFlair(flairField.getText().replaceAll(settings.getRegWS(), "").split(","));
 		settings.setNsfwLevel(nsfwSlider.getValue());
 		settings.setHeight((int) heightField.getValue());
 		settings.setWidth((int) widthField.getValue());
+		settings.setScore((int) scoreField.getValue());
 		settings.setMaxOldness((TIME) oldSelection.getSelectedItem());
 		settings.setPeriod((int) periodField.getValue());
 		settings.setSearchBy((SEARCH_BY) sortSelection.getSelectedItem());
 		settings.setKeepWallpapers(keepCheckBox.isSelected());
+		settings.setKeepBlacklist(blacklistCheckBox.isSelected());
 		settings.setMaxDatabaseSize((int) dbSizeField.getValue());
+		settings.setRatioLimit(ratio.getSelectedItem());
 
 		settings.writeSettings();
 	}
 
 	void loadSettings() {
-		titleField.setText(Arrays.toString(settings.getTitles()).replace("[", "").replace("]", ""));
-		subredditField.setText(Arrays.toString(settings.getSubreddits()).replace("[", "").replace("]", ""));
+		// Settings.regSB holds the regex string for removing square brackets
+		titleField.setText(Arrays.toString(settings.getTitles()).replaceAll(settings.getRegSB(), ""));
+		subredditField.setText(Arrays.toString(settings.getSubreddits()).replaceAll(settings.getRegSB(), ""));
+		flairField.setText(Arrays.toString(settings.getFlair()).replaceAll(settings.getRegSB(), ""));
 		sortSelection.setSelectedItem(settings.getSearchBy());
 		heightField.setValue(settings.getHeight());
 		widthField.setValue(settings.getWidth());
+		scoreField.setValue(settings.getScore());
 		periodField.setValue(settings.getPeriod());
 		oldSelection.setSelectedItem(settings.getMaxOldness());
 		dbSizeField.setValue(settings.getMaxDatabaseSize());
-		keepCheckBox.setSelected(settings.doKeepWallpapers());
+		keepCheckBox.setSelected(settings.getKeepWallpapers());
+		blacklistCheckBox.setSelected(settings.getKeepBlacklist());
 		wallpaperPathText.setText(Settings.getWallpaperPath());
 		nsfwSlider.setValue(settings.getNsfwLevel().value);
+		ratio.setSelectedItem(settings.getRatioLimit());
 	}
 
 	void changeWallpaper() {
@@ -150,23 +163,25 @@ public class GUI extends JFrame{
 		int selectedOption = JOptionPane.showConfirmDialog(this, "You are going to remove your wallpaper database", "Alert", JOptionPane.OK_CANCEL_OPTION);
 
 		if (selectedOption == JOptionPane.OK_OPTION) {
-			//TODO actually reset the DB
-			File dbFile = new File(Settings.PATH_TO_DATABASE);
-			File wallpaperFolder = new File(Settings.getWallpaperPath());
-			if (dbFile.exists()) {
-				dbFile.delete();
-				try {
-					dbFile.createNewFile();
-				} catch (IOException e) {
-					log.log(Level.WARNING, "Failed erasing the database");
-				}
-			}
-			if (wallpaperFolder.isDirectory()) {
-				for (File walp: Objects.requireNonNull(wallpaperFolder.listFiles())) {
-					walp.delete();
-				}
-			}
 
+			File wallpaperFolder = new File(Settings.getWallpaperPath());
+			Settings.eraseDB();
+
+			// Requires the directory exists and wallpapers should not be kept
+			if (wallpaperFolder.isDirectory() && !settings.getKeepWallpapers()) {
+				for (File walp : Objects.requireNonNull(wallpaperFolder.listFiles())) {
+					if (walp.delete()) {
+						log.log(Level.FINE, () -> walp + " deleted.");
+					}
+				}
+				log.log(Level.FINE, () -> "Wallpapers successfully purged.");
+			}
+			else if (settings.getKeepWallpapers()) {
+				log.log(Level.FINE, () -> "Wallpapers have not been removed by preference.");
+			}
+			else {
+				log.log(Level.FINE, () -> "Wallpapers directory is missing.");
+			}
 		}
 	}
 
@@ -177,6 +192,8 @@ public class GUI extends JFrame{
 		heightField = new JSpinner(s);
 		s = new SpinnerNumberModel(1920, 0, 10000, 1);
 		widthField = new JSpinner(s);
+		s = new SpinnerNumberModel(15, 0, 10000, 1);
+		scoreField = new JSpinner(s);
 		s = new SpinnerNumberModel(50, 5, 10000, 1);
 		dbSizeField = new JSpinner(s);
 		oldSelection = new JComboBox<>(TIME.values());
@@ -184,12 +201,10 @@ public class GUI extends JFrame{
 	}
 
 	private void showLog() {
-		FileReader reader = null;
+		FileReader reader;
 		try {
 			reader = new FileReader(DisplayLogger.LOG_PATH);
 			logArea.read(reader, DisplayLogger.LOG_PATH);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

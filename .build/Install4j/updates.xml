@@ -1,18 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <updateDescriptor baseUrl="">
-  <entry targetMediaFileId="36" updatableVersionMin="1.0" updatableVersionMax="" fileName="RW_windows-x64_1_1_1.exe" newVersion="1.1.1" newMediaFileId="36" fileSize="39662080" md5Sum="f7993ed9222cf11196b453e6215c7c6e" sha256Sum="d52a5bd93fc7b25ba99d6a710d6be9abd03635137c5cfeb5e7d33953899277c0" bundledJre="windows-amd64-11.0.11.tar.gz" archive="false" singleBundle="false">
-    <comment language="en">[1.1.1 - 27/09/2021]
- - Fix: GUI limiting period selector
- - Fix: nsfwSlider doesn't stay in position </comment>
+  <entry targetMediaFileId="36" updatableVersionMin="1.0" updatableVersionMax="" fileName="RW_windows-x64_1_2_1.exe" newVersion="1.2.1" newMediaFileId="36" fileSize="39775744" md5Sum="45fb0d04d8959ae732bf1ebfffdcec24" sha256Sum="7b8d653e1f1bad19daec839e68dcce4d5f2573b7a339b06b1ab9eb231667803b" bundledJre="windows-amd64-11.0.13.tar.gz" archive="false" singleBundle="false">
+    <comment language="en">[1.1.1 - 27/09/2021]&#xD;
+ - Fix: GUI limiting period selector&#xD;
+ - Fix: nsfwSlider doesn't stay in position &#xD;
+[1.2.0 - 21/12/2021]&#xD;
+ - Change: RW now queries a multireddit. This makes it more stable for large lists of subreddits (Go wild!)&#xD;
+ - Enhancement: Added option for searching flairs&#xD;
+ - Enhancement: Added a check for keeping blacklisted wallpapers&#xD;
+ - Enhancement: Wallpaper directory will be cleared with the database if "Keep wallpapers in database" is not checked&#xD;
+ - Enhancement: Added option for setting the minimum post score (default 15)&#xD;
+ - Fix: Check that the database has the right data types&#xD;
+ - Fix: Erase database button functions as intended&#xD;
+[1.2.1 - 22/12/2021]&#xD;
+ - Fix: Breaking bug involving an infinite loop and null pointers related to multiscreen handling&#xD;
+ - Enhancement: Added option to filter by aspect ratio.&#xD;
+   - Strict: Rejects any image that doesn't exactly match your chosen resolution's ratio&#xD;
+   - Relaxed: Allows images that are the same orientation as your chosen resolution (landscape or portait)&#xD;
+   - None: No ratio filtering</comment>
   </entry>
-  <entry targetMediaFileId="144" updatableVersionMin="1.0" updatableVersionMax="" fileName="RW_unix_1_1_1.sh" newVersion="1.1.1" newMediaFileId="144" fileSize="39920838" md5Sum="8c120dee424b5af8e000bef82c3b1087" sha256Sum="8ac2e3fdeaf2282c9546b057e17e2cfbae4edc66f257426fa44cca04e26ae3cf" bundledJre="linux-amd64-11.0.11.tar.gz" archive="false" singleBundle="false">
-    <comment language="en">[1.1.1 - 27/09/2021]
- - Fix: GUI limiting period selector
- - Fix: nsfwSlider doesn't stay in position </comment>
+  <entry targetMediaFileId="144" updatableVersionMin="1.0" updatableVersionMax="" fileName="RW_unix_1_2_1.sh" newVersion="1.2.1" newMediaFileId="144" fileSize="39996786" md5Sum="24a9a4223c76eb5e769cb4344a724bf1" sha256Sum="b82bb3ad82f476c36aed3d869718da709eb5e2fb8c9d4bc75172262f8cc25d50" bundledJre="linux-amd64-11.0.13.tar.gz" archive="false" singleBundle="false">
+    <comment language="en">[1.1.1 - 27/09/2021]&#xD;
+ - Fix: GUI limiting period selector&#xD;
+ - Fix: nsfwSlider doesn't stay in position &#xD;
+[1.2.0 - 21/12/2021]&#xD;
+ - Change: RW now queries a multireddit. This makes it more stable for large lists of subreddits (Go wild!)&#xD;
+ - Enhancement: Added option for searching flairs&#xD;
+ - Enhancement: Added a check for keeping blacklisted wallpapers&#xD;
+ - Enhancement: Wallpaper directory will be cleared with the database if "Keep wallpapers in database" is not checked&#xD;
+ - Enhancement: Added option for setting the minimum post score (default 15)&#xD;
+ - Fix: Check that the database has the right data types&#xD;
+ - Fix: Erase database button functions as intended&#xD;
+[1.2.1 - 22/12/2021]&#xD;
+ - Fix: Breaking bug involving an infinite loop and null pointers related to multiscreen handling&#xD;
+ - Enhancement: Added option to filter by aspect ratio.&#xD;
+   - Strict: Rejects any image that doesn't exactly match your chosen resolution's ratio&#xD;
+   - Relaxed: Allows images that are the same orientation as your chosen resolution (landscape or portait)&#xD;
+   - None: No ratio filtering</comment>
   </entry>
-  <entry targetMediaFileId="196" updatableVersionMin="1.0" updatableVersionMax="" fileName="RW_windows-x32_1_1_1.exe" newVersion="1.1.1" newMediaFileId="196" fileSize="37452800" md5Sum="1afb1294b34ce4f6d4ba2f3f32c9a4c4" sha256Sum="c19f429dab52307daa9f310ab92bcef6c8e3c28d029dbcccf937c1bf7d78a6c7" bundledJre="windows-x86-11.0.12.tar.gz" archive="false" singleBundle="false">
-    <comment language="en">[1.1.1 - 27/09/2021]
- - Fix: GUI limiting period selector
- - Fix: nsfwSlider doesn't stay in position </comment>
+  <entry targetMediaFileId="196" updatableVersionMin="1.0" updatableVersionMax="" fileName="RW_windows-x32_1_2_1.exe" newVersion="1.2.1" newMediaFileId="196" fileSize="37472256" md5Sum="d08c89e2132e8a4ad42e200e2efd4b02" sha256Sum="40a5c8f4518e6291b8ca0dd9a90c27e60e5cfa86f0aa8d995b160503fec04bf4" bundledJre="windows-x86-11.0.13.tar.gz" archive="false" singleBundle="false">
+    <comment language="en">[1.1.1 - 27/09/2021]&#xD;
+ - Fix: GUI limiting period selector&#xD;
+ - Fix: nsfwSlider doesn't stay in position &#xD;
+[1.2.0 - 21/12/2021]&#xD;
+ - Change: RW now queries a multireddit. This makes it more stable for large lists of subreddits (Go wild!)&#xD;
+ - Enhancement: Added option for searching flairs&#xD;
+ - Enhancement: Added a check for keeping blacklisted wallpapers&#xD;
+ - Enhancement: Wallpaper directory will be cleared with the database if "Keep wallpapers in database" is not checked&#xD;
+ - Enhancement: Added option for setting the minimum post score (default 15)&#xD;
+ - Fix: Check that the database has the right data types&#xD;
+ - Fix: Erase database button functions as intended&#xD;
+[1.2.1 - 22/12/2021]&#xD;
+ - Fix: Breaking bug involving an infinite loop and null pointers related to multiscreen handling&#xD;
+ - Enhancement: Added option to filter by aspect ratio.&#xD;
+   - Strict: Rejects any image that doesn't exactly match your chosen resolution's ratio&#xD;
+   - Relaxed: Allows images that are the same orientation as your chosen resolution (landscape or portait)&#xD;
+   - None: No ratio filtering</comment>
   </entry>
 </updateDescriptor>
