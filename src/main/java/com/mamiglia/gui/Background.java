@@ -6,6 +6,7 @@ import com.mamiglia.utils.GetNewWallpaper;
 import com.mamiglia.utils.SetNewWallpaper;
 import com.mamiglia.wallpaper.Wallpaper;
 
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,6 +22,7 @@ public class Background implements Runnable {
 	private final Settings settings = Settings.getInstance();
 	private boolean stopped = false;
 	private Wallpaper current = null;
+	private List<Long> timers;
 
 	private Background() {
 	}
@@ -44,10 +46,8 @@ public class Background implements Runnable {
 		}
 	}
 
-	public void changeWallpaper() {
-		int screens = settings.getScreens();
-		boolean diff = settings.getDiffWallpapers();
-		GetNewWallpaper g = new GetNewWallpaper(settings, screens, diff);
+	public void changeWallpaper(List<Integer> monitorIdx) {
+		GetNewWallpaper g = new GetNewWallpaper(settings);
 		Thread t1 = new Thread(g);
 		t1.start();
 		try {
@@ -56,45 +56,61 @@ public class Background implements Runnable {
 			log.log(Level.SEVERE, "Thread GetNewWallpaper was interrupted by unknown error");
 		}
 
-		if (screens > 1 && diff) {
-			int i = 0;
-			for (Wallpaper c : g.getResult(screens)) {
-				SetNewWallpaper set = new SetNewWallpaper(c, screens);
+		if (monitorIdx != null) { //monitor index == null means change to all monitors
+			List<Thread> threadList = new LinkedList<>();
+			for (Integer idx : monitorIdx) {
+				SetNewWallpaper set = new SetNewWallpaper(g.getResult(), idx);
 				Thread t2 = new Thread(set);
 				t2.start();
-				settings.updateDate();
-				Tray.getInstance().populateTray(cosmetifyTitle(c.getTitle()));
-				log.log(Level.INFO, () -> "Wallpaper is successfully set to:\n" + c);
-				i++;
-				if (i == screens) break;
+				threadList.add(t2);
+				t2.setName(idx.toString());
+				settings.updateDate(idx);
+			}
+			log.log(Level.INFO, () -> "Wallpaper is being set to:\n" + current);
+			for (Thread t2 : threadList) {
+				try {
+					t2.join();
+				} catch (InterruptedException e) {
+					log.log(Level.SEVERE, "Thread SetNewWallpaper was interrupted by unknown error");
+				}
+				log.log(Level.INFO, () -> "Succes for monitor #" + t2.getName());
 			}
 		} else {
 			current = g.getResult();
-			SetNewWallpaper set = new SetNewWallpaper(current, diff);
+			SetNewWallpaper set = new SetNewWallpaper(current, -1);
 			Thread t2 = new Thread(set);
 			t2.start();
-			settings.updateDate();
-			Tray.getInstance().populateTray(cosmetifyTitle(current.getTitle()));
+			try {
+				t2.join();
+			} catch (InterruptedException e) {
+				log.log(Level.SEVERE, "Thread SetNewWallpaper was interrupted by unknown error");
+			}
+			settings.updateDate(0);
 			log.log(Level.INFO, () -> "Wallpaper is successfully set to:\n" + current);
 		}
+		Tray.getInstance().populateTray();
+
 	}
 
 	@Override
 	public void run() {
-		long residualTime = settings.getLastTimeWallpaperChanged() + settings.getPeriod() * 60000L - System.currentTimeMillis();
-		if (residualTime <= 60000L) { //if residualTime is under a minute I change the wallpaper anyway
-			changeWallpaper();
-			residualTime = settings.getPeriod() * 60000L;
-		}
+		initializeTimers(settings.getScreens());
+
+		Boolean[] timeOvers = updateTimers(0L);
+		changeWallpapers(timeOvers);
+
 
 		while (!stopped) {
+			Long residualTime = getShortestTimer();
+			long start = System.currentTimeMillis();
 			try {
 				Thread.sleep(residualTime); //
 			} catch (InterruptedException e) {
 				log.log(Level.INFO, "Sleep is interrupted");
 			}
-			residualTime = settings.getPeriod() * 60000L;
-			changeWallpaper();
+
+			timeOvers = updateTimers(System.currentTimeMillis() - start);
+			changeWallpapers(timeOvers);
 		}
 		log.log(Level.INFO, "Background Service has been stopped as requested");
 	}
@@ -110,7 +126,48 @@ public class Background implements Runnable {
 			temp += "...";
 		}
 		return temp;
+	}
 
+	private void initializeTimers(int size) {
+		timers = new ArrayList<>(size);
+		for (int i=0; i < size; i++) {
+			timers.set(i, settings.getLastTimeWallpaperChanged(i) + settings.getTimerForMonitor(i) * 60000L - System.currentTimeMillis());
+		}
+	}
+
+	private Long getShortestTimer() {
+		return Collections.min(timers);
+	}
+
+	private Boolean[] updateTimers(Long elapsedTime) {
+		Boolean[] timeovers = new Boolean[timers.size()];
+		Arrays.fill(timeovers, false);
+		for (int i=0; i<timers.size(); i++) {
+			Long residualTime = timers.get(i) - elapsedTime;
+			if (residualTime <= 60000L) { //if residualTime is under a minute I change the wallpaper anyway
+				residualTime = settings.getTimerForMonitor(i) * 60000L;
+				timeovers[i] = true;
+				if (!settings.getDiffWallpapers()) {
+					Arrays.fill(timeovers, true);
+					Collections.fill(timers, residualTime);
+					break;
+				}
+			}
+			timers.set(i, residualTime);
+		}
+		return timeovers;
+	}
+
+	private void changeWallpapers(Boolean[] timeovers) {
+		if (settings.getDiffWallpapers()) {
+			changeWallpaper(null);
+			return;
+		}
+		List<Integer> indexes = new LinkedList<>();
+		for (int i=0; i<timeovers.length; i++) {
+			if (timeovers[i]) indexes.add(i);
+		}
+		changeWallpaper(indexes);
 
 	}
 
