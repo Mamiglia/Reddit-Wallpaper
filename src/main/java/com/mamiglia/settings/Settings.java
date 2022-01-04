@@ -235,10 +235,12 @@ public class Settings {
 	}
 
 	public int getPeriod() {
+		//DEPRECATED
 		return period;
 	}
 
 	public void setPeriod(int period) {
+		//DEPRECATED
 		this.period = period;
 	}
 
@@ -294,8 +296,9 @@ public class Settings {
 		return diffWallpapers;
 	}
 
-	public long getLastTimeWallpaperChanged() {
+	public long getLastTimeWallpaperChanged(int i) {
 		// The settings file is updated each time a wallpaper is changed
+		// TODO change behaviour to save timestamp every time a wallpaper is changed
 		return settingFile.lastModified();
 	}
 
@@ -323,7 +326,14 @@ public class Settings {
 		return screens;
 	}
 
-	public void updateDate() {
+	public Long getTimerForMonitor(int i) {
+		// returns timer time for monitor #i
+		return 0L;
+	}
+
+
+	public void updateDate(int idx) {
+		// TODO change to something that saves every wallpaper change
 		try {
 			Files.setLastModifiedTime(settingFile.toPath(), FileTime.fromMillis(System.currentTimeMillis()));
 		} catch (IOException e) {
