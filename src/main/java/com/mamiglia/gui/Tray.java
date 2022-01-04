@@ -56,7 +56,7 @@ public class Tray {
 			return ;
 		}
 
-		populateTray(null);
+		populateTray();
 
 		try{
 			systemTray.add(trayIcon);
@@ -65,10 +65,10 @@ public class Tray {
 		}
 	}
 
-	public void populateTray(String title){
+	public void populateTray(){
 		PopupMenu trayPopupMenu = new PopupMenu("Reddit Wallpaper");
 
-		if (title != null) {
+		if (title != null) { // TODO change this to iterate through monitors
 			MenuItem titleItem = new MenuItem(title);
 			titleItem.addActionListener(e -> openWebpage(background.getCurrent().getPostUrl()));
 			trayPopupMenu.add(titleItem);
