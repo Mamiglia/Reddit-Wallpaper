@@ -14,16 +14,11 @@ public class GetNewWallpaper implements Runnable {
 	private static final Logger log = DisplayLogger.getInstance("Get New Wallpaper");
 	private final Settings settings;
 	public static final Wallpaper ERROR_VALUE = null;
-	private final int screens;
-	private final boolean diff;
 
 	private Wallpaper result;
-	private Set<Wallpaper> results;
 
-	public GetNewWallpaper(Settings settings, int screens, boolean diff) {
+	public GetNewWallpaper(Settings settings) {
 		this.settings = settings;
-		this.screens = screens;
-		this.diff = diff;
 	}
 
 
@@ -45,7 +40,7 @@ public class GetNewWallpaper implements Runnable {
 		Selector selector;
 
 		try {
-			selector = new Selector(wallpapers, settings.getKeepWallpapers(), settings.getMaxDatabaseSize(), screens, diff);
+			selector = new Selector(wallpapers, settings.getKeepWallpapers(), settings.getMaxDatabaseSize());
 		} catch (IOException e) {
 			log.log(Level.SEVERE, "Loading DB is impossible. Aborting wallpaper set up");
 			abort();
@@ -53,36 +48,19 @@ public class GetNewWallpaper implements Runnable {
 		}
 
 		selector.run();
-		if (!diff || screens == 1) {
-			result = selector.getResult();
-			if (result != null) {
-				if (result.isDownloaded()) {
-					try {
-						result.download();
-					} catch (IOException e) {
-						log.log(Level.SEVERE, "Couldn't download the image");
-						log.log(Level.FINER, e.getMessage());
-					}
-				}
-				log.log(Level.FINER, () -> "GetNewWallpaper selected:\n" + result);
-			}
-		} else if (screens > 1) {
-			results = selector.getResult(screens);
-			if (results != null) {
-				for (Wallpaper r : results) {
-					if (r.isDownloaded()) {
-						try {
-							r.download();
-						} catch (IOException e) {
-							log.log(Level.SEVERE, "Couldn't download the image");
-							log.log(Level.FINER, e.getMessage());
-						}
-					}
-					log.log(Level.FINER, () -> "GetNewWallpaper selected:\n" + r);
+		result = selector.getResult();
+		if (result != null) {
+			if (result.isDownloaded()) {
+				try {
+					result.download();
+				} catch (IOException e) {
+					log.log(Level.SEVERE, "Couldn't download the image");
+					log.log(Level.FINER, e.getMessage());
 				}
 			}
+			log.log(Level.FINER, () -> "GetNewWallpaper selected:\n" + result);
 		}
-		if (result == null && (screens == 1 || !diff) || (results == null && diff && screens > 1)) {
+		if (result == null) {
 			log.log(Level.SEVERE, "The selection process found no wallpaper");
 			abort();
 		}
@@ -100,16 +78,5 @@ public class GetNewWallpaper implements Runnable {
 			log.log(Level.INFO, "No wallpaper was selected.");
 		}
 		return result;
-	}
-
-	public Set<Wallpaper> getResult(int i) {
-		if (!executed) {
-			log.log(Level.INFO, "Result was requested but the functor was never executed");
-		} else if (results == null) {
-			log.log(Level.INFO, "No wallpapers were selected.");
-		} else if (results.size() < i) {
-			log.log(Level.INFO, "Not enough wallpapers found for your screens");
-		}
-		return results;
 	}
 }

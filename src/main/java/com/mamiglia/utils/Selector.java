@@ -22,15 +22,12 @@ class Selector implements Runnable{
     private final Set<Wallpaper> results = new HashSet<>();
     private final Settings settings = Settings.getInstance();
     private final Set<Wallpaper> proposal;
-    private final int screens;
-    private final boolean diff;
 
-    public Selector(Set<Wallpaper> proposal, boolean keepWallpapers, int maxDbSize, int screens, boolean diff) throws IOException {
+    public Selector(Set<Wallpaper> proposal, boolean keepWallpapers, int maxDbSize) throws IOException {
         this.proposal = proposal;
         this.keepWallpapers = keepWallpapers;
         this.maxDbSize = maxDbSize;
-        this.screens = screens;
-        this.diff = diff;
+
 
         loadDB();
         try (ResultSet dataTypes = db.executeQuery("SELECT DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where" +
@@ -78,16 +75,9 @@ class Selector implements Runnable{
                 }
                 log.log(Level.FINE, "Selected new wallpaper from those proposed");
                 insertDB(propWallpaper);
-                if (screens == 1 || !diff) {
-                    closeDB();
-                    result = propWallpaper;
-                    return;
-                } else if (results.size() < screens){
-                    results.add(propWallpaper);
-                } else {
-					closeDB();
-					return;
-                }
+                closeDB();
+                result = propWallpaper;
+                return;
             }
         }
 		
@@ -102,16 +92,10 @@ class Selector implements Runnable{
             try (ResultSet rs = db.executeQuery("SELECT wp FROM WALLPAPERS ORDER BY date LIMIT 1")) {
                 rs.next();
 				result = (Wallpaper) rs.getObject("wp");
-				if (result == null || results.size() == screens) break;
+				if (result == null) break;
 				else if (!settings.isBanned(result.getID())) {
-					if (screens == 1 || !diff) {
-						updateDate(result);
-						break;
-					} else if (results.size() < screens) {
-						results.add(result);
-						updateDate(result);
-						continue;
-					} else break;
+                    updateDate(result);
+                    break;
 				}
                 removeWp(result.getID());
             } catch (SQLException throwables) {
@@ -121,9 +105,7 @@ class Selector implements Runnable{
             }
         }
 
-		if (results.size() != screens && screens > 1 && diff) {
-            log.log(Level.WARNING, "Not enough images available to set one per screen.");
-        } else if (result == null) {
+		if (result == null) {
             log.log(Level.WARNING, "Database is void, no wallpaper can be set.");
 		}
         closeDB();
