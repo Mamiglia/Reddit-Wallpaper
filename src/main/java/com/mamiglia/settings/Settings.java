@@ -22,7 +22,7 @@ public class Settings {
 	private final File settingFile = new File(PATH_TO_SAVEFILE);
 	public boolean keepBlacklist = false;
 	private String[] titles = {};
-	private String[] flair ={};
+	private String[] flair = {};
 	private String[] subreddits = {"wallpaper", "wallpapers"};
 	private SEARCH_BY searchBy = SEARCH_BY.HOT;
 	private NSFW_LEVEL nsfwLevel = NSFW_LEVEL.ALLOW;
@@ -36,7 +36,7 @@ public class Settings {
 	private boolean keepWallpapers = false; //keep wallpapers after eliminating them from db?
 	private final boolean diffWallpapers = false; //Different wallpaper per screen?
 	private static String wallpaperPath = "Saved-Wallpapers"; // path to wallpaper folder
-	private Object ratioLimit = "Relaxed";
+	private RATIO_LIMIT ratioLimit = RATIO_LIMIT.RELAXED;
 	private static final Logger log = DisplayLogger.getInstance("Settings");
 	private static final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 	private static int screens; // Number of physical screens connected to the system
@@ -116,6 +116,17 @@ public class Settings {
 		public final String value;
 
 		SEARCH_BY(String value) {
+			this.value = value;
+		}
+	}
+
+	public enum RATIO_LIMIT {
+		RELAXED("relaxed"),
+		STRICT("strict"),
+		NONE("none");
+
+		public final String value;
+		RATIO_LIMIT(String value) {
 			this.value = value;
 		}
 	}
@@ -306,7 +317,7 @@ public class Settings {
 		return ratioLimit;
 	}
 
-	public void setRatioLimit(Object ratioLimit) {
+	public void setRatioLimit(RATIO_LIMIT ratioLimit) {
 		this.ratioLimit = ratioLimit;
 	}
 
@@ -426,7 +437,7 @@ public class Settings {
 				period = Integer.parseInt(value);
 				break;
 			case "ratioLimit":
-				ratioLimit = value;
+				ratioLimit = RATIO_LIMIT.valueOf(value);
 				break;
 			case "maxOldness":
 				maxOldness = TIME.valueOf(value);

@@ -47,7 +47,7 @@ public class GUI extends JFrame{
 	private JTextField wallpaperPathText;
 	private JButton changeDirectoryButton;
 	private JSlider nsfwSlider;
-	private JComboBox<String> ratio;
+	private JComboBox<Settings.RATIO_LIMIT> ratioSelection;
 	static final Logger log = DisplayLogger.getInstance("GUI");
 	private final Settings settings = Settings.getInstance();
 	private final Thread backThread;
@@ -107,7 +107,7 @@ public class GUI extends JFrame{
 		settings.setKeepWallpapers(keepCheckBox.isSelected());
 		settings.setKeepBlacklist(blacklistCheckBox.isSelected());
 		settings.setMaxDatabaseSize((int) dbSizeField.getValue());
-		settings.setRatioLimit(ratio.getSelectedItem());
+		settings.setRatioLimit((Settings.RATIO_LIMIT) ratioSelection.getSelectedItem());
 
 		settings.writeSettings();
 	}
@@ -128,7 +128,7 @@ public class GUI extends JFrame{
 		blacklistCheckBox.setSelected(settings.getKeepBlacklist());
 		wallpaperPathText.setText(Settings.getWallpaperPath());
 		nsfwSlider.setValue(settings.getNsfwLevel().value);
-		ratio.setSelectedItem(settings.getRatioLimit());
+		ratioSelection.setSelectedItem(settings.getRatioLimit());
 	}
 
 	void changeWallpaper() {
@@ -196,6 +196,7 @@ public class GUI extends JFrame{
 		dbSizeField = new JSpinner(s);
 		oldSelection = new JComboBox<>(TIME.values());
 		sortSelection = new JComboBox<>(SEARCH_BY.values());
+		ratioSelection = new JComboBox<>(Settings.RATIO_LIMIT.values());
 	}
 
 	private void showLog() {

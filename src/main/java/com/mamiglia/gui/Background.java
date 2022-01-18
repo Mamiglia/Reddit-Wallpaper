@@ -73,7 +73,7 @@ public class Background implements Runnable {
 				} catch (InterruptedException e) {
 					log.log(Level.SEVERE, "Thread SetNewWallpaper was interrupted by unknown error");
 				}
-				log.log(Level.INFO, () -> "Succes for monitor #" + t2.getName());
+				log.log(Level.INFO, () -> "Success for monitor #" + t2.getName());
 			}
 		} else {
 			current = g.getResult();

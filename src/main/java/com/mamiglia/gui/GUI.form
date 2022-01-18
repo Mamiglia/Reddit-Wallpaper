@@ -167,7 +167,9 @@
                       </component>
                       <component id="1301a" class="javax.swing.JComboBox" binding="oldSelection" custom-create="true">
                         <constraints/>
-                        <properties/>
+                        <properties>
+                          <model/>
+                        </properties>
                       </component>
                       <component id="57e77" class="javax.swing.JLabel">
                         <constraints/>
@@ -546,17 +548,13 @@
                     </properties>
                     <border type="none"/>
                     <children>
-                      <component id="1f1c7" class="javax.swing.JComboBox" binding="ratio">
+                      <component id="1f1c7" class="javax.swing.JComboBox" binding="ratioSelection" custom-create="true">
                         <constraints>
                           <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <foreground color="-4473925"/>
-                          <model>
-                            <item value="Strict"/>
-                            <item value="Relaxed"/>
-                            <item value="None"/>
-                          </model>
+                          <model/>
                           <toolTipText value="Strict: Exact match to chosen resolution ratio&#10;Relaxed: From chosen resolution to square&#10;None: Any ratio"/>
                         </properties>
                       </component>
