@@ -56,7 +56,7 @@ public class GUI extends JFrame{
 
 	public GUI(Thread backThread) {
 		super("Reddit Wallpaper Downloader");
-		this.setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource(Tray.PATH_TO_TRAY_ICON)));/* icon by https://www.freepik.com */
+		this.setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getClassLoader().getResource(Tray.PATH_TO_TRAY_ICON)));/* icon by https://www.freepik.com */
 		this.backThread = backThread;
 		add(rootPane);
 		Act act = new Act(this);
