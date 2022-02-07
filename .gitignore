@@ -38,3 +38,5 @@ autostartRW.bat
 /Saved-Wallpapers/
 .build/Install4j/RW_unix_0_4.sh
 .build/Install4j/RW.install4j
+
+/.gradle/
