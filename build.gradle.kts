@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.mamiglia"
-version = "0.0.4" // todo: What is the correct version?
+version = "1.2.2"
 description = "Reddit-Wallpaper"
 java.sourceCompatibility = javaVersion
 java.targetCompatibility = javaVersion
