@@ -18,6 +18,13 @@ repositories {
 }
 
 dependencies {
+    implementation("net.java.dev.jna:jna-platform:5.8.0")
+    implementation("org.json:json:20210307")
+    implementation("com.formdev:flatlaf:1.1.2")
+
+    runtimeOnly("com.h2database:h2:1.4.200")
+
+
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
 }
