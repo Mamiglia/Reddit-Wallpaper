@@ -40,3 +40,4 @@ autostartRW.bat
 .build/Install4j/RW.install4j
 
 /.gradle/
+/build/
