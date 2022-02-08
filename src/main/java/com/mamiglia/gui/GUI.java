@@ -1,14 +1,12 @@
-package GUI;
+package com.mamiglia.gui;
 
-import Settings.Settings;
-import Settings.Settings.TIME;
-import Settings.Settings.SEARCH_BY;
-import Utils.DisplayLogger;
+import com.mamiglia.settings.Settings;
+import com.mamiglia.settings.Settings.TIME;
+import com.mamiglia.settings.Settings.SEARCH_BY;
+import com.mamiglia.utils.DisplayLogger;
 import com.formdev.flatlaf.FlatDarkLaf;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.io.File;
 import java.io.FileReader;

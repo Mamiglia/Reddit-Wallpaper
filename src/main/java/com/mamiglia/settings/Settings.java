@@ -1,6 +1,6 @@
-package Settings;
+package com.mamiglia.settings;
 
-import Utils.DisplayLogger;
+import com.mamiglia.utils.DisplayLogger;
 
 import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;

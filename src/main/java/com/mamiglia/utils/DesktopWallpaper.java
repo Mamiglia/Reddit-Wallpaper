@@ -1,18 +1,13 @@
-package Utils;
+package com.mamiglia.utils;
 
-import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
 import com.sun.jna.WString;
-import com.sun.jna.platform.EnumUtils;
 import com.sun.jna.platform.win32.COM.COMUtils;
 import com.sun.jna.platform.win32.COM.Unknown;
 import com.sun.jna.platform.win32.FlagEnum;
 import com.sun.jna.platform.win32.Guid.CLSID;
 import com.sun.jna.platform.win32.Guid.IID;
 import com.sun.jna.platform.win32.Ole32;
-import com.sun.jna.platform.win32.WinDef.BOOL;
-import com.sun.jna.platform.win32.WinDef.RECT;
 import com.sun.jna.platform.win32.WinNT.HRESULT;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;

@@ -1,10 +1,10 @@
-package GUI;
+package com.mamiglia.gui;
 
-import Settings.Settings;
-import Utils.DisplayLogger;
-import Utils.GetNewWallpaper;
-import Utils.SetNewWallpaper;
-import Wallpaper.Wallpaper;
+import com.mamiglia.settings.Settings;
+import com.mamiglia.utils.DisplayLogger;
+import com.mamiglia.utils.GetNewWallpaper;
+import com.mamiglia.utils.SetNewWallpaper;
+import com.mamiglia.wallpaper.Wallpaper;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

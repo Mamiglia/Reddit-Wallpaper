@@ -1,6 +1,6 @@
-package GUI;
+package com.mamiglia.gui;
 
-import Utils.DisplayLogger;
+import com.mamiglia.utils.DisplayLogger;
 
 import javax.swing.*;
 import java.awt.*;

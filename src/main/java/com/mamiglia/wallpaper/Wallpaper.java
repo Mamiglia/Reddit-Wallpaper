@@ -1,6 +1,6 @@
-package Wallpaper;
+package com.mamiglia.wallpaper;
 
-import Settings.Settings;
+import com.mamiglia.settings.Settings;
 
 import java.io.File;
 import java.io.IOException;

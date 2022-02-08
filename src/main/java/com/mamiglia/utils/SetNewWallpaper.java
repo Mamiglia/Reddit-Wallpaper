@@ -1,6 +1,6 @@
-package Utils;
+package com.mamiglia.utils;
 
-import Wallpaper.Wallpaper;
+import com.mamiglia.wallpaper.Wallpaper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,7 +16,6 @@ import com.sun.jna.platform.win32.COM.COMException;
 import com.sun.jna.platform.win32.COM.COMUtils;
 import com.sun.jna.platform.win32.Ole32;
 import com.sun.jna.platform.win32.WTypes;
-import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.ptr.PointerByReference;
 import com.sun.jna.win32.*;

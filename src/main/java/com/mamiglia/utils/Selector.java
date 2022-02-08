@@ -1,7 +1,7 @@
-package Utils;
+package com.mamiglia.utils;
 
-import Settings.Settings;
-import Wallpaper.Wallpaper;
+import com.mamiglia.settings.Settings;
+import com.mamiglia.wallpaper.Wallpaper;
 
 import java.io.*;
 import java.sql.*;
