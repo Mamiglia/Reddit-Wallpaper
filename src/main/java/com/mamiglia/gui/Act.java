@@ -1,4 +1,4 @@
-package GUI;
+package com.mamiglia.gui;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

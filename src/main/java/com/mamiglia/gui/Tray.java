@@ -1,6 +1,6 @@
-package GUI;
+package com.mamiglia.gui;
 
-import Utils.DisplayLogger;
+import com.mamiglia.utils.DisplayLogger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,12 +15,12 @@ import java.util.logging.Logger;
 
 public class Tray {
 	private static Tray uniqueInstance;
-	public static final String PATH_TO_TRAY_ICON = "/resources/tray_icon.png";
-//	public static final String PATH_TO_CHANGE_ICON = "/resources/change_ico.png";
-//	public static final String PATH_TO_DOWNLOAD_ICON = "/resources/download_ico.png";
-//	public static final String PATH_TO_POWER_ICON = "/resources/power_ico.png";
-//	public static final String PATH_TO_SETTINGS_ICON = "/resources/settings_ico.png";
-//	public static final String PATH_TO_WALLPAPER_ICON = "/resources/wallpaper_ico.png";
+	public static final String PATH_TO_TRAY_ICON = "tray_icon.png";
+//	public static final String PATH_TO_CHANGE_ICON = "change_ico.png";
+//	public static final String PATH_TO_DOWNLOAD_ICON = "download_ico.png";
+//	public static final String PATH_TO_POWER_ICON = "power_ico.png";
+//	public static final String PATH_TO_SETTINGS_ICON = "settings_ico.png";
+//	public static final String PATH_TO_WALLPAPER_ICON = "wallpaper_ico.png";
 	private final Thread backThread; // it's the Thread of the backgound (the thing that runs always in background)
 	private final Background background;
 	private final TrayIcon trayIcon;
@@ -43,7 +43,7 @@ public class Tray {
 	private Tray(Thread backgroundThread, Background background) {
 		this.backThread = backgroundThread;
 		this.background = background;
-		Image image = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource(PATH_TO_TRAY_ICON));// icon by https://www.freepik.com
+		Image image = Toolkit.getDefaultToolkit().getImage(this.getClass().getClassLoader().getResource(PATH_TO_TRAY_ICON));// icon by https://www.freepik.com
 		this.trayIcon = new TrayIcon(image, "Reddit Wallpaper", null);
 		this.systemTray = SystemTray.getSystemTray();
 	}

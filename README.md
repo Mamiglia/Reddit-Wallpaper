@@ -46,3 +46,11 @@ I need help, I need feedbacks, I need people to tell me that they like this/disl
 - [ ] Consider turning the application in a service
 - [x] Feature request: add the title of the post to the image (somewhere)
 - [x] Feature request: add blacklist option for wallpapers
+
+
+# Development setup
+
+After gradle import, in Intellij Idea, go to <kbd>Build, Execution, Deployment</kbd> > <kbd>Build Tools</kbd> > <kbd>Gradle</kbd> and set <kbd>Build and run</kbd> to use `Intellij IDEA`, not `Gradle`.
+
+This is needed because Gradle plugin does not support generating GUI designer code.
+If you're affected by this, please vote for: https://youtrack.jetbrains.com/issue/IDEA-223518

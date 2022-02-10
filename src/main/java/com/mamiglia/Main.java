@@ -1,10 +1,10 @@
-package Main;
+package com.mamiglia;
 
-import GUI.Background;
-import GUI.GUI;
-import GUI.Tray;
-import Settings.Settings;
-import Utils.DisplayLogger;
+import com.mamiglia.gui.Background;
+import com.mamiglia.gui.GUI;
+import com.mamiglia.gui.Tray;
+import com.mamiglia.settings.Settings;
+import com.mamiglia.utils.DisplayLogger;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
