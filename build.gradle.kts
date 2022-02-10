@@ -3,6 +3,7 @@ val javaVersion = JavaVersion.VERSION_11
 
 plugins {
     id("java")
+    id("io.github.file5.guidesigner") version "1.0.1"
 }
 
 group = "com.mamiglia"
@@ -24,6 +25,9 @@ dependencies {
 
     runtimeOnly("com.h2database:h2:1.4.200")
 
+    implementation("com.jetbrains.intellij.java:java-gui-forms-rt:+")
+    //noinspection GradlePackageUpdate
+    implementation("com.jgoodies:forms:1.1-preview")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
