@@ -1,6 +1,7 @@
 package com.mamiglia.utils;
 
-import com.mamiglia.settings.Settings;
+import com.mamiglia.settings.NSFW_LEVEL;
+import com.mamiglia.settings.Source;
 import com.mamiglia.wallpaper.Wallpaper;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -14,15 +15,17 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.mamiglia.settings.SettingsKt.REG_WS;
+
 class Searcher {
-	private final Settings settings;
+	private final Set<Source> sources;
 	private String searchQuery = "";
 	private Set<Wallpaper> proposed;
 	private static final Logger log = DisplayLogger.getInstance("Searcher");
 	private static final int QUERY_SIZE = 50;
 
-	public Searcher(Settings settings) {
-		this.settings = settings;
+	public Searcher(Set<Source> sources) {
+		this.sources = sources;
 	}
 
 	/**
@@ -37,20 +40,20 @@ class Searcher {
 				"https://reddit.com/r/";
 
 		// it feels redundant calling the same if check 3 times
-		temp = String.join("+", settings.getSubreddits()).replaceAll(settings.getRegWS(), "");
+		temp = String.join("+", src.getSubreddits()).replaceAll(REG_WS, "");
 		if (!temp.equals(test)) {
 			searchQuery += temp + "/";
 		}
 		searchQuery += "search.json?q=";
 
 		// build temp string with title data
-		temp = String.join("\" OR \"", settings.getTitles()).replaceAll(settings.getRegWS(), "");
+		temp = String.join("\" OR \"", src.getTitles()).replaceAll(REG_WS, "");
 		if (!temp.equals(test)) {
 			searchQuery += "title:(\"" + temp + "\")&";
 		}
 
 		// build temp string with flair data
-		temp = String.join("\" OR \"", settings.getFlair()).replaceAll(settings.getRegWS(), "");
+		temp = String.join("\" OR \"", src.getFlairs()).replaceAll(REG_WS, "");
 		if (!temp.equals(test)) {
 		// Flair string is delimited by commas and automatically wrapped in quotation marks to handle multi-word flairs
 			searchQuery += "flair:(\"" + temp + "\")&";
@@ -58,12 +61,12 @@ class Searcher {
 
 		searchQuery +=
 			"self:no" //this means no text-only posts
-				+ "&sort=" + settings.getSearchBy().value //how to sort them (hot, new ...)
+				+ "&sort=" + src.getSearchBy().getValue() //how to sort them (hot, new ...)
 				+ "&limit=" + QUERY_SIZE //how many posts
-				+ "&t=" + settings.getMaxOldness().value //how old can a post be at most
+				+ "&t=" + src.getMaxOldness().getValue() //how old can a post be at most
 				+ "&type=t3" //only link type posts, no text-only
 				+ "&restrict_sr=true" //restrict results to defined subreddits (leave on true)
-				+ settings.getNsfwLevel().query
+				+ src.getNsfwLevel().getQuery()
 				+ "&rawjson=1"
 		;
 		
@@ -72,7 +75,7 @@ class Searcher {
 		//Removes title and flair field if they are void and somehow made it in
 		//What happens if some dumbhead tries to put as keyword to search "title:() "
 		//or "flair:() "? Will it just break the program? Is this some sort of hijackable thing?
-		//I don't know for I myself am too dumb - Don't be so hard on yourself <3
+		//I don't know for I myself am too dumb - Don't be so hard on yourself <3 - Thanks bro <3
 
 		log.log(Level.INFO, () -> "Search Query is: "+ searchQuery);
 	}
@@ -138,7 +141,7 @@ class Searcher {
 			score = child.getInt("score"); // # of upvotes
 			is_over_18 = child.getBoolean("over_18");
 
-			if (score < settings.getScore() || (!is_over_18 && settings.getNsfwLevel() == Settings.NSFW_LEVEL.ONLY)) {
+			if (score < src.getMinScore() || (!is_over_18 && src.getNsfwLevel() == NSFW_LEVEL.ONLY)) {
 				// when a post has too few upvotes it's skipped
 				// or if only over_18 content is allowed - no need to check in the other sense, because the query excludes them
 				continue;
@@ -239,12 +242,12 @@ class Searcher {
 	 * URL is required for output to the log
 	 */
 	private boolean imageSize(int x, int y, String url) {
-		int width = settings.getWidth();
-		int height = settings.getHeight();
+		int width = src.getWidth();
+		int height = src.getHeight();
 		float ratio = (float) width/height;
 		if ((width > x || height > y) || // image doesn't meet resolution
-				(ratio != (float) x/y && settings.getRatioLimit().equals("Strict")) || // image doesn't meet exact screen ratio
-				(((ratio > 1 && 1 > (float) x/y) || (ratio < 1 && 1 < (float) x/y)) && settings.getRatioLimit().equals("Relaxed"))) { // image isn't somewhere between screen ratio and square
+				(ratio != (float) x/y && src.getRatioLimit().equals("Strict")) || // image doesn't meet exact screen ratio
+				(((ratio > 1 && 1 > (float) x/y) || (ratio < 1 && 1 < (float) x/y)) && src.getRatioLimit().equals("Relaxed"))) { // image isn't somewhere between screen ratio and square
 			log.log(Level.FINE, () ->
 				"Detected wallpaper not compatible with screen dimensions: "
 					+ x + "x" + y + " ratio: " + x/y

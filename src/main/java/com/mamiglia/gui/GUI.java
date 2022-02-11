@@ -1,8 +1,6 @@
 package com.mamiglia.gui;
 
-import com.mamiglia.settings.Settings;
-import com.mamiglia.settings.Settings.TIME;
-import com.mamiglia.settings.Settings.SEARCH_BY;
+import com.mamiglia.settings.*;
 import com.mamiglia.utils.DisplayLogger;
 import com.formdev.flatlaf.FlatDarkLaf;
 
@@ -47,9 +45,9 @@ public class GUI extends JFrame{
 	private JTextField wallpaperPathText;
 	private JButton changeDirectoryButton;
 	private JSlider nsfwSlider;
-	private JComboBox<Settings.RATIO_LIMIT> ratioSelection;
+	private JComboBox<RATIO_LIMIT> ratioSelection;
 	static final Logger log = DisplayLogger.getInstance("GUI");
-	private final Settings settings = Settings.getInstance();
+	private final Settings settings = Settings.INSTANCE;
 	private final Thread backThread;
 
 	public GUI(Thread backThread) {
@@ -107,7 +105,7 @@ public class GUI extends JFrame{
 		settings.setKeepWallpapers(keepCheckBox.isSelected());
 		settings.setKeepBlacklist(blacklistCheckBox.isSelected());
 		settings.setMaxDatabaseSize((int) dbSizeField.getValue());
-		settings.setRatioLimit((Settings.RATIO_LIMIT) ratioSelection.getSelectedItem());
+		settings.setRatioLimit((RATIO_LIMIT) ratioSelection.getSelectedItem());
 
 		settings.writeSettings();
 	}
@@ -126,8 +124,8 @@ public class GUI extends JFrame{
 		dbSizeField.setValue(settings.getMaxDatabaseSize());
 		keepCheckBox.setSelected(settings.getKeepWallpapers());
 		blacklistCheckBox.setSelected(settings.getKeepBlacklist());
-		wallpaperPathText.setText(Settings.getWallpaperPath());
-		nsfwSlider.setValue(settings.getNsfwLevel().value);
+		wallpaperPathText.setText(Settings.INSTANCE.getWallpaperPath());
+		nsfwSlider.setValue(settings.getNsfwLevel().getValue());
 		ratioSelection.setSelectedItem(settings.getRatioLimit());
 	}
 
@@ -151,7 +149,7 @@ public class GUI extends JFrame{
 	 */
 	void displayFolder() {
 		try {
-			Desktop.getDesktop().open(new File(Settings.getWallpaperPath()));
+			Desktop.getDesktop().open(new File(Settings.INSTANCE.getWallpaperPath()));
 		} catch (IOException e) {
 			log.log(Level.WARNING, e.getMessage());
 		}
@@ -162,8 +160,8 @@ public class GUI extends JFrame{
 
 		if (selectedOption == JOptionPane.OK_OPTION) {
 
-			File wallpaperFolder = new File(Settings.getWallpaperPath());
-			Settings.eraseDB();
+			File wallpaperFolder = new File(Settings.INSTANCE.getWallpaperPath());
+			Settings.INSTANCE.eraseDB();
 
 			// Requires the directory exists and wallpapers should not be kept
 			if (wallpaperFolder.isDirectory() && !settings.getKeepWallpapers()) {
@@ -196,7 +194,7 @@ public class GUI extends JFrame{
 		dbSizeField = new JSpinner(s);
 		oldSelection = new JComboBox<>(TIME.values());
 		sortSelection = new JComboBox<>(SEARCH_BY.values());
-		ratioSelection = new JComboBox<>(Settings.RATIO_LIMIT.values());
+		ratioSelection = new JComboBox<>(RATIO_LIMIT.values());
 	}
 
 	private void showLog() {

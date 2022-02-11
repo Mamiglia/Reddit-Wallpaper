@@ -1,6 +1,8 @@
 package com.mamiglia.utils;
 
+import com.mamiglia.settings.Destination;
 import com.mamiglia.settings.Settings;
+import com.mamiglia.settings.Source;
 import com.mamiglia.wallpaper.Wallpaper;
 
 import java.io.IOException;
@@ -12,13 +14,15 @@ public class GetNewWallpaper implements Runnable {
 	// This Functor is the main class that runs all the other needed in a wallpaper selection and download
 	private boolean executed = false;
 	private static final Logger log = DisplayLogger.getInstance("Get New Wallpaper");
-	private final Settings settings;
 	public static final Wallpaper ERROR_VALUE = null;
+	private final Set<Source> src;
+	private final Destination dest;
 
 	private Wallpaper result;
 
-	public GetNewWallpaper(Settings settings) {
-		this.settings = settings;
+	public GetNewWallpaper(Set<Source> src, Destination dest) {
+		this.src = src;
+		this.dest = dest;
 	}
 
 
@@ -27,7 +31,7 @@ public class GetNewWallpaper implements Runnable {
 		if (executed) return;
 		executed = true;
 
-		Searcher s = new Searcher(settings);
+		Searcher s = new Searcher(src);
 		s.generateSearchQuery();
 		Set<Wallpaper> wallpapers = null;
 		try {
@@ -40,7 +44,7 @@ public class GetNewWallpaper implements Runnable {
 		Selector selector;
 
 		try {
-			selector = new Selector(wallpapers, settings.getKeepWallpapers(), settings.getMaxDatabaseSize());
+			selector = new Selector(wallpapers, Settings.INSTANCE.getKeepWallpapers(), Settings.INSTANCE.getMaxDatabaseSize());
 		} catch (IOException e) {
 			log.log(Level.SEVERE, "Loading DB is impossible. Aborting wallpaper set up");
 			abort();
