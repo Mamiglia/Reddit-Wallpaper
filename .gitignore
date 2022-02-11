@@ -41,3 +41,7 @@ autostartRW.bat
 
 /.gradle/
 /build/
+
+
+/.tmp.driveupload
+/.tmp.drivedownload
