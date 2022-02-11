@@ -1,6 +1,8 @@
 package com.mamiglia.utils;
 
+import com.mamiglia.settings.Destination;
 import com.mamiglia.settings.NSFW_LEVEL;
+import com.mamiglia.settings.RATIO_LIMIT;
 import com.mamiglia.settings.Source;
 import com.mamiglia.wallpaper.Wallpaper;
 import org.json.JSONArray;
@@ -19,7 +21,6 @@ import static com.mamiglia.settings.SettingsKt.REG_WS;
 
 class Searcher {
 	private final Set<Source> sources;
-	private String searchQuery = "";
 	private Set<Wallpaper> proposed;
 	private static final Logger log = DisplayLogger.getInstance("Searcher");
 	private static final int QUERY_SIZE = 50;
@@ -31,53 +32,46 @@ class Searcher {
 	/**
 	 * It generates a search query for reddit query API
 	 */
-	void generateSearchQuery() {
-		String temp; //temporary holder for title or flair portion of query
-		String test = ""; // populated to test if the temp field has anything added from getTitles() or getFlair()
+	String generateSearchQuery(Source src) {
+		StringBuilder strQuery = new StringBuilder("https://reddit.com/r/");
 
- 		searchQuery =
-		//Query now builds a multisub out of listed subreddits, this should prevent issues with very large lists of subs
-				"https://reddit.com/r/";
+		//Query now builds a multireddit out of listed subreddits, this should prevent issues with very large lists of subs
+		strQuery.append(String.join("+", src.getSubreddits()).replaceAll(REG_WS, ""));
 
-		// it feels redundant calling the same if check 3 times
-		temp = String.join("+", src.getSubreddits()).replaceAll(REG_WS, "");
-		if (!temp.equals(test)) {
-			searchQuery += temp + "/";
-		}
-		searchQuery += "search.json?q=";
+		strQuery.append("/search.json?q=(");
+//		if (!src.getSubreddits().isEmpty()) {
+//			strQuery.append("subreddit:(")
+//					.append(String.join(" OR ", src.getSubreddits()))
+//					.append(")");
+//		}
+		// Subreddit selection is made through the multireddit build
 
-		// build temp string with title data
-		temp = String.join("\" OR \"", src.getTitles()).replaceAll(REG_WS, "");
-		if (!temp.equals(test)) {
-			searchQuery += "title:(\"" + temp + "\")&";
-		}
-
-		// build temp string with flair data
-		temp = String.join("\" OR \"", src.getFlairs()).replaceAll(REG_WS, "");
-		if (!temp.equals(test)) {
-		// Flair string is delimited by commas and automatically wrapped in quotation marks to handle multi-word flairs
-			searchQuery += "flair:(\"" + temp + "\")&";
+		if (!src.getTitles().isEmpty()) {
+			strQuery.append("title:(\"")
+					.append(String.join("\" OR \"", src.getTitles()))
+					.append("\")");
 		}
 
-		searchQuery +=
-			"self:no" //this means no text-only posts
-				+ "&sort=" + src.getSearchBy().getValue() //how to sort them (hot, new ...)
-				+ "&limit=" + QUERY_SIZE //how many posts
-				+ "&t=" + src.getMaxOldness().getValue() //how old can a post be at most
-				+ "&type=t3" //only link type posts, no text-only
-				+ "&restrict_sr=true" //restrict results to defined subreddits (leave on true)
-				+ src.getNsfwLevel().getQuery()
-				+ "&rawjson=1"
-		;
-		
-		searchQuery = searchQuery.replace("flair:()&", "");
-		searchQuery = searchQuery.replace("title:()&", "");
+		if (!src.getFlairs().isEmpty()) {
+			strQuery.append("flair:(\"")
+					.append(String.join("\" OR \"", src.getFlairs()))
+					.append("\")");
+		}
+
+		strQuery.append(")&self:no" //this means no text-only posts
+				+ "&sort=").append(src.getSearchBy().getValue() //how to sort them (hot, new ...)
+		).append("&limit=").append(QUERY_SIZE //how many posts
+		).append("&t=").append(src.getMaxOldness().getValue() //how old can a post be at most
+		).append("&type=t3" //only link type posts, no text-only
+		).append("&restrict_sr=true" //restrict results to defined subreddits (leave on true)
+		).append(src.getNsfwLevel().getQuery()).append("&rawjson=1");
 		//Removes title and flair field if they are void and somehow made it in
 		//What happens if some dumbhead tries to put as keyword to search "title:() "
 		//or "flair:() "? Will it just break the program? Is this some sort of hijackable thing?
 		//I don't know for I myself am too dumb - Don't be so hard on yourself <3 - Thanks bro <3
 
-		log.log(Level.INFO, () -> "Search Query is: "+ searchQuery);
+		log.log(Level.INFO, () -> "Search Query for source " + src.getName() + " is: "+ strQuery);
+		return strQuery.toString();
 	}
 
 	/**
@@ -87,14 +81,21 @@ class Searcher {
 	 */
 	public Set<Wallpaper> getSearchResults() throws IOException {
 		if (proposed == null) {
-			URLConnection connect = initializeConnection();
-			String rawData = getRawData(connect);
-			proposed =  refineData(rawData);
+			proposed= new HashSet<>();
+			if (sources.isEmpty()) {
+				log.log(Level.SEVERE, "Sources list is void");
+				return null;
+			}
+			for (Source src: sources) {
+				URLConnection connect = initializeConnection(generateSearchQuery(src));
+				String rawData = getRawData(connect);
+				proposed.addAll(refineData(rawData, src));
+			}
 		}
 		return proposed;
 	}
 
-	private URLConnection initializeConnection() throws IOException {
+	private URLConnection initializeConnection(String searchQuery) throws IOException {
 		URLConnection connection = new URL(searchQuery).openConnection();
 		connection.setRequestProperty("User-Agent", "Reddit-Wallpaper bot");
 		connection.setRequestProperty("Accept-Charset", StandardCharsets.UTF_8.name());
@@ -107,7 +108,7 @@ class Searcher {
 		return s.hasNext() ? s.next() : "";
 	}
 
-	private Set<Wallpaper> refineData(String rawData) {
+	private Set<Wallpaper> refineData(String rawData, Source src) {
 		// converts the String JSON into a HashMap JSON, then selects the only things
 		// we are interested in: the ID and the photo link
 		Set<Wallpaper> res = new HashSet<>();
@@ -120,9 +121,9 @@ class Searcher {
 		int score;
 		boolean is_over_18;
 
-		if (rawData.contains("error")) {
+		if (rawData.contains("error")) { // FIX What happens if someone puts "error" in the title of their post?
 			log.log(Level.WARNING, "Reddit returned an error:\n" + rawData);
-			return null;
+			return res; // res is void at this stage
 		}
 
 		JSONArray children = new JSONObject(rawData).getJSONObject("data").getJSONArray("children");
@@ -194,12 +195,13 @@ class Searcher {
 					.getJSONObject(0)
 					.getJSONObject("source");
 
-			if (imageSize(child.getInt("width"), child.getInt("height"), url)) {
-				// if image doesn't meet minimum size, restart loop
-				continue;
-			}
+//			if (imageSize(, , url)) {
+//				// if image doesn't meet minimum size, restart loop
+//				continue;
+//			}
+			// TODO move this check in selector
 
-			wallpaper = new Wallpaper(id, title, url, permalink);
+			wallpaper = new Wallpaper(id, title, url, permalink, child.getInt("width"), child.getInt("height"));
 			res.add(wallpaper);
 		}
 		return res;
@@ -223,12 +225,8 @@ class Searcher {
 			type = type.replace("image/", "");
 			url = "https://i.redd.it/" + id + "." + type;
 
-			if (imageSize(width, height, url)) {
-				continue;
-			}
-
 			titleGallery = title + " " + id;
-			wallpaper = new Wallpaper(id, titleGallery, url, permalink);
+			wallpaper = new Wallpaper(id, titleGallery, url, permalink, width, height);
 			res.add(wallpaper);
 		}
 		return res;
@@ -241,13 +239,13 @@ class Searcher {
 	 * It seems a bit backwards but it prevents using a negative modifier on every portion that I've used it
 	 * URL is required for output to the log
 	 */
-	private boolean imageSize(int x, int y, String url) {
-		int width = src.getWidth();
-		int height = src.getHeight();
+	private boolean imageSize(int x, int y, String url, Destination dest) {
+		int width = dest.getWidth();
+		int height = dest.getHeight();
 		float ratio = (float) width/height;
 		if ((width > x || height > y) || // image doesn't meet resolution
-				(ratio != (float) x/y && src.getRatioLimit().equals("Strict")) || // image doesn't meet exact screen ratio
-				(((ratio > 1 && 1 > (float) x/y) || (ratio < 1 && 1 < (float) x/y)) && src.getRatioLimit().equals("Relaxed"))) { // image isn't somewhere between screen ratio and square
+				(ratio != (float) x/y && dest.getRatioLimit() == RATIO_LIMIT.STRICT) || // image doesn't meet exact screen ratio
+				(((ratio > 1 && 1 > (float) x/y) || (ratio < 1 && 1 < (float) x/y)) && dest.getRatioLimit() == RATIO_LIMIT.RELAXED)) { // image isn't somewhere between screen ratio and square
 			log.log(Level.FINE, () ->
 				"Detected wallpaper not compatible with screen dimensions: "
 					+ x + "x" + y + " ratio: " + x/y
