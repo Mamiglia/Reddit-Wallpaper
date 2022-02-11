@@ -14,7 +14,7 @@ public class Main {
 
 	public static void main(String []args) {
 		System.out.println("Main Thread started");
-		Settings s = Settings.getInstance();
+		Settings s = Settings.INSTANCE;
 		s.readSettings();
 
 		Background b = Background.getInstance();

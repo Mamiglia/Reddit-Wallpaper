@@ -1,7 +1,6 @@
 package com.mamiglia.wallpaper;
 
 import com.mamiglia.settings.Settings;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,7 +39,7 @@ public class Wallpaper implements Serializable {
     }
 
     public boolean isDownloaded() {
-        return !file.exists();
+        return file.exists();
     }
 
 
@@ -100,7 +99,7 @@ public class Wallpaper implements Serializable {
     }
 
     private static String getWallpaperDirectory() {
-        return Settings.getWallpaperPath() + File.separator;
+        return Settings.INSTANCE.getWallpaperPath() + File.separator;
     }
 
     public static String cleanTitle(String title) {

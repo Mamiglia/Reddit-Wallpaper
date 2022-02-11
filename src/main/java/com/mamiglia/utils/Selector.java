@@ -20,7 +20,6 @@ class Selector implements Runnable{
     private boolean executed = false;
     private Wallpaper result = null;
     private final Set<Wallpaper> results = new HashSet<>();
-    private final Settings settings = Settings.getInstance();
     private final Set<Wallpaper> proposal;
 
     public Selector(Set<Wallpaper> proposal, boolean keepWallpapers, int maxDbSize) throws IOException {
@@ -68,7 +67,7 @@ class Selector implements Runnable{
 
         for (Wallpaper propWallpaper : proposal) {
             if (!oldID.contains(propWallpaper.getID())) {
-                if (settings.isBanned(propWallpaper.getID())) {
+                if (Settings.INSTANCE.isBanned(propWallpaper.getID())) {
                     // if banned the wallpaper must not be considered
                     removeWp(propWallpaper.getID());
                     continue;
@@ -93,7 +92,7 @@ class Selector implements Runnable{
                 rs.next();
 				result = (Wallpaper) rs.getObject("wp");
 				if (result == null) break;
-				else if (!settings.isBanned(result.getID())) {
+				else if (!Settings.INSTANCE.isBanned(result.getID())) {
                     updateDate(result);
                     break;
 				}
