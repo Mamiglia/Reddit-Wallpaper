@@ -1,5 +1,7 @@
 package com.mamiglia.utils;
 
+import com.mamiglia.settings.Destination;
+import com.mamiglia.settings.Settings;
 import com.mamiglia.wallpaper.Wallpaper;
 
 import java.io.BufferedReader;
@@ -25,36 +27,24 @@ public class SetNewWallpaper implements Runnable {
     static private final Logger log = DisplayLogger.getInstance("SetNewWallpaper");
     private boolean executed = false;
     private final Wallpaper wp;
-    private int i = 0; //counter for multi screen
-    private int screens;
-    private final boolean diff;
+    private final Destination dest;
 
-    public SetNewWallpaper(Wallpaper wp, boolean diff) {
+    public SetNewWallpaper(Wallpaper wp, Destination dest) {
         this.wp = wp;
-        this.diff = diff;
-    }
-
-    public SetNewWallpaper(Wallpaper wp, int screens) {
-        this.wp = wp;
-        this.screens = screens;
-        this.diff = true;
+        this.dest = dest;
     }
 
 
     @Override
     public void run() {
         if (executed) return;
-        i++;
-        if (screens == 1 || !diff || i == screens) {
-            executed = true;
-        }
 
         if (wp.isDownloaded()) {
             log.log(Level.WARNING, "Wallpaper file not found");
             return;
         }
         String wpPath = wp.getPath().toAbsolutePath().toString();
-        int os = Platform.getOSType(); // included in jna package, may as well use it right?
+        int os = Platform.getOSType();
         switch (os) {
 //            case 0: // Mac
             case 1: // Other Linux
@@ -95,10 +85,12 @@ public class SetNewWallpaper implements Runnable {
                 }
                 break;
             case 2: // Other Windows
-                if (!diff || screens == 1) {
+                if (Settings.INSTANCE.isSingleDestination()) {
                     windowsChange(wpPath);
                 } else {
-                    windowsChange(wpPath, i);
+                    for (int idx : dest.getScreens()) {
+                        windowsChange(wpPath, idx);
+                    }
                 }
                 break;
 //            case 3: // Solaris
