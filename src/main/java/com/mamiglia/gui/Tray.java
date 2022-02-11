@@ -1,5 +1,7 @@
 package com.mamiglia.gui;
 
+import com.mamiglia.settings.Destination;
+import com.mamiglia.settings.Settings;
 import com.mamiglia.utils.DisplayLogger;
 
 import javax.swing.*;
@@ -68,54 +70,58 @@ public class Tray {
 	public void populateTray(){
 		PopupMenu trayPopupMenu = new PopupMenu("Reddit Wallpaper");
 
-		if (title != null) { // TODO change this to iterate through monitors
-			MenuItem titleItem = new MenuItem(title);
-			titleItem.addActionListener(e -> openWebpage(background.getCurrent().getPostUrl()));
-			trayPopupMenu.add(titleItem);
+		for (Destination dest : Settings.INSTANCE.getDests()) {
+			trayPopupMenu.add(new MenuItem(dest.getName())); //title
 
-			MenuItem saveItem = new MenuItem("Save Wallpaper");
-			saveItem.addActionListener(e -> {
-				JFileChooser chooser = new JFileChooser();
-				chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-				chooser.setSelectedFile(background.getCurrent().getPath().toFile());
-				chooser.setDialogTitle("Select where to save wallpaper");
-				chooser.setAcceptAllFileFilterUsed(false);
-				int ret = chooser.showSaveDialog(null);
-				if (ret == JFileChooser.APPROVE_OPTION) {
-					Path path = chooser.getSelectedFile().toPath();
-					try {
-						Files.copy(background.getCurrent().getPath(), path, StandardCopyOption.REPLACE_EXISTING);
-					} catch (IOException ioException) {
-						ioException.printStackTrace();
+			if (dest.getCurrent() != null) {
+				MenuItem titleItem = new MenuItem(dest.getCurrent().getTitle());
+				titleItem.addActionListener(e -> openWebpage(dest.getCurrent().getPostUrl()));
+				trayPopupMenu.add(titleItem);
+
+				MenuItem saveItem = new MenuItem("Save Wallpaper");
+				saveItem.addActionListener(e -> {
+					JFileChooser chooser = new JFileChooser();
+					chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+					chooser.setSelectedFile(dest.getCurrent().getPath().toFile());
+					chooser.setDialogTitle("Select where to save wallpaper");
+					chooser.setAcceptAllFileFilterUsed(false);
+					int ret = chooser.showSaveDialog(null);
+					if (ret == JFileChooser.APPROVE_OPTION) {
+						Path path = chooser.getSelectedFile().toPath();
+						try {
+							Files.copy(dest.getCurrent().getPath(), path, StandardCopyOption.REPLACE_EXISTING);
+						} catch (IOException ioException) {
+							ioException.printStackTrace();
+						}
 					}
-				}
-			});
-			trayPopupMenu.add(saveItem);
+				});
+				trayPopupMenu.add(saveItem);
 
-			MenuItem banItem = new MenuItem("Blacklist Wallpaper");
-			banItem.addActionListener( e -> {
+				MenuItem banItem = new MenuItem("Ban wallpaper");
+				banItem.addActionListener(e -> {
+					if (backThread.getState() == Thread.State.TIMED_WAITING) {
+						Settings.INSTANCE.banWallpaper(dest.getCurrent());
+						backThread.interrupt(); //interrupting it makes it wake up and load new wallpaper
+					} else {
+						log.log(Level.INFO, "\"Ban wallpaper\" button was pressed too early, still occupied changing wallpaper from the last time");
+					}
+				});
+				trayPopupMenu.add(banItem);
+			}
+
+			MenuItem changeItem = new MenuItem("Change Wallpaper");
+			changeItem.addActionListener(e -> {
 				if (backThread.getState() == Thread.State.TIMED_WAITING) {
-					background.banWallpaper();
 					backThread.interrupt(); //interrupting it makes it wake up and load new wallpaper
 				} else {
-					log.log(Level.INFO, "Blacklist button was pressed too early, still occupied changing wallpaper from the last time");
+					log.log(Level.INFO, "Change button was pressed too early, still occupied changing wallpaper from the last time");
 				}
+				//interrupting the thread means waking it up. When it's awake it will automatically start searching for a new Wallpaper
 			});
-			trayPopupMenu.add(banItem);
+			trayPopupMenu.add(changeItem);
 
 			trayPopupMenu.addSeparator();
 		}
-
-		MenuItem changeItem = new MenuItem("Change Wallpaper");
-		changeItem.addActionListener(e -> {
-			if (backThread.getState() == Thread.State.TIMED_WAITING) {
-				backThread.interrupt(); //interrupting it makes it wake up and load new wallpaper
-			} else {
-				log.log(Level.INFO, "Change button was pressed too early, still occupied changing wallpaper from the last time");
-			}
-			//interrupting the thread means waking it up. When it's awake it will automatically start searching for a new Wallpaper
-		});
-		trayPopupMenu.add(changeItem);
 
 		MenuItem guiItem = new MenuItem("Settings");
 		guiItem.addActionListener(e -> new GUI(backThread));
