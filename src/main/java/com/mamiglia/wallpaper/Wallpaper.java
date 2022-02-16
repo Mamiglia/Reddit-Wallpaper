@@ -19,11 +19,16 @@ public class Wallpaper implements Serializable {
     private final String title;
     private final String url;
     private final String postUrl;
+    private final int width;
+    private final int height;
 
 
-    public Wallpaper(String id, String title, String url, String postUrl) {
+
+    public Wallpaper(String id, String title, String url, String postUrl, int width, int height) {
         this.id = id;
         this.title = title;
+        this.width = width;
+        this.height = height;
         String format = url.replaceAll("^.*(?=\\.\\w+$)", "");
         file = new File(getWallpaperDirectory() + cleanTitle(title) + format);
         this.url = url;
@@ -44,17 +49,17 @@ public class Wallpaper implements Serializable {
 
 
     // GETTERS
-//    public double getRatio() {
-//        return (double) getWidth() / (double) getHeight();
-//    }
-//
-//    public int getWidth() {
-//        return image.getWidth(null);
-//    }
-//
-//    public int getHeight() {
-//        return image.getHeight(null);
-//    }
+    public double getRatio() {
+        return (double) getWidth() / (double) getHeight();
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
 
     /**
         @return the absolute path of the wallpaper

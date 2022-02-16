@@ -9,5 +9,6 @@ data class Source(
     val searchBy: SEARCH_BY = SEARCH_BY.HOT,
     val nsfwLevel: NSFW_LEVEL = NSFW_LEVEL.ALLOW,
     val minScore: Int = 15,
-    val maxOldness:TIME = TIME.DAY
+    val maxOldness:TIME = TIME.DAY,
+    val name : String = "$subreddits,$titles,$flairs"
 )

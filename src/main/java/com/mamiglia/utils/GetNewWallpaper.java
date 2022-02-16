@@ -15,13 +15,13 @@ public class GetNewWallpaper implements Runnable {
 	private boolean executed = false;
 	private static final Logger log = DisplayLogger.getInstance("Get New Wallpaper");
 	public static final Wallpaper ERROR_VALUE = null;
-	private final Set<Source> src;
+	private final Set<Source> sources;
 	private final Destination dest;
 
 	private Wallpaper result;
 
-	public GetNewWallpaper(Set<Source> src, Destination dest) {
-		this.src = src;
+	public GetNewWallpaper(Set<Source> sources, Destination dest) {
+		this.sources = sources;
 		this.dest = dest;
 	}
 
@@ -31,8 +31,7 @@ public class GetNewWallpaper implements Runnable {
 		if (executed) return;
 		executed = true;
 
-		Searcher s = new Searcher(src);
-		s.generateSearchQuery();
+		Searcher s = new Searcher(sources);
 		Set<Wallpaper> wallpapers = null;
 		try {
 			wallpapers = s.getSearchResults();
@@ -44,7 +43,7 @@ public class GetNewWallpaper implements Runnable {
 		Selector selector;
 
 		try {
-			selector = new Selector(wallpapers, Settings.INSTANCE.getKeepWallpapers(), Settings.INSTANCE.getMaxDatabaseSize());
+			selector = new Selector(wallpapers, Settings.INSTANCE.getKeepWallpapers(), Settings.INSTANCE.getMaxDatabaseSize(), dest);
 		} catch (IOException e) {
 			log.log(Level.SEVERE, "Loading DB is impossible. Aborting wallpaper set up");
 			abort();

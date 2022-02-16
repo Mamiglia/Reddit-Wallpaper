@@ -1,5 +1,6 @@
 package com.mamiglia.utils;
 
+import com.mamiglia.settings.Destination;
 import com.mamiglia.settings.Settings;
 import com.mamiglia.wallpaper.Wallpaper;
 
@@ -13,7 +14,7 @@ class Selector implements Runnable{
     private final int maxDbSize;
     private final boolean keepWallpapers;
     private static final String dbUrl = "jdbc:h2:file:" + System.getProperty("user.dir")
-            + File.separator + Settings.PATH_TO_DATABASE;
+            + File.separator + Settings.INSTANCE.getPATH_TO_DATABASE();
     private static final Logger log = DisplayLogger.getInstance("Selector");
     private Connection conn = null;
     private Statement db = null;
@@ -21,11 +22,13 @@ class Selector implements Runnable{
     private Wallpaper result = null;
     private final Set<Wallpaper> results = new HashSet<>();
     private final Set<Wallpaper> proposal;
+    private final Destination dest;
 
-    public Selector(Set<Wallpaper> proposal, boolean keepWallpapers, int maxDbSize) throws IOException {
+    public Selector(Set<Wallpaper> proposal, boolean keepWallpapers, int maxDbSize, Destination dest) throws IOException {
         this.proposal = proposal;
         this.keepWallpapers = keepWallpapers;
         this.maxDbSize = maxDbSize;
+        this.dest = dest;
 
 
         loadDB();
@@ -59,6 +62,9 @@ class Selector implements Runnable{
     //TODO Multi monitor alignment options
     //TODO Add image title to image bottom left (possibly restrict to certain subreddits?)
     //TODO Imgur gallery handling???
+
+    //TODO REenable wallpaper banning
+    //TODO REenable size check
     @Override
     public void run() {
         if (executed || proposal == null) return;
@@ -67,11 +73,11 @@ class Selector implements Runnable{
 
         for (Wallpaper propWallpaper : proposal) {
             if (!oldID.contains(propWallpaper.getID())) {
-                if (Settings.INSTANCE.isBanned(propWallpaper.getID())) {
-                    // if banned the wallpaper must not be considered
-                    removeWp(propWallpaper.getID());
-                    continue;
-                }
+//                if (Settings.INSTANCE.isBanned(propWallpaper.getID())) {
+//                    // if banned the wallpaper must not be considered
+//                    removeWp(propWallpaper.getID());
+//                    continue;
+//                } TODO
                 log.log(Level.FINE, "Selected new wallpaper from those proposed");
                 insertDB(propWallpaper);
                 closeDB();
@@ -92,10 +98,10 @@ class Selector implements Runnable{
                 rs.next();
 				result = (Wallpaper) rs.getObject("wp");
 				if (result == null) break;
-				else if (!Settings.INSTANCE.isBanned(result.getID())) {
-                    updateDate(result);
-                    break;
-				}
+//				else if (!Settings.INSTANCE.isBanned(result.getID())) {
+//                    updateDate(result);
+//                    break;
+//				} TODO
                 removeWp(result.getID());
             } catch (SQLException throwables) {
                 log.log(Level.WARNING, "DB Query error in select()");
