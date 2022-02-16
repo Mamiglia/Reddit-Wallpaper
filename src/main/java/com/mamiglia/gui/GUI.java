@@ -19,9 +19,6 @@ public class GUI extends JFrame{
 	private JPanel rootPane;
 	private JTabbedPane tabbedPane;
 	private JPanel settingPane;
-	private JPanel titlePane;
-	private JPanel subredditPane;
-	private JPanel flairPane;
 	private JTextField subredditField;
 	private JTextField flairField;
 	private JComboBox<SEARCH_BY> sortSelection;
@@ -42,10 +39,10 @@ public class GUI extends JFrame{
 	private JButton folderButton;
 	private JButton resetButton;
 	private JScrollPane scrollPane;
-	private JTextField wallpaperPathText;
 	private JButton changeDirectoryButton;
 	private JSlider nsfwSlider;
 	private JComboBox<RATIO_LIMIT> ratioSelection;
+	private JTextField wallpaperPathText;
 	static final Logger log = DisplayLogger.getInstance("GUI");
 	private final Settings settings = Settings.INSTANCE;
 	private final Thread backThread;
@@ -89,9 +86,9 @@ public class GUI extends JFrame{
 	}
 
 	void saveSettings() {
-		// Settings.regWS holds the whitespace regex string as it's accessible from both places I currnetly have it
-		// Selects any extra space before or after a string with comma delimitation
-		// Selects any extra space (any more than one) between words
+//		// Settings.regWS holds the whitespace regex string as it's accessible from both places I currnetly have it
+//		// Selects any extra space before or after a string with comma delimitation
+//		// Selects any extra space (any more than one) between words
 		settings.setTitles(titleField.getText().replaceAll(settings.getRegWS(), "").split(","));
 		settings.setSubreddits(subredditField.getText().replaceAll(settings.getRegWS(), "").split(","));
 		settings.setFlair(flairField.getText().replaceAll(settings.getRegWS(), "").split(","));
@@ -112,21 +109,21 @@ public class GUI extends JFrame{
 
 	void loadSettings() {
 		// Settings.regSB holds the regex string for removing square brackets
-		titleField.setText(Arrays.toString(settings.getTitles()).replaceAll(settings.getRegSB(), ""));
-		subredditField.setText(Arrays.toString(settings.getSubreddits()).replaceAll(settings.getRegSB(), ""));
-		flairField.setText(Arrays.toString(settings.getFlair()).replaceAll(settings.getRegSB(), ""));
-		sortSelection.setSelectedItem(settings.getSearchBy());
-		heightField.setValue(settings.getHeight());
-		widthField.setValue(settings.getWidth());
-		scoreField.setValue(settings.getScore());
-		periodField.setValue(settings.getPeriod());
-		oldSelection.setSelectedItem(settings.getMaxOldness());
-		dbSizeField.setValue(settings.getMaxDatabaseSize());
-		keepCheckBox.setSelected(settings.getKeepWallpapers());
-		blacklistCheckBox.setSelected(settings.getKeepBlacklist());
-		wallpaperPathText.setText(Settings.INSTANCE.getWallpaperPath());
-		nsfwSlider.setValue(settings.getNsfwLevel().getValue());
-		ratioSelection.setSelectedItem(settings.getRatioLimit());
+//		titleField.setText(Arrays.toString(settings.getTitles()).replaceAll(settings.getRegSB(), ""));
+//		subredditField.setText(Arrays.toString(settings.getSubreddits()).replaceAll(settings.getRegSB(), ""));
+//		flairField.setText(Arrays.toString(settings.getFlair()).replaceAll(settings.getRegSB(), ""));
+//		sortSelection.setSelectedItem(settings.getSearchBy());
+//		heightField.setValue(settings.getHeight());
+//		widthField.setValue(settings.getWidth());
+//		scoreField.setValue(settings.getScore());
+//		periodField.setValue(settings.getPeriod());
+//		oldSelection.setSelectedItem(settings.getMaxOldness());
+//		dbSizeField.setValue(settings.getMaxDatabaseSize());
+//		keepCheckBox.setSelected(settings.getKeepWallpapers());
+//		blacklistCheckBox.setSelected(settings.getKeepBlacklist());
+//		wallpaperPathText.setText(Settings.INSTANCE.getWallpaperPath());
+//		nsfwSlider.setValue(settings.getNsfwLevel().getValue());
+//		ratioSelection.setSelectedItem(settings.getRatioLimit());
 	}
 
 	void changeWallpaper() {
@@ -161,7 +158,7 @@ public class GUI extends JFrame{
 		if (selectedOption == JOptionPane.OK_OPTION) {
 
 			File wallpaperFolder = new File(Settings.INSTANCE.getWallpaperPath());
-			Settings.INSTANCE.eraseDB();
+			// Settings.INSTANCE.eraseDB(); TODO
 
 			// Requires the directory exists and wallpapers should not be kept
 			if (wallpaperFolder.isDirectory() && !settings.getKeepWallpapers()) {
