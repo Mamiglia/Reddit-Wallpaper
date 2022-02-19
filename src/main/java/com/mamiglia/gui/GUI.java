@@ -9,40 +9,34 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Hashtable;
 import java.util.Objects;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class GUI extends JFrame{
 	private JPanel rootPane;
 	private JTabbedPane tabbedPane;
-	private JPanel settingPane;
-	private JTextField subredditField;
-	private JTextField flairField;
-	private JComboBox<SEARCH_BY> sortSelection;
 	private JTextArea logArea;
 	private JButton applyButton;
 	private JButton changeNowButton;
-	private JCheckBox logCheckBox;
-	private JSpinner heightField;
-	private JSpinner periodField;
-	private JSpinner widthField;
 	private JSpinner dbSizeField;
 	private JSpinner scoreField;
 	private JCheckBox keepCheckBox;
 	private JCheckBox blacklistCheckBox;
-	private JComboBox<TIME> oldSelection;
-	private JTextField titleField;
 	private JPanel logTab;
 	private JButton folderButton;
 	private JButton resetButton;
-	private JScrollPane scrollPane;
 	private JButton changeDirectoryButton;
-	private JSlider nsfwSlider;
-	private JComboBox<RATIO_LIMIT> ratioSelection;
 	private JTextField wallpaperPathText;
+	private JPanel sourcesPane;
+	private JButton addSrcBtn;
+	private JPanel sourcesButtonsPane;
+	private JPanel destsPane;
+	private JButton addDestBtn;
+	private JPanel destButtonPane;
+	private JScrollPane destScrollBar;
+	private JScrollPane srcScrollBar;
 	static final Logger log = DisplayLogger.getInstance("GUI");
 	private final Settings settings = Settings.INSTANCE;
 	private final Thread backThread;
@@ -52,34 +46,12 @@ public class GUI extends JFrame{
 		this.setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getClassLoader().getResource(Tray.PATH_TO_TRAY_ICON)));/* icon by https://www.freepik.com */
 		this.backThread = backThread;
 		add(rootPane);
-		Act act = new Act(this);
-		applyButton.addActionListener(act);
-		folderButton.addActionListener(act);
-		resetButton.addActionListener(act);
-		changeNowButton.addActionListener(act);
-		changeDirectoryButton.addActionListener(act);
-		scrollPane.setPreferredSize(new Dimension(-1, 3));
-		nsfwSlider.setLabelTable(new Hashtable<Integer, JLabel>() {{
-			put(-1, new JLabel("Never"));
-			put(0, new JLabel("Allow"));
-			put(1, new JLabel("Only"));
-		}});
 
-		// TODO was useless!
-		logCheckBox.setVisible(false);
-
-		tabbedPane.addChangeListener(changeEvent -> {
-			JTabbedPane src = (JTabbedPane) changeEvent.getSource();
-			int index = src.getSelectedIndex();
-			if (src.getComponentAt(index).equals(logTab)) {
-				showLog();
-			}
-		});
-
+		setupUI();
 		loadSettings();
 		log.log(Level.FINER, "GUI started");
 
-		setResizable(false);
+		//setResizable(false);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		pack();
 		setVisible(true);
@@ -89,22 +61,22 @@ public class GUI extends JFrame{
 //		// Settings.regWS holds the whitespace regex string as it's accessible from both places I currnetly have it
 //		// Selects any extra space before or after a string with comma delimitation
 //		// Selects any extra space (any more than one) between words
-		settings.setTitles(titleField.getText().replaceAll(settings.getRegWS(), "").split(","));
-		settings.setSubreddits(subredditField.getText().replaceAll(settings.getRegWS(), "").split(","));
-		settings.setFlair(flairField.getText().replaceAll(settings.getRegWS(), "").split(","));
-		settings.setNsfwLevel(nsfwSlider.getValue());
-		settings.setHeight((int) heightField.getValue());
-		settings.setWidth((int) widthField.getValue());
-		settings.setScore((int) scoreField.getValue());
-		settings.setMaxOldness((TIME) oldSelection.getSelectedItem());
-		settings.setPeriod((int) periodField.getValue());
-		settings.setSearchBy((SEARCH_BY) sortSelection.getSelectedItem());
-		settings.setKeepWallpapers(keepCheckBox.isSelected());
-		settings.setKeepBlacklist(blacklistCheckBox.isSelected());
-		settings.setMaxDatabaseSize((int) dbSizeField.getValue());
-		settings.setRatioLimit((RATIO_LIMIT) ratioSelection.getSelectedItem());
-
-		settings.writeSettings();
+//		settings.setTitles(titleField.getText().replaceAll(settings.getRegWS(), "").split(","));
+//		settings.setSubreddits(subredditField.getText().replaceAll(settings.getRegWS(), "").split(","));
+//		settings.setFlair(flairField.getText().replaceAll(settings.getRegWS(), "").split(","));
+//		settings.setNsfwLevel(nsfwSlider.getValue());
+//		settings.setHeight((int) heightField.getValue());
+//		settings.setWidth((int) widthField.getValue());
+//		settings.setScore((int) scoreField.getValue());
+//		settings.setMaxOldness((TIME) oldSelection.getSelectedItem());
+//		settings.setPeriod((int) periodField.getValue());
+//		settings.setSearchBy((SEARCH_BY) sortSelection.getSelectedItem());
+//		settings.setKeepWallpapers(keepCheckBox.isSelected());
+//		settings.setKeepBlacklist(blacklistCheckBox.isSelected());
+//		settings.setMaxDatabaseSize((int) dbSizeField.getValue());
+//		settings.setRatioLimit((RATIO_LIMIT) ratioSelection.getSelectedItem());
+//
+//		settings.writeSettings();
 	}
 
 	void loadSettings() {
@@ -126,10 +98,16 @@ public class GUI extends JFrame{
 //		ratioSelection.setSelectedItem(settings.getRatioLimit());
 	}
 
-	void changeWallpaper() {
+	void changeWallpaper(Destination dest) {
 		saveSettings();
 		showLog();
 
+		if (dest == null) { // if dest == null then change them all
+			for (Destination d : Settings.INSTANCE.getDests())
+				d.updateNext();
+		} else {
+			dest.updateNext();
+		}
 		if (backThread.getState() == Thread.State.TIMED_WAITING) {
 			backThread.interrupt(); //interrupting it makes it wake up and load new wallpaper
 		} else {
@@ -138,7 +116,7 @@ public class GUI extends JFrame{
 		//interrupting the thread means waking it up. When it's awake it will automatically start searching for a new Wallpaper
 
 
-	}
+		}
 
 	/*
 		Opens in explorer the Wallpaper Folder
@@ -178,20 +156,69 @@ public class GUI extends JFrame{
 		}
 	}
 
+	private void setupUI() {
+		Act act = new Act(this);
+		applyButton.addActionListener(act);
+		folderButton.addActionListener(act);
+		resetButton.addActionListener(act);
+		changeNowButton.addActionListener(act);
+		changeDirectoryButton.addActionListener(act);
+		//scrollPane.setPreferredSize(new Dimension(-1, 3)); TODO
+//		nsfwSlider.setLabelTable(new Hashtable<Integer, JLabel>() {{
+//			put(-1, new JLabel("Never"));
+//			put(0, new JLabel("Allow"));
+//			put(1, new JLabel("Only"));
+//		}});
+		tabbedPane.addChangeListener(changeEvent -> {
+			JTabbedPane src = (JTabbedPane) changeEvent.getSource();
+			int index = src.getSelectedIndex();
+			if (src.getComponentAt(index).equals(logTab)) {
+				showLog();
+			}
+		});
+		destScrollBar.getVerticalScrollBar().setUnitIncrement(14);
+		srcScrollBar.getVerticalScrollBar().setUnitIncrement(14);
+
+		refreshListSrc();
+		refreshListDest();
+		addSrcBtn.addActionListener(e -> {
+			Settings.INSTANCE.newSource();
+			refreshListSrc();
+		});
+		addDestBtn.addActionListener(e->{
+			Settings.INSTANCE.newDest();
+			refreshListDest();
+		});
+
+	}
+
+	private void refreshListSrc() {
+		sourcesPane.removeAll();
+		sourcesPane.setLayout(new BoxLayout(sourcesPane, BoxLayout.Y_AXIS));
+		for (Source src : Settings.INSTANCE.getSources()) {
+			sourcesPane.add(new SourceGUI(src));
+		}
+		sourcesPane.add(new Box.Filler(new Dimension(), new Dimension(), new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE))); // makes everything align at top
+		sourcesPane.add(sourcesButtonsPane);
+	}
+
+	private void refreshListDest() {
+		destsPane.removeAll();
+		destsPane.setLayout(new BoxLayout(destsPane, BoxLayout.Y_AXIS));
+		for (Destination dest : Settings.INSTANCE.getDests()) {
+			destsPane.add(new DestGUI(dest, this));
+		}
+		destsPane.add(new Box.Filler(new Dimension(), new Dimension(), new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE))); // makes everything align at top
+		destsPane.add(destButtonPane);
+	}
+
 	private void createUIComponents() {
-		SpinnerNumberModel s = new SpinnerNumberModel(15, 0, 1000000, 1);
-		periodField = new JSpinner(s);
-		s = new SpinnerNumberModel(1080, 0, 10000, 1);
-		heightField = new JSpinner(s);
-		s = new SpinnerNumberModel(1920, 0, 10000, 1);
-		widthField = new JSpinner(s);
-		s = new SpinnerNumberModel(15, 0, 10000, 1);
+		// custom create
+		SpinnerNumberModel s = new SpinnerNumberModel(15, 0, 10000, 1);
 		scoreField = new JSpinner(s);
 		s = new SpinnerNumberModel(50, 5, 10000, 1);
 		dbSizeField = new JSpinner(s);
-		oldSelection = new JComboBox<>(TIME.values());
-		sortSelection = new JComboBox<>(SEARCH_BY.values());
-		ratioSelection = new JComboBox<>(RATIO_LIMIT.values());
+
 	}
 
 	private void showLog() {
