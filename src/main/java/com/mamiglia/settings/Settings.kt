@@ -1,16 +1,18 @@
 package com.mamiglia.settings
 
-import com.mamiglia.gui.Background
 import com.mamiglia.utils.DisplayLogger
 import com.mamiglia.wallpaper.Wallpaper
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.*
+import org.json.JSONException
 import java.awt.GraphicsDevice
 import java.awt.GraphicsEnvironment
 import java.awt.HeadlessException
 import java.io.File
+import java.nio.file.Files
 import java.util.logging.Level
 
 private const val DESTS_SAVEFILE = "destinations.json"
@@ -20,7 +22,7 @@ const val MIN_TO_MILLIS = 60000L
 
 @Serializable
 object Settings {
-    val PATH_TO_SAVEFOLDER = "utility" + File.separator + "settings" + File.separator // const?
+    private val PATH_TO_SAVEFOLDER = System.getProperty("user.dir") + File.separator + "utility" + File.separator + "settings" + File.separator // const?
     val PATH_TO_DATABASE = "utility" + File.separator + "database"
     var wallpaperPath = "Saved-Wallpapers" // path to wallpaper folder
 
@@ -49,7 +51,11 @@ object Settings {
 
     init {
         log.log(Level.INFO, "Setting singleton invoked")
-        readSettings()
+        try {
+            readSettings()
+        } catch (e: Exception) { // I would like to use a more specific exception, but i cannot find JsonDecodingException
+            log.log(Level.WARNING, "Settings file is corrupted, cannot read it, starting with default settings: $e")
+        }
         if (sources.isEmpty()) {
             sources.add(Source()) //add default source
         }
@@ -60,14 +66,18 @@ object Settings {
 
 
     fun writeSettings() {
-        File(PATH_TO_SAVEFOLDER + DESTS_SAVEFILE)
-            .writeText(Json.encodeToString(dests))
-        File(PATH_TO_SAVEFOLDER + SRCS_SAVEFILE)
-            .writeText(Json.encodeToString(sources))
-        val file = File(PATH_TO_SAVEFOLDER + SETTINGS_SAVEFILE)
+        var file = File(PATH_TO_SAVEFOLDER + DESTS_SAVEFILE)
+        Files.createDirectories(file.parentFile.toPath())
+        file.createNewFile()
+        file.writeText(Json.encodeToString(dests))
+        file = File(PATH_TO_SAVEFOLDER + SRCS_SAVEFILE)
+        file.createNewFile()
+        file.writeText(Json.encodeToString(sources))
+        file = File(PATH_TO_SAVEFOLDER + SETTINGS_SAVEFILE)
+        file.createNewFile()
 
-        // how to write and save dest X src map?
-        file.appendText(Json.encodeToString(keepWallpapers) + '\n')
+
+        file.writeText(Json.encodeToString(keepWallpapers) + '\n')
         file.appendText(Json.encodeToString(keepBlacklist)+ '\n')
         file.appendText(Json.encodeToString(maxDatabaseSize)+ '\n')
         log.log(Level.INFO, "Settings saved")
@@ -81,12 +91,11 @@ object Settings {
         } else {
             return
         }
-
         keepBlacklist = Json.decodeFromString(lines[0]) //TODO find a better way to do this
         keepWallpapers = Json.decodeFromString(lines[1])  //FIX what happens if file is void? if there's no line there?
         maxDatabaseSize = Json.decodeFromString(lines[2])
-        sources.addAll(Json.decodeFromString(File(PATH_TO_SAVEFOLDER+ SRCS_SAVEFILE).readText()))
-        dests.addAll(Json.decodeFromString(File(PATH_TO_SAVEFOLDER+ DESTS_SAVEFILE).readText()))
+        sources.addAll(format.decodeFromString(File(PATH_TO_SAVEFOLDER+ SRCS_SAVEFILE).readText()))
+        dests.addAll(format.decodeFromString(File(PATH_TO_SAVEFOLDER+ DESTS_SAVEFILE).readText()))
         log.log(Level.INFO, "Setting read from files")
     }
 
@@ -132,6 +141,8 @@ object Settings {
 
     //TODO add eraseDB()
 }
+
+val format = Json { ignoreUnknownKeys = true }
 
 enum class TIME(val value: String) {
     HOUR("hour"),
