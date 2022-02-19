@@ -113,7 +113,7 @@ public class DestGUI extends JPanel {
 
 	private static void createLink(JLabel label, String text, String link) {
 		label.setText(text);
-		label.setForeground(Color.BLUE.darker());
+		label.setForeground(Color.CYAN);
 		label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		label.addMouseListener(new MouseAdapter()
 		{
@@ -124,16 +124,6 @@ public class DestGUI extends JPanel {
 				} catch (IOException | URISyntaxException ex) {
 					ex.printStackTrace();
 				}
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				label.setText("<U>" + text + "</U>");
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				label.setText(text);
 			}
 		});
 	}
