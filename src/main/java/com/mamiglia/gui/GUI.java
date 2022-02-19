@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Objects;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,10 +17,8 @@ public class GUI extends JFrame{
 	private JPanel rootPane;
 	private JTabbedPane tabbedPane;
 	private JTextArea logArea;
-	private JButton applyButton;
 	private JButton changeNowButton;
 	private JSpinner dbSizeField;
-	private JSpinner scoreField;
 	private JCheckBox keepCheckBox;
 	private JCheckBox blacklistCheckBox;
 	private JPanel logTab;
@@ -37,8 +34,9 @@ public class GUI extends JFrame{
 	private JPanel destButtonPane;
 	private JScrollPane destScrollBar;
 	private JScrollPane srcScrollBar;
+	private JPanel associationPane;
+	private JButton refreshButton;
 	static final Logger log = DisplayLogger.getInstance("GUI");
-	private final Settings settings = Settings.INSTANCE;
 	private final Thread backThread;
 
 	public GUI(Thread backThread) {
@@ -58,44 +56,14 @@ public class GUI extends JFrame{
 	}
 
 	void saveSettings() {
-//		// Settings.regWS holds the whitespace regex string as it's accessible from both places I currnetly have it
-//		// Selects any extra space before or after a string with comma delimitation
-//		// Selects any extra space (any more than one) between words
-//		settings.setTitles(titleField.getText().replaceAll(settings.getRegWS(), "").split(","));
-//		settings.setSubreddits(subredditField.getText().replaceAll(settings.getRegWS(), "").split(","));
-//		settings.setFlair(flairField.getText().replaceAll(settings.getRegWS(), "").split(","));
-//		settings.setNsfwLevel(nsfwSlider.getValue());
-//		settings.setHeight((int) heightField.getValue());
-//		settings.setWidth((int) widthField.getValue());
-//		settings.setScore((int) scoreField.getValue());
-//		settings.setMaxOldness((TIME) oldSelection.getSelectedItem());
-//		settings.setPeriod((int) periodField.getValue());
-//		settings.setSearchBy((SEARCH_BY) sortSelection.getSelectedItem());
-//		settings.setKeepWallpapers(keepCheckBox.isSelected());
-//		settings.setKeepBlacklist(blacklistCheckBox.isSelected());
-//		settings.setMaxDatabaseSize((int) dbSizeField.getValue());
-//		settings.setRatioLimit((RATIO_LIMIT) ratioSelection.getSelectedItem());
-//
-//		settings.writeSettings();
+		Settings.INSTANCE.writeSettings();
 	}
 
 	void loadSettings() {
-		// Settings.regSB holds the regex string for removing square brackets
-//		titleField.setText(Arrays.toString(settings.getTitles()).replaceAll(settings.getRegSB(), ""));
-//		subredditField.setText(Arrays.toString(settings.getSubreddits()).replaceAll(settings.getRegSB(), ""));
-//		flairField.setText(Arrays.toString(settings.getFlair()).replaceAll(settings.getRegSB(), ""));
-//		sortSelection.setSelectedItem(settings.getSearchBy());
-//		heightField.setValue(settings.getHeight());
-//		widthField.setValue(settings.getWidth());
-//		scoreField.setValue(settings.getScore());
-//		periodField.setValue(settings.getPeriod());
-//		oldSelection.setSelectedItem(settings.getMaxOldness());
-//		dbSizeField.setValue(settings.getMaxDatabaseSize());
-//		keepCheckBox.setSelected(settings.getKeepWallpapers());
-//		blacklistCheckBox.setSelected(settings.getKeepBlacklist());
-//		wallpaperPathText.setText(Settings.INSTANCE.getWallpaperPath());
-//		nsfwSlider.setValue(settings.getNsfwLevel().getValue());
-//		ratioSelection.setSelectedItem(settings.getRatioLimit());
+		keepCheckBox.setSelected(Settings.INSTANCE.getKeepWallpapers());
+		blacklistCheckBox.setSelected(Settings.INSTANCE.getKeepBlacklist());
+		dbSizeField.setValue(Settings.INSTANCE.getMaxDatabaseSize());
+		wallpaperPathText.setText(Settings.INSTANCE.getWallpaperPath());
 	}
 
 	void changeWallpaper(Destination dest) {
@@ -139,7 +107,7 @@ public class GUI extends JFrame{
 			// Settings.INSTANCE.eraseDB(); TODO
 
 			// Requires the directory exists and wallpapers should not be kept
-			if (wallpaperFolder.isDirectory() && !settings.getKeepWallpapers()) {
+			if (wallpaperFolder.isDirectory() && !Settings.INSTANCE.getKeepWallpapers()) {
 				for (File walp : Objects.requireNonNull(wallpaperFolder.listFiles())) {
 					if (walp.delete()) {
 						log.log(Level.FINE, () -> walp + " deleted.");
@@ -147,7 +115,7 @@ public class GUI extends JFrame{
 				}
 				log.log(Level.FINE, () -> "Wallpapers successfully purged.");
 			}
-			else if (settings.getKeepWallpapers()) {
+			else if (Settings.INSTANCE.getKeepWallpapers()) {
 				log.log(Level.FINE, () -> "Wallpapers have not been removed by preference.");
 			}
 			else {
@@ -158,17 +126,11 @@ public class GUI extends JFrame{
 
 	private void setupUI() {
 		Act act = new Act(this);
-		applyButton.addActionListener(act);
+		//applyButton.addActionListener(act);
 		folderButton.addActionListener(act);
 		resetButton.addActionListener(act);
 		changeNowButton.addActionListener(act);
 		changeDirectoryButton.addActionListener(act);
-		//scrollPane.setPreferredSize(new Dimension(-1, 3)); TODO
-//		nsfwSlider.setLabelTable(new Hashtable<Integer, JLabel>() {{
-//			put(-1, new JLabel("Never"));
-//			put(0, new JLabel("Allow"));
-//			put(1, new JLabel("Only"));
-//		}});
 		tabbedPane.addChangeListener(changeEvent -> {
 			JTabbedPane src = (JTabbedPane) changeEvent.getSource();
 			int index = src.getSelectedIndex();
@@ -176,6 +138,18 @@ public class GUI extends JFrame{
 				showLog();
 			}
 		});
+		refreshButton.addActionListener(e -> {
+			refreshListDest();
+			refreshListSrc();
+			refreshGridAssociations();
+			loadSettings();
+		});
+		keepCheckBox.addActionListener(e->
+				Settings.INSTANCE.setKeepWallpapers(keepCheckBox.isSelected()));
+		blacklistCheckBox.addActionListener(e->
+				Settings.INSTANCE.setKeepBlacklist(blacklistCheckBox.isSelected()));
+		dbSizeField.addChangeListener(e-> Settings.INSTANCE.setMaxDatabaseSize((Integer) dbSizeField.getValue()));
+
 		destScrollBar.getVerticalScrollBar().setUnitIncrement(14);
 		srcScrollBar.getVerticalScrollBar().setUnitIncrement(14);
 
@@ -190,6 +164,8 @@ public class GUI extends JFrame{
 			refreshListDest();
 		});
 
+
+		refreshGridAssociations();
 	}
 
 	private void refreshListSrc() {
@@ -212,11 +188,38 @@ public class GUI extends JFrame{
 		destsPane.add(destButtonPane);
 	}
 
+	private void refreshGridAssociations() {
+		if (Settings.INSTANCE.isSingleDestination() && Settings.INSTANCE.isSingleSource()) {
+			tabbedPane.setEnabledAt(2, false);
+			return;
+		} else {
+			tabbedPane.setEnabledAt(2, true);
+		}
+		associationPane.removeAll();
+		associationPane.setLayout(new GridLayout(Settings.INSTANCE.getSources().size()+1, Settings.INSTANCE.getDests().size()+1));
+		associationPane.add(new JPanel());
+		for (Destination d: Settings.INSTANCE.getDests()) {
+			associationPane.add(new JLabel(d.getName()));
+		}
+		for (Source s : Settings.INSTANCE.getSources()) {
+			associationPane.add(new JLabel(s.getName()));
+			for (Destination d : Settings.INSTANCE.getDests()) {
+				JCheckBox c = new JCheckBox();
+				c.addActionListener(e-> {
+					if (c.isSelected()) {
+						d.getSources().add(s);
+					} else {
+						d.getSources().remove(s);
+					}
+				});
+				associationPane.add(c);
+			}
+		}
+	}
+
 	private void createUIComponents() {
 		// custom create
-		SpinnerNumberModel s = new SpinnerNumberModel(15, 0, 10000, 1);
-		scoreField = new JSpinner(s);
-		s = new SpinnerNumberModel(50, 5, 10000, 1);
+		SpinnerNumberModel s = new SpinnerNumberModel(50, 5, 10000, 1);
 		dbSizeField = new JSpinner(s);
 
 	}
@@ -238,7 +241,7 @@ public class GUI extends JFrame{
 		chooser.setAcceptAllFileFilterUsed(false);
 		chooser.showOpenDialog(this);
 		File directory = chooser.getSelectedFile();
-		settings.setWallpaperPath(directory.toString() + File.separator);
+		Settings.INSTANCE.setWallpaperPath(directory.toString() + File.separator);
 		loadSettings();
 	}
 

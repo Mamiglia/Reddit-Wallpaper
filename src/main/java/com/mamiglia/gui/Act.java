@@ -22,9 +22,6 @@ class Act implements ActionListener {
 			case "Change Now":
 				frame.changeWallpaper(null);
 				break;
-			case "Apply":
-				frame.saveSettings();
-				break;
 			case "Open Directory":
 				frame.displayFolder();
 				break;
