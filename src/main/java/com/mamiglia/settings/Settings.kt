@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.awt.GraphicsDevice
 import java.awt.GraphicsEnvironment
 import java.awt.HeadlessException
 import java.io.File
@@ -25,19 +26,21 @@ object Settings {
 
     private val bannedList: MutableSet<String> = mutableSetOf() // the bannedList is kept until the pc is turned off, then it gets resetted
     private val log = DisplayLogger.getInstance("Settings")
-    private val sources: MutableSet<Source>  = mutableSetOf()
+    val sources: MutableSet<Source>  = mutableSetOf()
     val dests: MutableList<Destination> = mutableListOf()
-    val srcForEachDest : MutableMap<Destination, Source> = mutableMapOf()
 
     var keepWallpapers = false //keep wallpapers after eliminating them from db?
     var keepBlacklist : Boolean = false
     var maxDatabaseSize = 50
-    val screens
-        get() = try { // TODO is this correct?
-            GraphicsEnvironment.getLocalGraphicsEnvironment().screenDevices.size
+    val monitors: Array<GraphicsDevice>
+        get() = try {
+            GraphicsEnvironment.getLocalGraphicsEnvironment().screenDevices
         } catch (e: HeadlessException) {
-            log.log(Level.WARNING, "Could not get screens: " + e.message)
+            log.log(Level.SEVERE, "Could not get screens: " + e.message)
+            arrayOf()
         }
+    val monitorsNumber
+        get() = GraphicsEnvironment.getLocalGraphicsEnvironment().screenDevices.size
     val isSingleDestination: Boolean
         get() = dests.size == 1
 
@@ -49,7 +52,7 @@ object Settings {
             sources.add(Source()) //add default source
         }
         if (dests.isEmpty()) {
-            dests.add((Destination())) // add default destination
+            dests.add(Destination()) // add default destination
         }
     }
 
@@ -69,7 +72,13 @@ object Settings {
     }
 
     fun readSettings() {
-        val lines = File(PATH_TO_SAVEFOLDER + SETTINGS_SAVEFILE).readLines()
+        val file = File(PATH_TO_SAVEFOLDER + SETTINGS_SAVEFILE)
+        val lines : List<String>
+        if (file.exists()) {
+            lines = file.readLines()
+        } else {
+            return
+        }
 
         keepBlacklist = Json.decodeFromString(lines[0]) //TODO find a better way to do this
         keepWallpapers = Json.decodeFromString(lines[1])  //FIX what happens if file is void? if there's no line there?
@@ -90,17 +99,53 @@ object Settings {
         }
     }
 
+    fun newSource() : Source {
+        val new = Source()
+        sources.add(new)
+        return new
+    }
+
+    fun newDest() :Destination {
+        val new = Destination()
+        dests.add(new)
+        return new
+    }
+
+    fun removeSource(src: Source) {
+        sources.remove(src)
+        for (dest in dests) {
+            dest.sources.remove(src)
+        }
+    }
+
+    fun removeDestination(dest: Destination) {
+        dests.remove(dest)
+    }
+
+    fun changesAllMonitors(dest: Destination) : Boolean {
+        return dest.screens.size == monitorsNumber // TODO is this correct?
+        // what happens if the number of monitors changes?
+    }
+
     //TODO add eraseDB()
 }
 
 enum class TIME(val value: String) {
-    HOUR("hour"), DAY("day"), WEEK("week"), MONTH("month"), YEAR("year"), ALL("all");
+    HOUR("hour"),
+    DAY("day"),
+    WEEK("week"),
+    MONTH("month"),
+    YEAR("year"),
+    ALL("all");
 }
 
 enum class NSFW_LEVEL(val value: Int, val query: String) {
-    NEVER(-1, "&nsfw=no"), ALLOW(0, "&include_over_18=true&nsfw=yes"), ONLY(1, "&include_over_18=true&nsfw=yes");
+    NEVER(-1, "&nsfw=no"),
+    ALLOW(0, "&include_over_18=true&nsfw=yes"),
+    ONLY(1, "&include_over_18=true&nsfw=yes");
 
     companion object { // TODO is this needed?
+        @JvmStatic
         fun valueOf(i: Int): NSFW_LEVEL {
             return when (i) {
                 -1 -> NEVER
@@ -113,11 +158,16 @@ enum class NSFW_LEVEL(val value: Int, val query: String) {
 }
 
 enum class SEARCH_BY(val value: String) {
-    TOP("top"), NEW("new"), HOT("hot"), RELEVANCE("relevance");
+    TOP("top"),
+    NEW("new"),
+    HOT("hot"),
+    RELEVANCE("relevance");
 }
 
 enum class RATIO_LIMIT(val value: String) {
-    RELAXED("relaxed"), STRICT("strict"), NONE("none");
+    RELAXED("relaxed"),
+    STRICT("strict"),
+    NONE("none");
 }
 
 /* selects leading or trailing spaces on strings, or double (or greater) spaces between words (used in GUI and Searcher)
