@@ -56,14 +56,17 @@ public class DestGUI extends JPanel {
 			dest.setName(JOptionPane.showInputDialog(this, "Insert new name"));
 			this.setTitle(dest.getName());
 		});
-		changeBtn.addActionListener(e->gui.changeWallpaper(dest));
+		changeBtn.addActionListener(e->{
+			saveData();
+			gui.changeWallpaper(dest);
+		});
 
 		loadData();
 	}
 
 	private void loadData() {
 		if (dest.getCurrent() != null) {
-			wallpaperName.setText(dest.getName());
+			wallpaperName.setText(dest.getCurrent().getTitle());
 			createLink(wallpaperLink, "link", dest.getCurrent().getPostUrl());
 		} else {
 			wallpaperName.setText("None");
