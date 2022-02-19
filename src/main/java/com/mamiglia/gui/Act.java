@@ -20,7 +20,7 @@ class Act implements ActionListener {
 		JButton btnPressed = (JButton) src;
 		switch (btnPressed.getText()) {
 			case "Change Now":
-				frame.changeWallpaper();
+				frame.changeWallpaper(null);
 				break;
 			case "Apply":
 				frame.saveSettings();
