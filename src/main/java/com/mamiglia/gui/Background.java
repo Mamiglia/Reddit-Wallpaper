@@ -75,6 +75,7 @@ public class Background implements Runnable {
 				log.log(Level.INFO, "Sleep is interrupted");
 			}
 
+			Settings.INSTANCE.writeSettings();
 			changeWallpapers();
 		}
 		log.log(Level.INFO, "Background Service has been stopped as requested");

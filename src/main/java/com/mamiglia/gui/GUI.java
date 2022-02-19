@@ -189,12 +189,6 @@ public class GUI extends JFrame{
 	}
 
 	private void refreshGridAssociations() {
-		if (Settings.INSTANCE.isSingleDestination() && Settings.INSTANCE.isSingleSource()) {
-			tabbedPane.setEnabledAt(2, false);
-			return;
-		} else {
-			tabbedPane.setEnabledAt(2, true);
-		}
 		associationPane.removeAll();
 		associationPane.setLayout(new GridLayout(Settings.INSTANCE.getSources().size()+1, Settings.INSTANCE.getDests().size()+1));
 		associationPane.add(new JPanel());
