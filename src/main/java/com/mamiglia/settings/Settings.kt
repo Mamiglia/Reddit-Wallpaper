@@ -43,6 +43,8 @@ object Settings {
         get() = GraphicsEnvironment.getLocalGraphicsEnvironment().screenDevices.size
     val isSingleDestination: Boolean
         get() = dests.size == 1
+    val isSingleSource : Boolean
+        get() = sources.size == 1
 
 
     init {
@@ -123,6 +125,7 @@ object Settings {
     }
 
     fun changesAllMonitors(dest: Destination) : Boolean {
+        // returns true if this destination changes the wallpaper to all the monitors
         return dest.screens.size == monitorsNumber // TODO is this correct?
         // what happens if the number of monitors changes?
     }

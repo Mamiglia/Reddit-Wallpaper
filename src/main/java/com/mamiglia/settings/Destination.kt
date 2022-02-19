@@ -31,6 +31,7 @@ data class Destination(
     }
 
     fun updateNext() {
+        // sets this destination as to be updated in the next update
         lastChange = 0L
     }
 
