@@ -24,7 +24,7 @@ import com.sun.jna.win32.*;
 import com.sun.jna.Platform;
 
 public class SetNewWallpaper implements Runnable {
-    static private final Logger log = DisplayLogger.getInstance("SetNewWallpaper");
+    private static final Logger log = DisplayLogger.getInstance("SetNewWallpaper");
     private boolean executed = false;
     private final Wallpaper wp;
     private final Destination dest;
@@ -34,14 +34,18 @@ public class SetNewWallpaper implements Runnable {
         this.dest = dest;
     }
 
-
     @Override
     public void run() {
         if (executed) return;
+        executed = true;
 
-        if (wp.isDownloaded()) {
-            log.log(Level.WARNING, "Wallpaper file not found");
-            return;
+        if (!wp.isDownloaded()) {
+            log.log(Level.FINE, "Wallpaper file not found, downloading...");
+            try {
+                wp.download();
+            } catch (IOException e) {
+                log.log(Level.SEVERE, "Couldn't download file");
+            }
         }
         String wpPath = wp.getPath().toAbsolutePath().toString();
         int os = Platform.getOSType();
@@ -85,7 +89,7 @@ public class SetNewWallpaper implements Runnable {
                 }
                 break;
             case 2: // Other Windows
-                if (Settings.INSTANCE.isSingleDestination()) {
+                if (Settings.INSTANCE.changesAllMonitors(dest)) {
                     windowsChange(wpPath);
                 } else {
                     for (int idx : dest.getScreens()) {
@@ -199,10 +203,12 @@ public class SetNewWallpaper implements Runnable {
     void windowsChange(String path) {
         log.log(Level.FINE, () -> "Detected Windows, setting wallpaper in " + path);
         User32.INSTANCE.SystemParametersInfo(User32.SETDESKWALLPAPER, 0, path, 1);
+        log.log(Level.INFO, () -> "Wallpaper change is succesful for destination " + dest.getName());
+
     }
 
     void windowsChange(String path, int i) {
-        log.log(Level.FINE, () -> "Detected Windows, setting wallpaper in " + path + " to screen " + i);
+        log.log(Level.FINE, () -> "Detected Windows, setting wallpaper in " + path + " at screen " + i);
 
         // Copy pasted from https://github.com/matthiasblaesing/JNA-Demos/blob/master/IDesktopWallpaper/src/main/java/eu/doppel_helix/dev/blaesing/IDesktopWallpaper/Main.java
         WinNT.HRESULT result = Ole32.INSTANCE.CoInitializeEx(Pointer.NULL, Ole32.COINIT_MULTITHREADED);
@@ -220,8 +226,11 @@ public class SetNewWallpaper implements Runnable {
             try {
                     String deviceName = wallpaper.GetMonitorDevicePathAt(i);
                     wallpaper.SetWallpaper(deviceName, path);
+                    log.log(Level.INFO, () -> "Wallpaper change is succesful for Monitor " + deviceName);
+
             } catch(COMException e) {
                 log.log(Level.WARNING, () -> "COM failed to use windows API, maybe you don't have that many monitors?");
+                e.printStackTrace();
             } finally {
                 wallpaper.Release();
             }
