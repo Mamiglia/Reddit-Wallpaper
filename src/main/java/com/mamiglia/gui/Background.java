@@ -35,7 +35,13 @@ public class Background implements Runnable {
 
 	/* Changes wallpaper to a single destination (remember that a single destination could contain multiple monitors */
 	public void changeWallpaper(Destination dest) {
-		GetNewWallpaper g = new GetNewWallpaper(Settings.INSTANCE.getSrcForEachDest().get(dest)); //TODO get from all sources associated to such destination
+		log.log(Level.INFO, ()->"Changing wallpaper for destination " + dest.getName());
+		if (dest.getScreens().isEmpty() || dest.getSources().isEmpty()) {
+			log.log(Level.WARNING, "Wallpaper not changed for destination " + dest.getName() + " because it has no sources or monitors associated");
+			dest.updateLastChange();
+			return;
+		}
+		GetNewWallpaper g = new GetNewWallpaper(dest.getSources(), dest);
 		Thread t1 = new Thread(g);
 		t1.start();
 		try {
@@ -52,7 +58,6 @@ public class Background implements Runnable {
 		} catch (InterruptedException e) {
 			log.log(Level.SEVERE, "Thread SetNewWallpaper was interrupted by unknown error");
 		}
-		log.log(Level.INFO, () -> "Wallpaper change is succesful for destination " + dest.getName());
 		dest.updateLastChange();
 
 		Tray.getInstance().populateTray();
@@ -94,11 +99,12 @@ public class Background implements Runnable {
 			shortest = Long.min(shortest, dest.getResidualTime());
 		}
 
-		return shortest;
+		return Long.max(shortest, 0);
 	}
 
 	private void changeWallpapers() {
 		for (Destination dest : Settings.INSTANCE.getDests()) {
+			log.log(Level.FINER, () ->"Destination " + dest.getName() + "has still "+ dest.getResidualTime()+ " milliseconds left");
 			if (dest.isTimeElapsed())
 				changeWallpaper(dest);
 		}
