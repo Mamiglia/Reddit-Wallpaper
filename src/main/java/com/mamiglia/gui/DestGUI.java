@@ -2,6 +2,7 @@ package com.mamiglia.gui;
 
 import com.mamiglia.settings.Destination;
 import com.mamiglia.settings.RATIO_LIMIT;
+import com.mamiglia.settings.Settings;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,47 +11,99 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashSet;
+import java.util.logging.Level;
 
-public class DestGUI {
+public class DestGUI extends JPanel {
 	private JSpinner widthField;
 	private JSpinner heightField;
 	private JComboBox<RATIO_LIMIT> ratioSelection;
-	private JList<Integer> monitorList;
 	private JLabel wallpaperName;
 	private JLabel wallpaperSubreddit;
 	private JLabel wallpaperLink;
-	private JPanel iconPanel;
 	private JSpinner periodField;
-	private JPanel destination;
+	private JPanel root;
+	private JPanel monitorPanel;
+	private JButton renameBtn;
+	private JButton removeBtn;
+	private JButton saveBtn;
+	private JLabel titleField;
+	private JButton changeBtn;
 	private Destination dest;
+	private JCheckBox[] monitorList;
+	private GUI gui;
 
-	DestGUI(Destination dest) {
+
+	DestGUI(Destination dest, GUI gui) {
+		this.add(root);
 		this.dest = dest;
+		this.gui = gui;
+
+		monitorPanel.setLayout(new BoxLayout(monitorPanel, BoxLayout.Y_AXIS));
+		var g = Settings.INSTANCE.getMonitors();
+		monitorList = new JCheckBox[g.length];
+		for (int i=0; i<g.length; i++) {
+			JCheckBox c = new JCheckBox(Destination.Companion.monitorName(g[i]));
+			monitorList[i] = c;
+			monitorPanel.add(c);
+		}
+		saveBtn.addActionListener(e->saveData());
+		removeBtn.addActionListener(e->{
+			Settings.INSTANCE.removeDestination(dest);
+			this.removeAll();
+		});
+		renameBtn.addActionListener(e->{
+			dest.setName(JOptionPane.showInputDialog(this, "Insert new name"));
+			this.setTitle(dest.getName());
+		});
+		changeBtn.addActionListener(e->gui.changeWallpaper(dest));
 
 		loadData();
 	}
 
-	public void loadData() {
+	private void loadData() {
 		if (dest.getCurrent() != null) {
 			wallpaperName.setText(dest.getName());
 			createLink(wallpaperLink, "link", dest.getCurrent().getPostUrl());
 		} else {
-			wallpaperName.setText("NULL");
+			wallpaperName.setText("None");
 			createLink(wallpaperLink, "None", "");
 		}
-		monitorList.setListData(dest.getScreens().toArray(new Integer[0]));
+		this.setTitle(dest.getName());
 		ratioSelection.setSelectedItem(dest.getRatioLimit());
 		heightField.setValue(dest.getHeight());
 		widthField.setValue(dest.getWidth());
 		periodField.setValue(dest.getPeriod());
+		for (int i=0; i<monitorList.length; i++) {
+			monitorList[i].setSelected(dest.getScreens().contains(i));
+		}
+		GUI.log.log(Level.FINE, "Destination"+ dest.getName()+ "loaded");
+	}
+
+	private void saveData() {
+		dest.setRatioLimit((RATIO_LIMIT) ratioSelection.getSelectedItem());
+		dest.setHeight((Integer)heightField.getValue());
+		dest.setWidth((Integer) widthField.getValue());
+		dest.setPeriod((Integer) periodField.getValue());
+		dest.setScreens(new HashSet<>());
+		for (int i=0; i<monitorList.length; i++) {
+			if (monitorList[i].isSelected()) {
+				dest.getScreens().add(i);
+			}
+		}
+		GUI.log.log(Level.FINE, "Destination " + dest.getName() + " Saved");
+	}
+
+	private void setTitle(String title) {
+		titleField.setText(title);
 	}
 
 
 	private void createUIComponents() {
 		//TODO add image to icon
-		heightField = new JSpinner(new SpinnerNumberModel(dest.getHeight(), 0, 10000, 1));
-		widthField = new JSpinner(new SpinnerNumberModel(dest.getWidth(), 0, 10000, 1));
-		periodField = new JSpinner(new SpinnerNumberModel(dest.getPeriod(), 0, 10000, 1));
+		heightField = new JSpinner(new SpinnerNumberModel(0, 0, 10000, 1));
+		widthField = new JSpinner(new SpinnerNumberModel(0, 0, 10000, 1));
+		periodField = new JSpinner(new SpinnerNumberModel(0, 0, 10000, 1));
 
 		ratioSelection = new JComboBox<>(RATIO_LIMIT.values());
 	}
@@ -80,5 +133,12 @@ public class DestGUI {
 				label.setText(text);
 			}
 		});
+	}
+
+	public static void main(String[] args) {
+//		JFrame f = new JFrame();
+//		f.add(new DestGUI(new Destination(), f));
+//		f.setVisible(true);
+//		f.pack();
 	}
 }
