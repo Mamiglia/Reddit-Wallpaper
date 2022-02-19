@@ -1,14 +1,19 @@
 package com.mamiglia.settings
 import kotlinx.serialization.Serializable
+import java.lang.Integer.min
 
 @Serializable
 data class Source(
-    val titles: Set<String> = setOf(),
-    val flairs: Set<String> = setOf(),
-    val subreddits: Set<String> = setOf("wallpaper", "wallpapers"),
-    val searchBy: SEARCH_BY = SEARCH_BY.HOT,
-    val nsfwLevel: NSFW_LEVEL = NSFW_LEVEL.ALLOW,
-    val minScore: Int = 15,
-    val maxOldness:TIME = TIME.DAY,
-    val name : String = "$subreddits,$titles,$flairs"
-)
+    var titles: Set<String> = setOf(),
+    var flairs: Set<String> = setOf(),
+    var subreddits: Set<String> = setOf("wallpaper", "wallpapers"),
+    var searchBy: SEARCH_BY = SEARCH_BY.HOT,
+    var nsfwLevel: NSFW_LEVEL = NSFW_LEVEL.ALLOW,
+    var minScore: Int = 15,
+    var maxOldness:TIME = TIME.DAY,
+) {
+    var name : String = ""
+        get() = if (field == "") "$subreddits${if (titles.isNotEmpty()) " | $titles" else ""}${if (flairs.isNotEmpty()) " | $flairs" else ""}" else field
+
+
+}
