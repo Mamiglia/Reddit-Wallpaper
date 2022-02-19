@@ -49,6 +49,7 @@ public class Background implements Runnable {
 		} catch (InterruptedException e) {
 			log.log(Level.SEVERE, "Thread GetNewWallpaper was interrupted by unknown error");
 		}
+		dest.setCurrent(g.getResult());
 
 		SetNewWallpaper set = new SetNewWallpaper(g.getResult(), dest);
 		Thread t2 = new Thread(set);
