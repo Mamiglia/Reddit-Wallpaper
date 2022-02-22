@@ -1,18 +1,16 @@
 package com.mamiglia.gui;
 
 import com.mamiglia.settings.*;
-import com.mamiglia.utils.DisplayLogger;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 class SourceGUI extends Collapsible{
+	public static final int STANDARD_HEIGHT = 200; // this is just a rough estimate of the height in pixels
 	private JTextField titleField;
 	private JTextField subredditField;
 	private JTextField flairField;
