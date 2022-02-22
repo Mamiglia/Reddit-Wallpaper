@@ -9,9 +9,11 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class GUI extends JFrame{
 	private JPanel rootPane;
@@ -43,7 +45,7 @@ public class GUI extends JFrame{
 		super("Reddit Wallpaper Downloader");
 		this.setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getClassLoader().getResource(Tray.PATH_TO_TRAY_ICON)));/* icon by https://www.freepik.com */
 		this.backThread = backThread;
-		add(rootPane);
+		this.add(rootPane);
 
 		setupUI();
 		loadSettings();
@@ -163,29 +165,24 @@ public class GUI extends JFrame{
 			Settings.INSTANCE.newDest();
 			refreshListDest();
 		});
-
-
 		refreshGridAssociations();
+
+		this.setPreferredSize(new Dimension(this.getPreferredSize().width, this.getPreferredSize().height + SourceGUI.STANDARD_HEIGHT));
 	}
 
 	private void refreshListSrc() {
-		sourcesPane.removeAll();
-		sourcesPane.setLayout(new BoxLayout(sourcesPane, BoxLayout.Y_AXIS));
-		for (Source src : Settings.INSTANCE.getSources()) {
-			sourcesPane.add(new SourceGUI(src));
-		}
-		sourcesPane.add(new Box.Filler(new Dimension(), new Dimension(), new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE))); // makes everything align at top
-		sourcesPane.add(sourcesButtonsPane);
+		generateList(
+				sourcesPane,
+				Settings.INSTANCE.getSources().stream().map(src->new SourceGUI(src)).collect(Collectors.toList()),
+				sourcesButtonsPane);
 	}
 
 	private void refreshListDest() {
-		destsPane.removeAll();
-		destsPane.setLayout(new BoxLayout(destsPane, BoxLayout.Y_AXIS));
-		for (Destination dest : Settings.INSTANCE.getDests()) {
-			destsPane.add(new DestGUI(dest, this));
-		}
-		destsPane.add(new Box.Filler(new Dimension(), new Dimension(), new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE))); // makes everything align at top
-		destsPane.add(destButtonPane);
+		generateList(
+				destsPane,
+				Settings.INSTANCE.getDests().stream().map(d -> new DestGUI(d, this)).collect(Collectors.toList()),
+				destButtonPane
+		);
 	}
 
 	private void refreshGridAssociations() {
@@ -237,6 +234,24 @@ public class GUI extends JFrame{
 		File directory = chooser.getSelectedFile();
 		Settings.INSTANCE.setWallpaperPath(directory.toString() + File.separator);
 		loadSettings();
+	}
+
+	private static void generateList(JPanel pane, List<JPanel> elements, JPanel ending) {
+		pane.removeAll();
+		pane.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridy = 0;
+		c.weightx = 1;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		for (JPanel el : elements) {
+			pane.add(el, c);
+			c.gridy++;
+		}
+		c.weighty = 1;
+		pane.add(new JPanel(), c); // makes everything align at top
+		c.weighty = 0;
+		c.gridy++;
+		pane.add(ending, c);
 	}
 
 	public static void setLookFeel() {
