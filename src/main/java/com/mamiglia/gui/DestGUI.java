@@ -14,7 +14,7 @@ import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.logging.Level;
 
-public class DestGUI extends JPanel {
+public class DestGUI extends Collapsible {
 	private JSpinner widthField;
 	private JSpinner heightField;
 	private JComboBox<RATIO_LIMIT> ratioSelection;
@@ -27,17 +27,15 @@ public class DestGUI extends JPanel {
 	private JButton renameBtn;
 	private JButton removeBtn;
 	private JButton saveBtn;
-	private JLabel titleField;
 	private JButton changeBtn;
-	private Destination dest;
-	private JCheckBox[] monitorList;
-	private GUI gui;
+	private final Destination dest;
+	private final JCheckBox[] monitorList;
 
 
 	DestGUI(Destination dest, GUI gui) {
-		this.add(root);
+		super(dest.getName());
+		setBody(root);
 		this.dest = dest;
-		this.gui = gui;
 
 		monitorPanel.setLayout(new BoxLayout(monitorPanel, BoxLayout.Y_AXIS));
 		var g = Settings.INSTANCE.getMonitors();
@@ -96,11 +94,6 @@ public class DestGUI extends JPanel {
 		}
 		GUI.log.log(Level.FINE, "Destination " + dest.getName() + " Saved");
 	}
-
-	private void setTitle(String title) {
-		titleField.setText(title);
-	}
-
 
 	private void createUIComponents() {
 		//TODO add image to icon
