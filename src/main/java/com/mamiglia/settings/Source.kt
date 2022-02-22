@@ -1,6 +1,7 @@
 package com.mamiglia.settings
+
 import kotlinx.serialization.Serializable
-import java.lang.Integer.min
+import kotlinx.serialization.Transient
 
 @Serializable
 data class Source(
@@ -12,6 +13,7 @@ data class Source(
     var minScore: Int = 15,
     var maxOldness:TIME = TIME.DAY,
 ) {
+    @Transient
     var name : String = ""
         get() = if (field == "") "$subreddits${if (titles.isNotEmpty()) " | $titles" else ""}${if (flairs.isNotEmpty()) " | $flairs" else ""}" else field
 

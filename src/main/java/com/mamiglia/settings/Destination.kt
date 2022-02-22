@@ -4,10 +4,8 @@ import com.mamiglia.wallpaper.Wallpaper
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import java.awt.GraphicsDevice
-import java.awt.GraphicsEnvironment
 import java.time.Instant
-import java.time.LocalDateTime
-import java.util.*
+
 
 @Serializable
 data class Destination(

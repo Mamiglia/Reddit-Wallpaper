@@ -52,7 +52,7 @@ public class DesktopWallpaper extends Unknown {
 
 		private final int flag;
 
-		private DESKTOP_WALLPAPER_POSITION(int flag) {
+		DESKTOP_WALLPAPER_POSITION(int flag) {
 			this.flag = flag;
 		}
 
