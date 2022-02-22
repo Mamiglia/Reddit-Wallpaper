@@ -1,9 +1,14 @@
 package com.mamiglia.gui;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 
 class Collapsible extends JPanel {
+	private static final ImageIcon COLLAPSE_ICO = new ImageIcon("src/main/resources/collapse_ico.png");
+	private static final ImageIcon EXPAND_ICO = new ImageIcon("src/main/resources/expand_ico.png");
+	private static final int BOTTOM_PADDING = 5;
 	private boolean collapsed = true;
 	private JPanel bodyContainer;
 	private JButton btn;
@@ -12,11 +17,16 @@ class Collapsible extends JPanel {
 	private JPanel head;
 
 	Collapsible(String title) {
-		this.add(root);
+		this.setLayout(new BorderLayout());
+		this.add(root, BorderLayout.CENTER);
 		this.setTitle(title);
 
 		bodyContainer.setVisible(false);
+		bodyContainer.setLayout(new BorderLayout());
+		root.setBorder(new LineBorder(new Color(48,50,52), 2, true));
+		this.setBorder(new EmptyBorder(0,0, BOTTOM_PADDING,0));
 
+		root.setBackground(new Color(48,50,52));
 
 		btn.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 		btn.setContentAreaFilled(false);
@@ -25,12 +35,13 @@ class Collapsible extends JPanel {
 
 	public void setTitle(String title) {
 		titleLabel.setText(title.substring(0, Math.min(40, title.length()))); //trimming is necessary
+		titleLabel.setForeground(new Color(74, 136, 199));
 	}
 
 
 	public void setBody(JPanel body) {
 		bodyContainer.removeAll();
-		bodyContainer.add(body);
+		bodyContainer.add(body, BorderLayout.CENTER);
 		bodyContainer.setVisible(false);
 		head.setPreferredSize(new Dimension(bodyContainer.getPreferredSize().width, head.getPreferredSize().height));
 	}
@@ -43,7 +54,7 @@ class Collapsible extends JPanel {
 	private void act() {
 		bodyContainer.setVisible(collapsed);
 		collapsed = !collapsed;
-		btn.setText(collapsed? "v" : "^"); // TODO add better icons
+		btn.setIcon(collapsed? EXPAND_ICO : COLLAPSE_ICO);
 	}
 
 	@Override
@@ -51,8 +62,10 @@ class Collapsible extends JPanel {
 		if (bodyContainer.getComponents().length == 0) {
 			return new Dimension();
 		}
-		return new Dimension(bodyContainer.getPreferredSize().width, root.getPreferredSize().height);
+		return new Dimension(bodyContainer.getPreferredSize().width, root.getPreferredSize().height + BOTTOM_PADDING);
 	}
+
+
 
 
 }
