@@ -23,9 +23,9 @@ repositories {
 }
 
 dependencies {
-    implementation("net.java.dev.jna:jna-platform:5.8.0")
-    implementation("org.json:json:20210307")
-    implementation("com.formdev:flatlaf:1.1.2")
+    implementation("net.java.dev.jna:jna-platform:5.9.0")
+    implementation("org.json:json:20211205")
+    implementation("com.formdev:flatlaf:2.0.1")
 
     implementation("com.jetbrains.intellij.java:java-gui-forms-rt:+")
     implementation("com.jgoodies:forms:1.1-preview"
