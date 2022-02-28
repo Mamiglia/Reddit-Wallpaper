@@ -5,10 +5,12 @@ import com.mamiglia.utils.DisplayLogger;
 import com.formdev.flatlaf.FlatDarkLaf;
 
 import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -187,32 +189,70 @@ public class GUI extends JFrame{
 
 	private void refreshGridAssociations() {
 		associationPane.removeAll();
-		associationPane.setLayout(new GridLayout(Settings.INSTANCE.getSources().size()+1, Settings.INSTANCE.getDests().size()+1));
-		associationPane.add(new JPanel());
-		for (Destination d: Settings.INSTANCE.getDests()) {
-			associationPane.add(new JLabel(d.getName()));
-		}
-		for (Source s : Settings.INSTANCE.getSources()) {
-			associationPane.add(new JLabel(s.getName()));
-			for (Destination d : Settings.INSTANCE.getDests()) {
-				JCheckBox c = new JCheckBox();
-				c.addActionListener(e-> {
-					if (c.isSelected()) {
-						d.getSources().add(s);
-					} else {
-						d.getSources().remove(s);
-					}
-				});
-				associationPane.add(c);
+		int destNumber = Settings.INSTANCE.getDests().size();
+		int srcNumber = Settings.INSTANCE.getSources().size();
+		var tableData = new Object[srcNumber][destNumber+1];
+		Iterator<Source> it = Settings.INSTANCE.getSources().iterator();
+
+		for (int i=0; i<srcNumber; i++) {
+			Source src = it.next();
+			tableData[i][0] = src.getName();
+			for (int j=0; j<destNumber; j++) {
+				tableData[i][j+1] = Settings.INSTANCE.getDests().get(j).getSources().contains(src);
 			}
 		}
+
+		var columns = new String[destNumber+1];
+		columns[0] = "";
+		for (int j=0; j<destNumber; j++) {
+			columns[1+j] = Settings.INSTANCE.getDests().get(j).getName();
+		}
+
+		associationPane.add(new JTable(new AbstractTableModel() {
+			private final String[] columnNames = columns;
+			private final Object[][] data = tableData;
+
+			@Override
+			public String getColumnName(int col) {
+				return columnNames[col];
+			}
+
+			@Override
+			public Class getColumnClass(int c) {
+				return c>=1? Boolean.class : String.class;
+			}
+
+			@Override
+			public boolean isCellEditable(int row, int col) {
+				return col>=1;
+			}
+
+			@Override
+			public int getRowCount() {
+				return data.length;
+			}
+
+			@Override
+			public int getColumnCount() {
+				return columnNames.length;
+			}
+
+			@Override
+			public Object getValueAt(int row, int col) {
+				return data[row][col];
+			}
+
+			public void setValueAt(Object value, int row, int col) {
+				data[row][col] = value;
+				fireTableCellUpdated(row, col);
+			}
+		}));
 	}
 
 	private void createUIComponents() {
 		// custom create
 		SpinnerNumberModel s = new SpinnerNumberModel(50, 5, 10000, 1);
 		dbSizeField = new JSpinner(s);
-
 	}
 
 	private void showLog() {
@@ -256,7 +296,10 @@ public class GUI extends JFrame{
 
 	public static void setLookFeel() {
 		try {
+			UIManager.put("Button.arc", 999);
+			UIManager.put( "ScrollBar.showButtons", false );
 			UIManager.setLookAndFeel( new FlatDarkLaf() );
+
 			// Set System L&F
 //			UIManager.setLookAndFeel(
 //					UIManager.getSystemLookAndFeelClassName());
