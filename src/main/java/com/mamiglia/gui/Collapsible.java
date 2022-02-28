@@ -31,6 +31,8 @@ class Collapsible extends JPanel {
 		btn.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 		btn.setContentAreaFilled(false);
 		btn.addActionListener(event -> act());
+		this.putClientProperty( "Panel.arc", 999);
+		bodyContainer.putClientProperty( "Component.arc", 999);
 	}
 
 	public void setTitle(String title) {
