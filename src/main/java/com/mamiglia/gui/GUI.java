@@ -40,6 +40,7 @@ public class GUI extends JFrame{
 	private JScrollPane srcScrollBar;
 	private JPanel associationPane;
 	private JButton refreshButton;
+	private JScrollPane associationScrollPane;
 	static final Logger log = DisplayLogger.getInstance("GUI");
 	private final Thread backThread;
 
@@ -207,14 +208,15 @@ public class GUI extends JFrame{
 		for (int j=0; j<destNumber; j++) {
 			columns[1+j] = Settings.INSTANCE.getDests().get(j).getName();
 		}
+		associationPane.setBackground(Color.CYAN);
 
-		associationPane.add(new JTable(new AbstractTableModel() {
+		JTable t = new JTable(new AbstractTableModel() {
 			private final String[] columnNames = columns;
 			private final Object[][] data = tableData;
 
 			@Override
 			public String getColumnName(int col) {
-				return columnNames[col];
+				return columnNames[col].toString();
 			}
 
 			@Override
@@ -246,7 +248,9 @@ public class GUI extends JFrame{
 				data[row][col] = value;
 				fireTableCellUpdated(row, col);
 			}
-		}));
+		});
+		associationPane.add(t, BorderLayout.NORTH);
+		associationScrollPane.setColumnHeaderView(t.getTableHeader());
 	}
 
 	private void createUIComponents() {
