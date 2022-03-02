@@ -39,6 +39,11 @@ public class SetNewWallpaper implements Runnable {
         if (executed) return;
         executed = true;
 
+        if (wp== null) {
+            log.log(Level.SEVERE, "No wallpaper was found, aborting");
+            return;
+        }
+
         if (!wp.isDownloaded()) {
             log.log(Level.FINE, "Wallpaper file not found, downloading...");
             try {
