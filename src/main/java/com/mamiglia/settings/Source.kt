@@ -17,5 +17,8 @@ data class Source(
     var name : String = ""
         get() = if (field == "") "$subreddits${if (titles.isNotEmpty()) " | $titles" else ""}${if (flairs.isNotEmpty()) " | $flairs" else ""}" else field
 
+    override fun toString() : String {
+        return name
+    }
 
 }
