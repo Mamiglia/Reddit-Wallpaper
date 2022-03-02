@@ -6,8 +6,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.*
-import org.json.JSONException
 import java.awt.GraphicsDevice
 import java.awt.GraphicsEnvironment
 import java.awt.HeadlessException
@@ -96,6 +94,10 @@ object Settings {
         maxDatabaseSize = Json.decodeFromString(lines[2])
         sources.addAll(format.decodeFromString(File(PATH_TO_SAVEFOLDER+ SRCS_SAVEFILE).readText()))
         dests.addAll(format.decodeFromString(File(PATH_TO_SAVEFOLDER+ DESTS_SAVEFILE).readText()))
+
+        for (d in dests) {
+            d.sources = d.sources.intersect(sources) as MutableSet<Source>
+        }
         log.log(Level.INFO, "Setting read from files")
     }
 

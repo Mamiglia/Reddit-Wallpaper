@@ -6,7 +6,6 @@ import kotlinx.serialization.Transient
 import java.awt.GraphicsDevice
 import java.time.Instant
 
-
 @Serializable
 data class Destination(
     var height: Int = 1920,
@@ -15,7 +14,7 @@ data class Destination(
     var screens: Set<Int> = setOf(),
     var ratioLimit: RATIO_LIMIT = RATIO_LIMIT.RELAXED,
     private var lastChange: Long = 0,  // TODO Should I use Date, Instant or some other time-specific class instead of millis from epoch?
-    val sources : MutableSet<Source> = mutableSetOf(), // TODO mutableSetOf()
+    var sources : MutableSet<Source> = mutableSetOf(),
     @Transient var current: Wallpaper? = null
 ) {
     val residualTime :Long
@@ -34,7 +33,8 @@ data class Destination(
     }
 
     fun addSource(src: Source) {
-        sources.add(src)
+        if (Settings.sources.contains(src))
+            sources.add(src)
     }
 
     fun removeSource(src: Source) {
