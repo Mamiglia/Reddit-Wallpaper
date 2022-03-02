@@ -5,14 +5,15 @@ import com.mamiglia.utils.DisplayLogger;
 import com.formdev.flatlaf.FlatDarkLaf;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -197,26 +198,22 @@ public class GUI extends JFrame{
 
 		for (int i=0; i<srcNumber; i++) {
 			Source src = it.next();
-			tableData[i][0] = src.getName();
+			tableData[i][0] = src;
 			for (int j=0; j<destNumber; j++) {
 				tableData[i][j+1] = Settings.INSTANCE.getDests().get(j).getSources().contains(src);
 			}
 		}
 
-		var columns = new String[destNumber+1];
-		columns[0] = "";
-		for (int j=0; j<destNumber; j++) {
-			columns[1+j] = Settings.INSTANCE.getDests().get(j).getName();
-		}
-		associationPane.setBackground(Color.CYAN);
+		var columns = new ArrayList<>(Settings.INSTANCE.getDests());
+		columns.add(0, null);
 
 		JTable t = new JTable(new AbstractTableModel() {
-			private final String[] columnNames = columns;
+			private final ArrayList<Destination> columnNames = columns;
 			private final Object[][] data = tableData;
 
 			@Override
 			public String getColumnName(int col) {
-				return columnNames[col].toString();
+				return col > 0 ? columnNames.get(col).getName() : "";
 			}
 
 			@Override
@@ -236,7 +233,7 @@ public class GUI extends JFrame{
 
 			@Override
 			public int getColumnCount() {
-				return columnNames.length;
+				return columnNames.size();
 			}
 
 			@Override
@@ -244,9 +241,16 @@ public class GUI extends JFrame{
 				return data[row][col];
 			}
 
+			@Override
 			public void setValueAt(Object value, int row, int col) {
 				data[row][col] = value;
-				fireTableCellUpdated(row, col);
+
+				if ((boolean)value) {
+					columnNames.get(col).addSource((Source) data[row][0]);
+				} else {
+					columnNames.get(col).removeSource((Source) data[row][0]);
+				}
+
 			}
 		});
 		associationPane.add(t, BorderLayout.NORTH);
