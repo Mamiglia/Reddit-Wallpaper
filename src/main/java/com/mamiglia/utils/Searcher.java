@@ -39,11 +39,7 @@ class Searcher {
 		strQuery.append(String.join("+", src.getSubreddits()).replaceAll(REG_WS, ""));
 
 		strQuery.append("/search.json?q=(");
-//		if (!src.getSubreddits().isEmpty()) {
-//			strQuery.append("subreddit:(")
-//					.append(String.join(" OR ", src.getSubreddits()))
-//					.append(")");
-//		}
+
 		// Subreddit selection is made through the multireddit build
 
 		if (!src.getTitles().isEmpty()) {
