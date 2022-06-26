@@ -15,13 +15,14 @@ class Selector implements Runnable{
     private static final Logger log = DisplayLogger.getInstance("Selector");
     private boolean executed = false;
     private Wallpaper result = null;
-    private final WallpaperDAO db = WallpaperDAO.INSTANCE;
+    private final WallpaperDAO db = new WallpaperDAO();
     private final Set<Wallpaper> proposal;
     private final Destination dest;
 
     public Selector(Set<Wallpaper> proposal, Destination dest) throws IOException {
         this.proposal = proposal;
         this.dest = dest;
+
     }
 
     //TODO Add image title to image bottom left (possibly restrict to certain subreddits?)
@@ -30,8 +31,10 @@ class Selector implements Runnable{
     public void run() {
         if (executed || proposal == null) return;
         executed = true;
-        List<String> oldID = db.getAllId();
 
+        if (!db.open()) return;
+
+        List<String> oldID = db.getAllId();
         var newWp = proposal.stream()
                 .filter(wp -> !oldID.contains(wp.getID()) && this.dest.checkSize(wp))
                 .collect(Collectors.toUnmodifiableList());
@@ -52,21 +55,24 @@ class Selector implements Runnable{
         if (proposal.isEmpty()) {
             log.log(Level.WARNING, "Not enough new wallpapers were proposed, setting from recent wallpapers. Maybe your query is too restrictive?");
         } else if (newWp.isEmpty()) {
-            log.log(Level.INFO, "No unused wallpapers were found, setting from the oldest of those found");
+            log.log(Level.INFO, "No unused or fitting wallpapers were found, setting from the oldest of those found");
         }
 
         // OR Not enough unused wallpapers are found //select oldest used wallpapers in the list
         var old = db.getAllWallpapers();
         old.addAll(proposal);
         for (Wallpaper wp : old) {
-            if (!dest.checkSize(wp) || Settings.INSTANCE.isBanned(wp)) continue;
-            this.result = wp;
-            db.updateDate(wp);
+            if (dest.checkSize(wp) && !Settings.INSTANCE.isBanned(wp)) {
+                this.result = wp;
+                db.updateDate(wp);
+                break;
+            }
         }
         if (result == null) {
             log.log(Level.WARNING, "Database is void, no wallpaper can be set.");
-            db.close();
         }
+        System.out.println(db.show());
+        db.close();
 
     }
 

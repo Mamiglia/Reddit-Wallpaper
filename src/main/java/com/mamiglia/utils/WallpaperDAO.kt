@@ -14,7 +14,7 @@ import java.util.logging.Level
 private val dbUrl = ("jdbc:h2:file:" + System.getProperty("user.dir")
         + File.separator + PATH_TO_DATABASE)
 
-object WallpaperDAO {
+class WallpaperDAO {
     private val log = DisplayLogger.getInstance("DAO")
     private var conn: Connection? = null
     private var db: Statement? = null
@@ -23,17 +23,19 @@ object WallpaperDAO {
     private val keepWallpapers : Boolean
         get() = Settings.keepWallpapers
 
-    fun open() {
+    fun open() : Boolean {
         try {
             conn = DriverManager.getConnection(dbUrl, "rw", "")
             db = conn!!.createStatement()
             db!!.execute("CREATE TABLE IF NOT EXISTS WALLPAPERS(id VARCHAR(100) PRIMARY KEY, wp OTHER NOT NULL, date TIMESTAMP NOT NULL)")
             log.log(Level.FINE, "Database loaded: $dbUrl")
+            return true;
         } catch (e: SQLException) {
             log.log(Level.SEVERE, "Query error: Couldn't create database: \n${e.message}")
         } catch (e: Exception) {
             log.log(Level.SEVERE, e.message)
         }
+        return false
     }
 
     fun close() {
@@ -90,7 +92,7 @@ object WallpaperDAO {
         return null
     }
 
-    public fun insert(wp: Wallpaper) {
+    fun insert(wp: Wallpaper) {
         try {
             conn?.prepareStatement("INSERT INTO WALLPAPERS VALUES (?, ?, CURRENT_TIMESTAMP())")?.use { p ->
                 p.setString(1, wp.id)
@@ -104,7 +106,7 @@ object WallpaperDAO {
         }
     }
 
-    public fun updateDate(wp: Wallpaper) {
+    fun updateDate(wp: Wallpaper) {
         try {
             conn?.prepareStatement("UPDATE WALLPAPERS SET date=CURRENT_TIMESTAMP() WHERE id=?")?.use {p ->
                 p.setString(1, wp.id)
@@ -125,7 +127,8 @@ object WallpaperDAO {
         // the user will set if he wants to delete also the wallpaper or the database entry only
         if (maxDbSize == -1) return;
         try {
-            db?.executeQuery("SELECT count(*) AS size FROM WALLPAPERS")?.use{ rs ->
+            db?.executeQuery("SELECT COUNT(*) AS size FROM WALLPAPERS")?.use{ rs ->
+                rs.next()
                 if (rs.getInt("size") <= maxDbSize) return;
             }
             db?.executeQuery("SELECT wp FROM WALLPAPERS ORDER BY date FETCH FIRST 20 PERCENT ROWS ONLY")?.use { rs ->
@@ -165,7 +168,7 @@ object WallpaperDAO {
     fun getAllWallpapers() : List<Wallpaper> {
         val arr = ArrayList<Wallpaper>()
         try {
-            db?.executeQuery("SELECT wp FROM WALLPAPERS ORDER BY date")?.use { rs ->
+            db?.executeQuery("SELECT wp FROM WALLPAPERS ORDER BY date ASC")?.use { rs ->
                 while (rs.next()) {
                     arr.add(rs.getObject("wp") as Wallpaper)
                 }
