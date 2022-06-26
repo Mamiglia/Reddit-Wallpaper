@@ -101,6 +101,7 @@ public class Tray {
 				banItem.addActionListener(e -> {
 					if (backThread.getState() == Thread.State.TIMED_WAITING) {
 						Settings.INSTANCE.banWallpaper(dest.getCurrent());
+						dest.updateNext();
 						backThread.interrupt(); //interrupting it makes it wake up and load new wallpaper
 					} else {
 						log.log(Level.INFO, "\"Ban wallpaper\" button was pressed too early, still occupied changing wallpaper from the last time");
