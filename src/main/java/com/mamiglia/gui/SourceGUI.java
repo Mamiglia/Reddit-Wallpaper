@@ -3,10 +3,7 @@ package com.mamiglia.gui;
 import com.mamiglia.settings.*;
 
 import javax.swing.*;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Level;
 
 class SourceGUI extends Collapsible{
@@ -61,9 +58,18 @@ class SourceGUI extends Collapsible{
 	}
 
 	private void saveData() {
-		src.setTitles(new HashSet<>(List.of(titleField.getText().split(","))));
-		src.setSubreddits(new HashSet<>(List.of(subredditField.getText().split(","))));
-		src.setFlairs(new HashSet<>(List.of(flairField.getText().split(","))));
+		if (!titleField.getText().equals(""))
+			src.setTitles(new HashSet<>(List.of(titleField.getText().replace(" ", "").split(","))));
+		else
+			src.setTitles(new HashSet<>());
+		if (!subredditField.getText().equals(""))
+			src.setSubreddits(new HashSet<>(List.of(subredditField.getText().replace(" ", "").split(","))));
+		else
+			src.setTitles(new HashSet<>());
+		if (!flairField.getText().equals(""))
+			src.setFlairs(new HashSet<>(List.of(flairField.getText().replace(" ", "").split(","))));
+		else
+			src.setTitles(new HashSet<>());
 		src.setMaxOldness((TIME) Objects.requireNonNull(timeSelection.getSelectedItem()));
 		src.setSearchBy((SEARCH_BY) sortSelection.getSelectedItem());
 		src.setMinScore((Integer) scoreField.getValue());

@@ -112,6 +112,10 @@ object Settings {
         }
     }
 
+    fun isBanned(wallpaper: Wallpaper) :Boolean {
+        return bannedList.contains(wallpaper.id)
+    }
+
     fun newSource() : Source {
         val new = Source()
         sources.add(new)
