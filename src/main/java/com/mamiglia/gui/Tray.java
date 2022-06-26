@@ -112,9 +112,10 @@ public class Tray {
 			MenuItem changeItem = new MenuItem("Change Wallpaper");
 			changeItem.addActionListener(e -> {
 				if (backThread.getState() == Thread.State.TIMED_WAITING) {
+					dest.updateNext();
 					backThread.interrupt(); //interrupting it makes it wake up and load new wallpaper
 				} else {
-					log.log(Level.INFO, "Change button was pressed too early, still occupied changing wallpaper from the last time");
+					log.log(Level.INFO, "\"Change\" button was pressed too early, still occupied changing wallpaper from the last time");
 				}
 				//interrupting the thread means waking it up. When it's awake it will automatically start searching for a new Wallpaper
 			});
