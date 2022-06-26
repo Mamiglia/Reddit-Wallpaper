@@ -20,7 +20,6 @@ class Selector implements Runnable{
     private Statement db = null;
     private boolean executed = false;
     private Wallpaper result = null;
-    private final Set<Wallpaper> results = new HashSet<>();
     private final Set<Wallpaper> proposal;
     private final Destination dest;
 
@@ -58,13 +57,9 @@ class Selector implements Runnable{
         }
     }
 
-    //TODO Add multi monitor support (wallpaper per screen, tray icon support)
-    //TODO Multi monitor alignment options
+
     //TODO Add image title to image bottom left (possibly restrict to certain subreddits?)
     //TODO Imgur gallery handling???
-
-    //TODO REenable wallpaper banning
-    //TODO REenable size check
     @Override
     public void run() {
         if (executed || proposal == null) return;
@@ -107,16 +102,16 @@ class Selector implements Runnable{
                     break;
 				}
                 removeWp(result.getID());
-            } catch (SQLException throwables) {
+            }catch (SQLException throwables) {
                 log.log(Level.WARNING, "DB Query error in select()");
-                log.log(Level.FINEST, throwables.getMessage());
+                log.log(Level.WARNING, throwables.getMessage());
+                if (throwables.getCause().getClass().equals(InvalidClassException.class)) {
+                    log.log(Level.WARNING, "Detected incompatible objects in DB, erasing the entire DB");
+                    eraseDB();
+                }
                 break;
             }
         }
-
-		if (result == null) {
-            log.log(Level.WARNING, "Database is void, no wallpaper can be set.");
-		}
         closeDB();
     }
 
@@ -128,17 +123,6 @@ class Selector implements Runnable{
         }
         return result;
     }
-	
-	public Set<Wallpaper> getResult(int screens) {
-		if (!executed) {
-            log.log(Level.INFO, "Result was requested but the functor was never executed.");
-		} else if (results.size() == 0) {
-            log.log(Level.INFO, "Selector didn't select any wallpapers.");
-        } else if (results.size() < screens) {
-			log.log(Level.INFO, "Selector didn't find enough images for your screens.");
-		}
-        return results;
-	}
 
     public List<String> getOldWallpapersID() {
         ArrayList<String> arr = new ArrayList<>();
@@ -260,7 +244,18 @@ class Selector implements Runnable{
         }
     }
 
+    private void eraseDB() {
+        try (PreparedStatement p = conn.prepareStatement("DELETE FROM WALLPAPERS")) {
+            p.executeUpdate();
+            log.log(Level.FINER,"Successfully erased DB");
+        } catch (SQLException e) {
+            log.log(Level.WARNING, () -> "Failed to insert entry in db: " + e.getMessage());
+        }
+    }
+
     public boolean isDBloaded() {
         return conn != null;
     }
+
+
 }
