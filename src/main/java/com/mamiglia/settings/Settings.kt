@@ -144,8 +144,6 @@ object Settings {
         return dest.screens.size == monitorsNumber // TODO is this correct?
         // what happens if the number of monitors changes?
     }
-
-    //TODO add eraseDB()
 }
 
 val format = Json { ignoreUnknownKeys = true }

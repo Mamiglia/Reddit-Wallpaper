@@ -43,7 +43,7 @@ public class GetNewWallpaper implements Runnable {
 		Selector selector;
 
 		try {
-			selector = new Selector(wallpapers, Settings.INSTANCE.getKeepWallpapers(), Settings.INSTANCE.getMaxDatabaseSize(), dest);
+			selector = new Selector(wallpapers, dest);
 		} catch (IOException e) {
 			log.log(Level.SEVERE, "Loading DB is impossible. Aborting wallpaper set up");
 			abort();
