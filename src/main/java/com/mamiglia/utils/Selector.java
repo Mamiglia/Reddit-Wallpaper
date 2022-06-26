@@ -72,12 +72,12 @@ class Selector implements Runnable{
         List<String> oldID = getOldWallpapersID();
 
         for (Wallpaper propWallpaper : proposal) {
-            if (!oldID.contains(propWallpaper.getID())) {
-//                if (Settings.INSTANCE.isBanned(propWallpaper.getID())) {
-//                    // if banned the wallpaper must not be considered
-//                    removeWp(propWallpaper.getID());
-//                    continue;
-//                } TODO
+            if (this.dest.checkSize(propWallpaper) && !oldID.contains(propWallpaper.getID())) {
+                if (Settings.INSTANCE.isBanned(propWallpaper)) {
+                    // if banned the wallpaper must not be considered
+                    removeWp(propWallpaper.getID());
+                    continue;
+                }
                 log.log(Level.FINE, "Selected new wallpaper from those proposed");
                 insertDB(propWallpaper);
                 closeDB();
@@ -97,11 +97,15 @@ class Selector implements Runnable{
             try (ResultSet rs = db.executeQuery("SELECT wp FROM WALLPAPERS ORDER BY date LIMIT 1")) {
                 rs.next();
 				result = (Wallpaper) rs.getObject("wp");
-				if (result == null) break;
-//				else if (!Settings.INSTANCE.isBanned(result.getID())) {
-//                    updateDate(result);
-//                    break;
-//				} TODO
+				if (result == null) {
+                    log.log(Level.WARNING, "Database is void, no wallpaper can be set.");
+                    closeDB();
+                    return;
+                }
+				else if (dest.checkSize(result) && !Settings.INSTANCE.isBanned(result)) {
+                    updateDate(result);
+                    break;
+				}
                 removeWp(result.getID());
             } catch (SQLException throwables) {
                 log.log(Level.WARNING, "DB Query error in select()");
