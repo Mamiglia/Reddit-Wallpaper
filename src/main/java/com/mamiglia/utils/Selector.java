@@ -210,7 +210,7 @@ class Selector implements Runnable{
             while (rs.next()) {
                 str.append(rs.getString("id"))
                         .append(": ")
-                        .append(((Wallpaper) rs.getObject("wp")).getTitle())
+                        .append(((Wallpaper) rs.getObject("wp")).getCompleteTitle())
                         .append(" ; ")
                         .append(rs.getTimestamp("date"))
                         .append("\n");

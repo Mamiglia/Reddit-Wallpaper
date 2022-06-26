@@ -65,6 +65,7 @@ public class DestGUI extends Collapsible {
 	private void loadData() {
 		if (dest.getCurrent() != null) {
 			wallpaperName.setText(dest.getCurrent().getTitle());
+			wallpaperSubreddit.setText("r/" + dest.getCurrent().getSubreddit());
 			createLink(wallpaperLink, "link", dest.getCurrent().getPostUrl());
 		} else {
 			wallpaperName.setText("None");

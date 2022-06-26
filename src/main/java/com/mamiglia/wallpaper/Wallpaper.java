@@ -68,10 +68,15 @@ public class Wallpaper implements Serializable {
         return file.toPath();
     }
     public String getTitle() {
-        return title;
+        return title.split(",")[0];
     }
+    public String getCompleteTitle() { return title;}
     public String getUrl() {
         return url;
+    }
+    public String getSubreddit() {
+        return postUrl.split("/")[4];
+        //https://www.reddit.com/r/SUBREDDIT_NAME/comments/ID/POST_NAME/
     }
     public String getPostUrl() {
         return postUrl;
