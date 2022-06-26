@@ -87,6 +87,9 @@ public class Wallpaper implements Serializable {
     public String getID() {
         return id;
     }
+    public Boolean isLandscape() {
+        return this.getRatio() > 1;
+    }
 
     @Override
     public boolean equals(Object o) {

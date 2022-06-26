@@ -21,7 +21,13 @@ data class Destination(
         get() = - Instant.now().toEpochMilli() + lastChange + period* MIN_TO_MILLIS
 
     val isTimeElapsed :Boolean
-        get() = residualTime < period * MIN_TO_MILLIS
+        get() = residualTime < 1 * MIN_TO_MILLIS
+
+    val ratio : Double
+        get() = width.toDouble() / height
+
+    val isLandscape : Boolean
+        get() = ratio > 1
 
     fun updateLastChange() {
         lastChange = Instant.now().toEpochMilli()
@@ -44,6 +50,13 @@ data class Destination(
     var name :String = ""
         get() = if (field == "") "${screens.map{ monitorName( Settings.monitors[it] )}}" else field
 
+    fun checkSize(wp: Wallpaper): Boolean {
+        return when (ratioLimit) {
+            RATIO_LIMIT.NONE -> height < wp.height && width < wp.width
+            RATIO_LIMIT.RELAXED -> isLandscape == wp.isLandscape && height < wp.height && width < wp.width
+            RATIO_LIMIT.STRICT -> ratio == wp.ratio && height < wp.height && width < wp.width
+        }
+    }
 
 
     companion object {
