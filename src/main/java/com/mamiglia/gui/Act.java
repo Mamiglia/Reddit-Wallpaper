@@ -25,7 +25,7 @@ class Act implements ActionListener {
 			case "Open Directory":
 				frame.displayFolder();
 				break;
-			case "Erase Wallpaper Database":
+			case "Erase Database":
 				frame.resetDB();
 				break;
 			case "Change":

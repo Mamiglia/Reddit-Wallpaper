@@ -175,7 +175,7 @@
                   <component id="8a79a" class="javax.swing.JButton" binding="resetButton">
                     <constraints/>
                     <properties>
-                      <text value="Erase Database Now"/>
+                      <text value="Erase Database"/>
                       <toolTipText value="Safely erases database file and all the wallpapers in the folder unless above box is checked"/>
                     </properties>
                   </component>
