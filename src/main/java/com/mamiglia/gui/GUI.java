@@ -6,6 +6,7 @@ import com.intellij.uiDesigner.core.Spacer;
 import com.mamiglia.settings.*;
 import com.mamiglia.utils.DisplayLogger;
 import com.formdev.flatlaf.FlatDarkLaf;
+import com.mamiglia.utils.WallpaperDAO;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -114,7 +115,7 @@ public class GUI extends JFrame {
 		if (selectedOption == JOptionPane.OK_OPTION) {
 
 			File wallpaperFolder = new File(Settings.INSTANCE.getWallpaperPath());
-			// Settings.INSTANCE.eraseDB(); TODO
+			new WallpaperDAO().erase();
 
 			// Requires the directory exists and wallpapers should not be kept
 			if (wallpaperFolder.isDirectory() && !Settings.INSTANCE.getKeepWallpapers()) {

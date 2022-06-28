@@ -48,7 +48,7 @@ class WallpaperDAO {
         }
     }
 
-    private fun erase() {
+    fun erase() {
         try {
             conn?.prepareStatement("DELETE FROM WALLPAPERS")?.use { p ->
                 p.executeUpdate()
