@@ -1,5 +1,8 @@
 package com.mamiglia.gui;
 
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.uiDesigner.core.Spacer;
 import com.mamiglia.settings.*;
 import com.mamiglia.utils.DisplayLogger;
 import com.formdev.flatlaf.FlatDarkLaf;
@@ -18,7 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class GUI extends JFrame{
+public class GUI extends JFrame {
 	private JPanel rootPane;
 	private JTabbedPane tabbedPane;
 	private JTextArea logArea;
@@ -47,6 +50,7 @@ public class GUI extends JFrame{
 
 	public GUI(Thread backThread) {
 		super("Reddit Wallpaper Downloader");
+		$$$setupUI$$$();
 		this.setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getClassLoader().getResource(Tray.PATH_TO_TRAY_ICON)));/* icon by https://www.freepik.com */
 		this.backThread = backThread;
 		this.add(rootPane);
@@ -90,7 +94,7 @@ public class GUI extends JFrame{
 		//interrupting the thread means waking it up. When it's awake it will automatically start searching for a new Wallpaper
 
 
-		}
+	}
 
 	/*
 		Opens in explorer the Wallpaper Folder
@@ -120,11 +124,9 @@ public class GUI extends JFrame{
 					}
 				}
 				log.log(Level.FINE, () -> "Wallpapers successfully purged.");
-			}
-			else if (Settings.INSTANCE.getKeepWallpapers()) {
+			} else if (Settings.INSTANCE.getKeepWallpapers()) {
 				log.log(Level.FINE, () -> "Wallpapers have not been removed by preference.");
-			}
-			else {
+			} else {
 				log.log(Level.FINE, () -> "Wallpapers directory is missing.");
 			}
 		}
@@ -150,11 +152,11 @@ public class GUI extends JFrame{
 			refreshGridAssociations();
 			loadSettings();
 		});
-		keepCheckBox.addActionListener(e->
+		keepCheckBox.addActionListener(e ->
 				Settings.INSTANCE.setKeepWallpapers(keepCheckBox.isSelected()));
-		blacklistCheckBox.addActionListener(e->
+		blacklistCheckBox.addActionListener(e ->
 				Settings.INSTANCE.setKeepBlacklist(blacklistCheckBox.isSelected()));
-		dbSizeField.addChangeListener(e-> Settings.INSTANCE.setMaxDatabaseSize((Integer) dbSizeField.getValue()));
+		dbSizeField.addChangeListener(e -> Settings.INSTANCE.setMaxDatabaseSize((Integer) dbSizeField.getValue()));
 
 		destScrollBar.getVerticalScrollBar().setUnitIncrement(14);
 		srcScrollBar.getVerticalScrollBar().setUnitIncrement(14);
@@ -165,7 +167,7 @@ public class GUI extends JFrame{
 			Settings.INSTANCE.newSource();
 			refreshListSrc();
 		});
-		addDestBtn.addActionListener(e->{
+		addDestBtn.addActionListener(e -> {
 			Settings.INSTANCE.newDest();
 			refreshListDest();
 		});
@@ -177,7 +179,7 @@ public class GUI extends JFrame{
 	private void refreshListSrc() {
 		generateList(
 				sourcesPane,
-				Settings.INSTANCE.getSources().stream().map(src->new SourceGUI(src)).collect(Collectors.toList()),
+				Settings.INSTANCE.getSources().stream().map(src -> new SourceGUI(src)).collect(Collectors.toList()),
 				sourcesButtonsPane);
 	}
 
@@ -193,14 +195,14 @@ public class GUI extends JFrame{
 		associationPane.removeAll();
 		int destNumber = Settings.INSTANCE.getDests().size();
 		int srcNumber = Settings.INSTANCE.getSources().size();
-		var tableData = new Object[srcNumber][destNumber+1];
+		var tableData = new Object[srcNumber][destNumber + 1];
 		Iterator<Source> it = Settings.INSTANCE.getSources().iterator();
 
-		for (int i=0; i<srcNumber; i++) {
+		for (int i = 0; i < srcNumber; i++) {
 			Source src = it.next();
 			tableData[i][0] = src;
-			for (int j=0; j<destNumber; j++) {
-				tableData[i][j+1] = Settings.INSTANCE.getDests().get(j).getSources().contains(src);
+			for (int j = 0; j < destNumber; j++) {
+				tableData[i][j + 1] = Settings.INSTANCE.getDests().get(j).getSources().contains(src);
 			}
 		}
 
@@ -218,12 +220,12 @@ public class GUI extends JFrame{
 
 			@Override
 			public Class getColumnClass(int c) {
-				return c>=1? Boolean.class : String.class;
+				return c >= 1 ? Boolean.class : String.class;
 			}
 
 			@Override
 			public boolean isCellEditable(int row, int col) {
-				return col>=1;
+				return col >= 1;
 			}
 
 			@Override
@@ -245,7 +247,7 @@ public class GUI extends JFrame{
 			public void setValueAt(Object value, int row, int col) {
 				data[row][col] = value;
 
-				if ((boolean)value) {
+				if ((boolean) value) {
 					columnNames.get(col).addSource((Source) data[row][0]);
 				} else {
 					columnNames.get(col).removeSource((Source) data[row][0]);
@@ -305,8 +307,8 @@ public class GUI extends JFrame{
 	public static void setLookFeel() {
 		try {
 			UIManager.put("Button.arc", 999);
-			UIManager.put( "ScrollBar.showButtons", false );
-			UIManager.setLookAndFeel( new FlatDarkLaf() );
+			UIManager.put("ScrollBar.showButtons", false);
+			UIManager.setLookAndFeel(new FlatDarkLaf());
 
 			// Set System L&F
 //			UIManager.setLookAndFeel(
@@ -315,8 +317,7 @@ public class GUI extends JFrame{
 //			UIManager.setLookAndFeel(
 //					"javax.swing.plaf.nimbus.NimbusLookAndFeel"
 //					);
-		}
-		catch (UnsupportedLookAndFeelException e) {
+		} catch (UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
 //		catch (ClassNotFoundException e) {
@@ -334,5 +335,143 @@ public class GUI extends JFrame{
 		// GUI Tests
 		setLookFeel();
 		new GUI(null);
+	}
+
+	/**
+	 * Method generated by IntelliJ IDEA GUI Designer
+	 * >>> IMPORTANT!! <<<
+	 * DO NOT edit this method OR call it in your code!
+	 *
+	 * @noinspection ALL
+	 */
+	private void $$$setupUI$$$() {
+		createUIComponents();
+		rootPane = new JPanel();
+		rootPane.setLayout(new BorderLayout(0, 0));
+		final JPanel panel1 = new JPanel();
+		panel1.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
+		rootPane.add(panel1, BorderLayout.SOUTH);
+		refreshButton = new JButton();
+		refreshButton.setText("Refresh");
+		panel1.add(refreshButton);
+		changeNowButton = new JButton();
+		changeNowButton.setText("Change Now");
+		panel1.add(changeNowButton);
+		tabbedPane = new JTabbedPane();
+		tabbedPane.setVisible(true);
+		rootPane.add(tabbedPane, BorderLayout.CENTER);
+		final JPanel panel2 = new JPanel();
+		panel2.setLayout(new BorderLayout(0, 0));
+		tabbedPane.addTab("Sources", panel2);
+		srcScrollBar = new JScrollPane();
+		srcScrollBar.setHorizontalScrollBarPolicy(31);
+		srcScrollBar.setVerticalScrollBarPolicy(22);
+		panel2.add(srcScrollBar, BorderLayout.CENTER);
+		sourcesPane = new JPanel();
+		sourcesPane.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		srcScrollBar.setViewportView(sourcesPane);
+		sourcesButtonsPane = new JPanel();
+		sourcesButtonsPane.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		sourcesPane.add(sourcesButtonsPane);
+		addSrcBtn = new JButton();
+		addSrcBtn.setText("+");
+		sourcesButtonsPane.add(addSrcBtn);
+		final JPanel panel3 = new JPanel();
+		panel3.setLayout(new BorderLayout(0, 0));
+		tabbedPane.addTab("Destinations", panel3);
+		destScrollBar = new JScrollPane();
+		destScrollBar.setHorizontalScrollBarPolicy(31);
+		destScrollBar.setVerticalScrollBarPolicy(22);
+		panel3.add(destScrollBar, BorderLayout.CENTER);
+		destsPane = new JPanel();
+		destsPane.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		destScrollBar.setViewportView(destsPane);
+		destButtonPane = new JPanel();
+		destButtonPane.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		destsPane.add(destButtonPane);
+		addDestBtn = new JButton();
+		addDestBtn.setText("+");
+		destButtonPane.add(addDestBtn);
+		final JPanel panel4 = new JPanel();
+		panel4.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+		tabbedPane.addTab("Associations", panel4);
+		associationScrollPane = new JScrollPane();
+		panel4.add(associationScrollPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		associationPane = new JPanel();
+		associationPane.setLayout(new BorderLayout(0, 0));
+		associationScrollPane.setViewportView(associationPane);
+		final Spacer spacer1 = new Spacer();
+		panel4.add(spacer1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		final JPanel panel5 = new JPanel();
+		panel5.setLayout(new GridLayoutManager(5, 1, new Insets(0, 0, 0, 0), -1, -1));
+		tabbedPane.addTab("Settings", panel5);
+		final JPanel panel6 = new JPanel();
+		panel6.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		panel6.setToolTipText("Wallpapers may occupy much disk space. So only a certain number of wallpapers are kept, those exceeding will be eliminated");
+		panel5.add(panel6, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		final JLabel label1 = new JLabel();
+		label1.setText("Maximum Size of Database");
+		label1.setToolTipText("Wallpapers may occupy much disk space. So only a certain number of wallpapers are kept, those exceeding will be eliminated");
+		panel6.add(label1);
+		dbSizeField.setInheritsPopupMenu(true);
+		dbSizeField.setToolTipText("Wallpapers may occupy much disk space. So only a certain number of wallpapers are kept, those exceeding will be eliminated");
+		panel6.add(dbSizeField);
+		resetButton = new JButton();
+		resetButton.setText("Erase Database");
+		resetButton.setToolTipText("Safely erases database file and all the wallpapers in the folder unless above box is checked");
+		panel6.add(resetButton);
+		final Spacer spacer2 = new Spacer();
+		panel5.add(spacer2, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		final JPanel panel7 = new JPanel();
+		panel7.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		panel7.setToolTipText("If checked wallpapers will be kept indefinetely. Pay attention to your disk space!");
+		panel5.add(panel7, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		blacklistCheckBox = new JCheckBox();
+		blacklistCheckBox.setText("Keep wallpapers even after they have been banned?");
+		blacklistCheckBox.setToolTipText("If checked, images will be kept when they are blacklisted");
+		panel7.add(blacklistCheckBox);
+		final JPanel panel8 = new JPanel();
+		panel8.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+		panel5.add(panel8, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		keepCheckBox = new JCheckBox();
+		keepCheckBox.setInheritsPopupMenu(true);
+		keepCheckBox.setText("Keep wallpapers even after they're deleted from database?");
+		keepCheckBox.setToolTipText("If checked wallpapers will be kept indefinetely. Pay attention to your disk space!");
+		panel8.add(keepCheckBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		final JPanel panel9 = new JPanel();
+		panel9.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		panel5.add(panel9, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		final JLabel label2 = new JLabel();
+		label2.setText("Wallpaper Directory:");
+		panel9.add(label2);
+		wallpaperPathText = new JTextField();
+		wallpaperPathText.setEditable(false);
+		wallpaperPathText.setHorizontalAlignment(0);
+		wallpaperPathText.setText("C:/your/path/to/wallpapers");
+		wallpaperPathText.setToolTipText("The folder in which your wallpapers are saved");
+		panel9.add(wallpaperPathText);
+		folderButton = new JButton();
+		folderButton.setText("Open Directory");
+		folderButton.setToolTipText("Opens the folder");
+		panel9.add(folderButton);
+		changeDirectoryButton = new JButton();
+		changeDirectoryButton.setText("Change");
+		changeDirectoryButton.setToolTipText("Changes the folder");
+		panel9.add(changeDirectoryButton);
+		logTab = new JPanel();
+		logTab.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+		tabbedPane.addTab("Log", logTab);
+		final JScrollPane scrollPane1 = new JScrollPane();
+		logTab.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		logArea = new JTextArea();
+		logArea.setEditable(false);
+		scrollPane1.setViewportView(logArea);
+	}
+
+	/**
+	 * @noinspection ALL
+	 */
+	public JComponent $$$getRootComponent$$$() {
+		return rootPane;
 	}
 }
