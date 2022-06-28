@@ -26,7 +26,7 @@ object Settings {
 
     private val bannedList: MutableSet<String> = mutableSetOf() // the bannedList is kept until the pc is turned off, then it gets resetted
     private val log = DisplayLogger.getInstance("Settings")
-    val sources: MutableSet<Source>  = mutableSetOf()
+    val sources: MutableList<Source>  = mutableListOf()
     val dests: MutableList<Destination> = mutableListOf()
 
     var keepWallpapers = false //keep wallpapers after eliminating them from db?
