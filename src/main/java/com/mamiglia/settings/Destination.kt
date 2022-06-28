@@ -8,8 +8,8 @@ import java.time.Instant
 
 @Serializable
 data class Destination(
-    var height: Int = 1920,
-    var width: Int = 1080,
+    var height: Int = 1080,
+    var width: Int = 1920,
     var period: Int = 15, //mins
     var screens: Set<Int> = setOf(),
     var ratioLimit: RATIO_LIMIT = RATIO_LIMIT.RELAXED,
