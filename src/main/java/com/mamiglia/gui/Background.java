@@ -2,14 +2,9 @@ package com.mamiglia.gui;
 
 import com.mamiglia.settings.Destination;
 import com.mamiglia.settings.Settings;
-import com.mamiglia.utils.DisplayLogger;
 import com.mamiglia.utils.GetNewWallpaper;
 import com.mamiglia.utils.SetNewWallpaper;
-import com.mamiglia.wallpaper.Wallpaper;
 
-import java.text.MessageFormat;
-import java.util.*;
-import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -2,7 +2,6 @@ package com.mamiglia.gui;
 
 import com.mamiglia.settings.Destination;
 import com.mamiglia.settings.Settings;
-import com.mamiglia.utils.DisplayLogger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,7 +11,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.logging.Level;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

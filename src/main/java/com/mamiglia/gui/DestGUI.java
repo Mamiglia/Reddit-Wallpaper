@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
-import java.util.logging.Level;
 
 public class DestGUI extends Collapsible {
 	private JSpinner widthField;

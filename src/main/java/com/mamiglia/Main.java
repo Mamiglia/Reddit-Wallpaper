@@ -4,9 +4,7 @@ import com.mamiglia.gui.Background;
 import com.mamiglia.gui.GUI;
 import com.mamiglia.gui.Tray;
 import com.mamiglia.settings.Settings;
-import com.mamiglia.utils.DisplayLogger;
 
-import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
