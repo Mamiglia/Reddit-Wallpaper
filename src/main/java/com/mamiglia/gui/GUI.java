@@ -270,8 +270,8 @@ public class GUI extends JFrame {
 	private void showLog() {
 		FileReader reader;
 		try {
-			reader = new FileReader(DisplayLogger.LOG_PATH);
-			logArea.read(reader, DisplayLogger.LOG_PATH);
+			reader = new FileReader(Settings.LOG_PATH);
+			logArea.read(reader, Settings.LOG_PATH);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

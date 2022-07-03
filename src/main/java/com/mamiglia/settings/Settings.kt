@@ -2,7 +2,6 @@
 
 package com.mamiglia.settings
 
-import com.mamiglia.utils.DisplayLogger
 import com.mamiglia.wallpaper.Wallpaper
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
@@ -25,6 +24,8 @@ const val MIN_TO_MILLIS = 60000L
 object Settings {
     private val PATH_TO_SAVEFOLDER = System.getProperty("user.dir") + File.separator + "utility" + File.separator + "settings" + File.separator // const?
     val PATH_TO_DATABASE = "utility" + File.separator + "database"
+    const val LOG_PATH = "utility/log.txt"
+
     var wallpaperPath = "Saved-Wallpapers" // path to wallpaper folder
 
     private val bannedList: MutableSet<String> = mutableSetOf() // the bannedList is kept until the pc is turned off, then it gets resetted

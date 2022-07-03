@@ -33,7 +33,7 @@ class WallpaperDAO {
             log.debug("Database loaded: {}", dbUrl)
             return this
         } catch (e: SQLException) {
-            log.error("Query error: Couldn't create database: \n{}", e.message );
+            log.error("Query error: Couldn't create database: \n{}", e.message)
         } catch (e: Exception) {
             log.error(e.message)
         }
@@ -54,7 +54,7 @@ class WallpaperDAO {
         try {
             conn.prepareStatement("DELETE FROM WALLPAPERS")?.use { p ->
                 p.executeUpdate()
-                log.debug("Successfully erased DB")
+                log.info("Successfully erased DB")
             }
         } catch (e: SQLException) {
             log.warn("Failed to insert entry in db: {}", e.message)
@@ -89,7 +89,6 @@ class WallpaperDAO {
             }
         } catch (throwables: SQLException) {
             log.warn("Query Error in showDB(): \n{}", throwables.message)
-            log.trace(throwables.message)
         }
         return null
     }
@@ -178,7 +177,7 @@ class WallpaperDAO {
         } catch (throwables: SQLException) {
             log.warn("Query Error in getAllWallpapers(): \n{}", throwables.message)
             if (throwables.cause!!.javaClass == InvalidClassException::class.java) {
-                log.warn("Detected incompatible objects in DB, erasing the entire DB")
+                log.warn("Detected incompatible objects in DB, erasing the whole DB")
                 erase()
             }
         }
