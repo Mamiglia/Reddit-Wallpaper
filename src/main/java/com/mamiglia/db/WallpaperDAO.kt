@@ -30,10 +30,10 @@ class WallpaperDAO {
     private fun open() : WallpaperDAO? {
         try {
             db.execute("CREATE TABLE IF NOT EXISTS WALLPAPERS(id VARCHAR(100) PRIMARY KEY, wp OTHER NOT NULL, date TIMESTAMP NOT NULL)")
-            log.debug("Database loaded: $dbUrl")
+            log.debug("Database loaded: {}", dbUrl)
             return this
         } catch (e: SQLException) {
-            log.error("Query error: Couldn't create database: \n${e.message}")
+            log.error("Query error: Couldn't create database: \n{}", e.message );
         } catch (e: Exception) {
             log.error(e.message)
         }
@@ -45,7 +45,7 @@ class WallpaperDAO {
             conn.close()
             db.close()
         } catch (throwables: SQLException) {
-            log.error("Query error: couldn't close the database connection: \n${throwables.message}")
+            log.error("Query error: couldn't close the database connection: \n{}", throwables.message)
             log.trace(throwables.message)
         }
     }
@@ -57,7 +57,7 @@ class WallpaperDAO {
                 log.debug("Successfully erased DB")
             }
         } catch (e: SQLException) {
-            log.warn("Failed to insert entry in db: ${e.message}")
+            log.warn("Failed to insert entry in db: {}", e.message)
         }
     }
 
@@ -66,10 +66,10 @@ class WallpaperDAO {
             conn.prepareStatement("DELETE FROM WALLPAPERS where id=?")?.use { p ->
                 p.setString(1, id)
                 p.executeUpdate()
-                log.debug("Successfully deleted entry:\n$id" )
+                log.debug("Successfully deleted entry:\n{}", id )
             }
         } catch (e: SQLException) {
-            log.warn("Failed to remove entry from db: ${e.message}" )
+            log.warn("Failed to remove entry from db: {}", e.message )
         }
     }
 
@@ -88,7 +88,7 @@ class WallpaperDAO {
                 return str.toString()
             }
         } catch (throwables: SQLException) {
-            log.warn("Query Error in showDB(): \n${throwables.message}")
+            log.warn("Query Error in showDB(): \n{}", throwables.message)
             log.trace(throwables.message)
         }
         return null
@@ -100,11 +100,11 @@ class WallpaperDAO {
                 p.setString(1, wp.id)
                 p.setObject(2, wp)
                 p.executeUpdate()
-                log.debug("Successfully inserted entry:\n$wp" )
+                log.debug("Successfully inserted entry:\n{}", wp)
                 cleanDB()
             }
         } catch (e: SQLException) {
-            log.warn("Failed to insert entry in db: ${e.message}" )
+            log.warn("Failed to insert entry in db: {}", e.message )
         }
     }
 
@@ -116,7 +116,7 @@ class WallpaperDAO {
             }
         } catch (throwables: SQLException) {
             // consider the case in which the wp isn't in the table
-            log.warn("Query Error in updateDate() :\n${throwables.message}")
+            log.warn("Query Error in updateDate() :\n{}", throwables.message)
         }
     }
 
@@ -147,7 +147,7 @@ class WallpaperDAO {
                 db.executeUpdate("DELETE FROM WALLPAPERS WHERE id IN (SELECT id FROM WALLPAPERS ORDER BY date fetch FIRST 20 PERCENT rows only)")
             }
         } catch (throwables: SQLException) {
-            log.warn("Query Error in cleanDB(): \n ${throwables.message}")
+            log.warn("Query Error in cleanDB(): \n {}", throwables.message)
         }
 
     }
@@ -162,7 +162,7 @@ class WallpaperDAO {
                 }
             }
         } catch (throwables: SQLException) {
-            log.warn("Query Error in getAllId(): \n${throwables.message}")
+            log.warn("Query Error in getAllId(): \n{}", throwables.message)
         }
         return arr
     }
@@ -176,7 +176,7 @@ class WallpaperDAO {
                 }
             }
         } catch (throwables: SQLException) {
-            log.warn("Query Error in getAllWallpapers(): \n${throwables.message}")
+            log.warn("Query Error in getAllWallpapers(): \n{}", throwables.message)
             if (throwables.cause!!.javaClass == InvalidClassException::class.java) {
                 log.warn("Detected incompatible objects in DB, erasing the entire DB")
                 erase()

@@ -108,9 +108,9 @@ object Settings {
         bannedList.add(wallpaper.id)
         if (!keepBlacklist) {
             if (wallpaper.delete()) {
-                log.info("Banned ${wallpaper.id} image removed.")
+                log.info("Banned {} image removed.", wallpaper.id)
             } else {
-                log.info("Banned ${wallpaper.id} image was not removed.")
+                log.info("Banned {} image was not removed.", wallpaper.id)
             }
         }
     }
