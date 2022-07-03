@@ -1,24 +1,22 @@
 package com.mamiglia.gui;
 
+import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.formdev.flatlaf.FlatLaf;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import com.mamiglia.db.WallpaperDAO;
 import com.mamiglia.settings.*;
-import com.mamiglia.utils.DisplayLogger;
 import com.formdev.flatlaf.FlatDarkLaf;
 
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
 import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
-import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
@@ -309,8 +307,13 @@ public class GUI extends JFrame {
 	public static void setLookFeel() {
 		try {
 			UIManager.put("Button.arc", 999);
+			UIManager.put("Component.arc", 5);
 			UIManager.put("ScrollBar.showButtons", false);
-			UIManager.setLookAndFeel(new FlatDarkLaf());
+			UIManager.put("Panel.border", null);
+			var fl = new FlatDarkLaf();
+			fl.setExtraDefaults(Collections.singletonMap("@accentColor", "#FF9B49"));
+			FlatLaf.setup(fl);
+			UIManager.setLookAndFeel(fl);
 
 			// Set System L&F
 //			UIManager.setLookAndFeel(
@@ -437,7 +440,7 @@ public class GUI extends JFrame {
 		panel5.add(panel8, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		keepCheckBox = new JCheckBox();
 		keepCheckBox.setInheritsPopupMenu(true);
-		keepCheckBox.setText("Keep wallpapers even after they're deleted from database?");
+		keepCheckBox.setText("Keep wallpapers even after RW won't use them anymore?");
 		keepCheckBox.setToolTipText("If checked wallpapers will be kept indefinetely. Pay attention to your disk space!");
 		panel8.add(keepCheckBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		final JPanel panel9 = new JPanel();
@@ -476,4 +479,5 @@ public class GUI extends JFrame {
 	public JComponent $$$getRootComponent$$$() {
 		return rootPane;
 	}
+
 }

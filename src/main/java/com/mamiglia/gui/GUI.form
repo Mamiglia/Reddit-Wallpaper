@@ -218,7 +218,7 @@
                     </constraints>
                     <properties>
                       <inheritsPopupMenu value="true"/>
-                      <text value="Keep wallpapers even after they're deleted from database?"/>
+                      <text value="Keep wallpapers even after RW won't use them anymore?"/>
                       <toolTipText value="If checked wallpapers will be kept indefinetely. Pay attention to your disk space!"/>
                     </properties>
                   </component>

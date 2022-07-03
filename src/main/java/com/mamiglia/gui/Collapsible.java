@@ -13,6 +13,8 @@ class Collapsible extends JPanel {
 	private static final ImageIcon COLLAPSE_ICO = new ImageIcon("src/main/resources/collapse_ico.png");
 	private static final ImageIcon EXPAND_ICO = new ImageIcon("src/main/resources/expand_ico.png");
 	private static final int BOTTOM_PADDING = 5;
+	private static final Color BACKGROUND_COLOR = new Color(48, 50, 52);
+	private static final Color ACCENT_COLOR = UIManager.getColor("Component.accentColor");
 	private boolean collapsed = true;
 	private JPanel bodyContainer;
 	private JButton btn;
@@ -27,10 +29,11 @@ class Collapsible extends JPanel {
 
 		bodyContainer.setVisible(false);
 		bodyContainer.setLayout(new BorderLayout());
-		root.setBorder(new LineBorder(new Color(48, 50, 52), 2, true));
+		root.setBorder(new LineBorder(BACKGROUND_COLOR, 2, true));
 		this.setBorder(new EmptyBorder(0, 0, BOTTOM_PADDING, 0));
 
-		root.setBackground(new Color(48, 50, 52));
+		root.setBackground(BACKGROUND_COLOR);
+
 
 		btn.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 		btn.setContentAreaFilled(false);
@@ -41,7 +44,7 @@ class Collapsible extends JPanel {
 
 	public void setTitle(String title) {
 		titleLabel.setText(title.substring(0, Math.min(40, title.length()))); //trimming is necessary
-		titleLabel.setForeground(new Color(74, 136, 199));
+		titleLabel.setForeground(ACCENT_COLOR);
 	}
 
 
@@ -95,7 +98,6 @@ class Collapsible extends JPanel {
 		head.setBackground(new Color(-13618636));
 		root.add(head, BorderLayout.NORTH);
 		titleLabel = new JLabel();
-		titleLabel.setForeground(new Color(-11892537));
 		titleLabel.setText("Title");
 		head.add(titleLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		btn = new JButton();
@@ -114,4 +116,5 @@ class Collapsible extends JPanel {
 	public JComponent $$$getRootComponent$$$() {
 		return root;
 	}
+
 }
