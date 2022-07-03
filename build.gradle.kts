@@ -8,6 +8,7 @@ plugins {
     kotlin("jvm") version "1.6.20-M1"
     kotlin("plugin.serialization") version "1.6.10"
     id("io.github.file5.guidesigner") version "1.0.1"
+//    id("org.springframework.boot") version "2.0.1.RELEASE"
     application
 }
 
@@ -37,7 +38,7 @@ dependencies {
         "com.jgoodies:forms:1.3.0"
     )
 
-    runtimeOnly("com.h2database:h2:2.1.212")
+    runtimeOnly("com.h2database:h2:+")
 
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
@@ -45,6 +46,10 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
+    implementation("org.apache.logging.log4j:log4j-api:+")
+    implementation("org.apache.logging.log4j:log4j-core:+")
+    implementation("org.apache.logging.log4j:log4j-slf4j-impl:+")
+
 }
 
 

@@ -7,9 +7,11 @@ import com.mamiglia.utils.GetNewWallpaper;
 import com.mamiglia.utils.SetNewWallpaper;
 import com.mamiglia.wallpaper.Wallpaper;
 
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Background implements Runnable {
 	//Singleton class
@@ -18,7 +20,7 @@ public class Background implements Runnable {
 	// 2 - Sleep X time
 	// 3 - repeat
 	// until program is stopped
-	private static final Logger log = DisplayLogger.getInstance("Background service");
+	private static final Logger log = LoggerFactory.getLogger("Background service");
 	private static final Background uniqueInstance = new Background();
 	private boolean stopped = false;
 
@@ -35,9 +37,9 @@ public class Background implements Runnable {
 
 	/* Changes wallpaper to a single destination (remember that a single destination could contain multiple monitors */
 	public void changeWallpaper(Destination dest) {
-		log.log(Level.INFO, ()->"Changing wallpaper for destination " + dest.getName());
+		log.info("Changing wallpaper for destination {}", dest.getName());
 		if (dest.getScreens().isEmpty() || dest.getSources().isEmpty()) {
-			log.log(Level.WARNING, "Wallpaper not changed for destination " + dest.getName() + " because it has no sources or monitors associated");
+			log.warn("Wallpaper not changed for destination {}", dest.getName() + " because it has no sources or monitors associated");
 			dest.updateLastChange();
 			return;
 		}
@@ -47,7 +49,7 @@ public class Background implements Runnable {
 		try {
 			t1.join();
 		} catch (InterruptedException e) {
-			log.log(Level.SEVERE, "Thread GetNewWallpaper was interrupted by unknown error");
+			log.error("Thread GetNewWallpaper was interrupted by unknown error");
 		}
 		dest.setCurrent(g.getResult());
 
@@ -57,7 +59,7 @@ public class Background implements Runnable {
 		try {
 			t2.join();
 		} catch (InterruptedException e) {
-			log.log(Level.SEVERE, "Thread SetNewWallpaper was interrupted by unknown error");
+			log.error("Thread SetNewWallpaper was interrupted by unknown error");
 		}
 		dest.updateLastChange();
 
@@ -72,7 +74,7 @@ public class Background implements Runnable {
 			try {
 				Thread.sleep(residualTime);
 			} catch (InterruptedException e) {
-				log.log(Level.INFO, "Sleep is interrupted");
+				log.info("Sleep is interrupted");
 			}
 			Settings.INSTANCE.writeSettings();
 			if (!stopped) {
@@ -80,7 +82,7 @@ public class Background implements Runnable {
 			}
 
 		}
-		log.log(Level.INFO, "Background Service has been stopped as requested");
+		log.info("Background Service has been stopped as requested");
 	}
 
 	private Long getShortestTimer() {
@@ -95,7 +97,7 @@ public class Background implements Runnable {
 
 	private void changeWallpapers() {
 		for (Destination dest : Settings.INSTANCE.getDests()) {
-			log.log(Level.FINER, () ->"Destination " + dest.getName() + "has still "+ dest.getResidualTime()+ " milliseconds left");
+			log.debug("Destination {} has still {} milliseconds left", dest.getName(), dest.getResidualTime());
 			if (dest.isTimeElapsed())
 				changeWallpaper(dest);
 		}

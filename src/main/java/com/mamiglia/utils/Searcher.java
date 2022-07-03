@@ -11,18 +11,20 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.mamiglia.settings.SettingsKt.REG_WS;
 
 class Searcher {
 	private final Set<Source> sources;
 	private Set<Wallpaper> proposed;
-	private static final Logger log = DisplayLogger.getInstance("Searcher");
+	private static final Logger log = LoggerFactory.getLogger("Searcher");
 	private static final int QUERY_SIZE = 50;
 
 	public Searcher(Set<Source> sources) {
@@ -66,7 +68,7 @@ class Searcher {
 		//or "flair:() "? Will it just break the program? Is this some sort of hijackable thing?
 		//I don't know for I myself am too dumb - Don't be so hard on yourself <3 - Thanks bro <3
 
-		log.log(Level.INFO, () -> "Search Query for source " + src.getName() + " is: "+ strQuery);
+		log.info("Search Query for source {}", src.getName() + " is: "+ strQuery);
 		return strQuery.toString();
 	}
 
@@ -79,7 +81,7 @@ class Searcher {
 		if (proposed == null) {
 			proposed= new HashSet<>();
 			if (sources.isEmpty()) {
-				log.log(Level.SEVERE, "Sources list is void");
+				log.error("Sources list is void");
 				return null;
 			}
 			for (Source src: sources) {
@@ -118,7 +120,7 @@ class Searcher {
 		boolean is_over_18;
 
 		if (rawData.contains("error")) { // FIX What happens if someone puts "error" in the title of their post?
-			log.log(Level.WARNING, "Reddit returned an error:\n" + rawData);
+			log.warn("Reddit returned an error:\n{}", rawData);
 			return res; // res is void at this stage
 		}
 
@@ -130,7 +132,7 @@ class Searcher {
 			// If the post isn't an image, we don't want it
 			if (child.keySet().contains("post_hint")) { // gallaries don't have a post hint
 				if (!child.getString("post_hint").equals("image")) {
-					log.log(Level.FINER, "This post isn't a valid wallpaper. Skipping.");
+					log.debug("This post isn't a valid wallpaper. Skipping.");
 					continue;
 				}
 			}
@@ -174,14 +176,14 @@ class Searcher {
 
 			// if the url doesn't have a file extension (a web page)
 			if (!(url.matches("(.*)\\.\\w+"))) {
-				log.log(Level.FINER, "This post isn't a valid wallpaper. Skipping.");
+				log.debug("This post isn't a valid wallpaper. Skipping.");
 				continue;
 			}
 
 			// preview keyword is required for the rest of the json handling. If preview is missing the program will
 			// throw an error. Easiest just to exclude these results
 			if (!child.keySet().contains("preview")) {
-				log.log(Level.FINER, "This entry is problematic. Skipping.");
+				log.debug("This entry is problematic. Skipping.");
 				continue;
 			}
 
@@ -242,14 +244,11 @@ class Searcher {
 		if ((width > x || height > y) || // image doesn't meet resolution
 				(ratio != (float) x/y && dest.getRatioLimit() == RATIO_LIMIT.STRICT) || // image doesn't meet exact screen ratio
 				(((ratio > 1 && 1 > (float) x/y) || (ratio < 1 && 1 < (float) x/y)) && dest.getRatioLimit() == RATIO_LIMIT.RELAXED)) { // image isn't somewhere between screen ratio and square
-			log.log(Level.FINE, () ->
-				"Detected wallpaper not compatible with screen dimensions: "
-					+ x + "x" + y + " ratio: " + x/y
-					+  " Instead of "
-					+ width + "x" + height + " ratio: " + ratio
-					+ ". Searching for another..."
+			log.debug(
+					"Detected wallpaper not compatible with screen dimensions: {}x{} ratio: {} Instead of {}x{} ratio: {}. Searching for another...",
+					x, y, x / y, width, height, ratio
 				);
-			log.log(Level.FINER, () -> "Wallpaper rejected was: " + url);
+			log.debug("Wallpaper rejected was: {}", url);
 			// if the image is rejected
 			return true;
 		}

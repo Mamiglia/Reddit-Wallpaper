@@ -84,7 +84,7 @@ public class DestGUI extends Collapsible {
 		for (int i = 0; i < monitorList.length; i++) {
 			monitorList[i].setSelected(dest.getScreens().contains(i));
 		}
-		GUI.log.log(Level.FINE, "Destination" + dest.getName() + "loaded");
+		GUI.log.debug("Destination{}", dest.getName() + "loaded");
 	}
 
 	private void saveData() {
@@ -98,7 +98,7 @@ public class DestGUI extends Collapsible {
 				dest.getScreens().add(i);
 			}
 		}
-		GUI.log.log(Level.FINE, "Destination " + dest.getName() + " Saved");
+		GUI.log.debug("Destination {}", dest.getName() + " Saved");
 	}
 
 	private void createUIComponents() {

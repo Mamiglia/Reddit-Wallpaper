@@ -8,12 +8,13 @@ import com.mamiglia.wallpaper.Wallpaper;
 import java.io.IOException;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GetNewWallpaper implements Runnable {
 	// This Functor is the main class that runs all the other needed in a wallpaper selection and download
 	private boolean executed = false;
-	private static final Logger log = DisplayLogger.getInstance("Get New Wallpaper");
+	private static final Logger log = LoggerFactory.getLogger("Get New Wallpaper");
 	public static final Wallpaper ERROR_VALUE = null;
 	private final Set<Source> sources;
 	private final Destination dest;
@@ -36,7 +37,7 @@ public class GetNewWallpaper implements Runnable {
 		try {
 			wallpapers = s.getSearchResults();
 		} catch (IOException e) {
-			log.log(Level.WARNING, "Couldn't download the object, Internet error or Invalid input");
+			log.warn("Couldn't download the object, Internet error or Invalid input");
 		}
 
 		//SELECTOR
@@ -45,7 +46,7 @@ public class GetNewWallpaper implements Runnable {
 		try {
 			selector = new Selector(wallpapers, dest);
 		} catch (IOException e) {
-			log.log(Level.SEVERE, "Loading DB is impossible. Aborting wallpaper set up");
+			log.error("Loading DB is impossible. Aborting wallpaper set up");
 			abort();
 			return;
 		}
@@ -57,28 +58,28 @@ public class GetNewWallpaper implements Runnable {
 				try {
 					result.download();
 				} catch (IOException e) {
-					log.log(Level.SEVERE, "Couldn't download the image");
-					log.log(Level.FINER, e.getMessage());
+					log.error("Couldn't download the image");
+					log.debug(e.getMessage());
 				}
 			}
-			log.log(Level.FINER, () -> "GetNewWallpaper selected:\n" + result);
+			log.debug("GetNewWallpaper selected:\n {}", result);
 		}
 		if (result == null) {
-			log.log(Level.SEVERE, "The selection process found no wallpaper");
+			log.error("The selection process found no wallpaper");
 			abort();
 		}
 	}
 
 	private void abort() {
-		log.log(Level.INFO, "Something went wrong: couldn't download or select a new wallpaper");
+		log.info("Something went wrong: couldn't download or select a new wallpaper");
 		result = ERROR_VALUE;
 	}
 
 	public Wallpaper getResult() {
 		if (!executed) {
-			log.log(Level.INFO, "Result was requested but the functor was never executed");
+			log.info("Result was requested but the functor was never executed");
 		} else if (result == null) {
-			log.log(Level.INFO, "No wallpaper was selected.");
+			log.info("No wallpaper was selected.");
 		}
 		return result;
 	}

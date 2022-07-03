@@ -11,7 +11,8 @@ import com.sun.jna.Library;
 import com.sun.jna.Native;
 import java.io.InputStreamReader;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.COM.COMException;
@@ -24,7 +25,7 @@ import com.sun.jna.win32.*;
 import com.sun.jna.Platform;
 
 public class SetNewWallpaper implements Runnable {
-    private static final Logger log = DisplayLogger.getInstance("SetNewWallpaper");
+    private static final Logger log = LoggerFactory.getLogger("SetNewWallpaper");
     private boolean executed = false;
     private final Wallpaper wp;
     private final Destination dest;
@@ -40,16 +41,16 @@ public class SetNewWallpaper implements Runnable {
         executed = true;
 
         if (wp== null) {
-            log.log(Level.SEVERE, "No wallpaper was found, aborting");
+            log.error("No wallpaper was found, aborting");
             return;
         }
 
         if (!wp.isDownloaded()) {
-            log.log(Level.FINE, "Wallpaper file not found, downloading...");
+            log.debug("Wallpaper file not found, downloading...");
             try {
                 wp.download();
             } catch (IOException e) {
-                log.log(Level.SEVERE, "Couldn't download file");
+                log.error("Couldn't download file");
             }
         }
         String wpPath = wp.getPath().toAbsolutePath().toString();
@@ -60,7 +61,7 @@ public class SetNewWallpaper implements Runnable {
                 String de = identifyDE();
 
                 if (de == null) {
-                    log.log(Level.SEVERE, "Couldn't identify your Desktop Environment: {0}, {1}");
+                    log.error("Couldn't identify your Desktop Environment: {}", os);
                     break;
                 }
 
@@ -90,7 +91,9 @@ public class SetNewWallpaper implements Runnable {
                         executeProcess(
                             "gsettings set org.cinnamon.desktop.background picture-uri  \"file://" + wpPath + "\"");
                         break;
-                    default: log.log(Level.SEVERE, "Your DE is currently not supported: " + de);
+                    default:
+                        log.error("Your DE is currently not supported: {}", de);
+                        return;
                 }
                 break;
             case 2: // Other Windows
@@ -112,8 +115,9 @@ public class SetNewWallpaper implements Runnable {
 //            case 10: // GNU/kFreeBSD
 //            case 11: // NetBSD
             default: //
-                log.log(Level.WARNING, () -> "Can't recognize OS: " + os);
+                log.warn("Can't recognize OS: {}", os);
         }
+        log.info("Wallpaper set: \n{}", wp);
     }
 
     public static String identifyDE() {
@@ -124,17 +128,17 @@ public class SetNewWallpaper implements Runnable {
             de = System.getenv("XDG_CURRENT_DESKTOP").toLowerCase();
             flag = 1;
         } catch (NullPointerException e) {
-            log.log(Level.FINE, "Not identifiable with: echo $XDG_CURRENT_DESKTOP: {1}" + e);
+            log.debug("Not identifiable with: echo $XDG_CURRENT_DESKTOP: {}", e.getMessage());
         } catch (SecurityException e) {
-            log.log(Level.SEVERE, "Forbidden by security policy: " + e);
+            log.error("Forbidden by security policy: {}", e.getMessage());
         }
         try {
             de = System.getenv("$GDM_SESSION").toLowerCase();
             flag = 2;
         } catch (NullPointerException e) {
-            log.log(Level.FINE, "Not identifiable with: echo $GDM_SESSION" + e);
+            log.debug("Not identifiable with: echo $GDM_SESSION{}", e.getMessage());
         } catch (SecurityException e) {
-            log.log(Level.SEVERE, "Forbidden by security policy: " + e);
+            log.error("Forbidden by security policy: {}", e.getMessage());
         }
 
         if (de != null) {
@@ -159,12 +163,12 @@ public class SetNewWallpaper implements Runnable {
             } else {
                 switch (flag) {
                     case 1:
-                        log.log(Level.FINE, "Not identifiable with: echo $XDG_CURRENT_DESKTOP: {1}", de);
+                        log.debug("Not identifiable with: echo $XDG_CURRENT_DESKTOP: {}", de);
                         break;
                     case 2:
-                        log.log(Level.FINE, "Not identifiable with: echo $GDM_SESSION");
+                        log.debug("Not identifiable with: echo $GDM_SESSION");
                         break;
-                    default: log.log(Level.SEVERE, "Desktop environment not identifiable!");
+                    default: log.error("Desktop environment not identifiable!");
                 }
             }
         }
@@ -178,7 +182,7 @@ public class SetNewWallpaper implements Runnable {
         try {
             p = pb.start();
         } catch (IOException e) {
-            log.log(Level.WARNING, () -> "Error while executing command: " + s);
+            log.warn("Error while executing command: {}", s);
             return;
         }
         BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -206,14 +210,14 @@ public class SetNewWallpaper implements Runnable {
     }
 
     void windowsChange(String path) {
-        log.log(Level.FINE, () -> "Detected Windows, setting wallpaper in " + path);
+        log.trace("Detected Windows, setting wallpaper in {}", path);
         User32.INSTANCE.SystemParametersInfo(User32.SETDESKWALLPAPER, 0, path, 1);
-        log.log(Level.INFO, () -> "Wallpaper change is succesful for destination " + dest.getName());
+        log.info("Wallpaper change is successful for destination {}", dest.getName());
 
     }
 
     void windowsChange(String path, int i) {
-        log.log(Level.FINE, () -> "Detected Windows, setting wallpaper in " + path + " at screen " + i);
+        log.debug("Detected Windows, setting wallpaper in {} at screen {}", path, i);
 
         // Copy pasted from https://github.com/matthiasblaesing/JNA-Demos/blob/master/IDesktopWallpaper/src/main/java/eu/doppel_helix/dev/blaesing/IDesktopWallpaper/Main.java
         WinNT.HRESULT result = Ole32.INSTANCE.CoInitializeEx(Pointer.NULL, Ole32.COINIT_MULTITHREADED);
@@ -231,10 +235,10 @@ public class SetNewWallpaper implements Runnable {
             try {
                     String deviceName = wallpaper.GetMonitorDevicePathAt(i);
                     wallpaper.SetWallpaper(deviceName, path);
-                    log.log(Level.INFO, () -> "Wallpaper change is succesful for Monitor " + deviceName);
+                    log.info("Wallpaper change is successful for Monitor {}", deviceName);
 
             } catch(COMException e) {
-                log.log(Level.WARNING, () -> "COM failed to use windows API, maybe you don't have that many monitors?");
+                log.warn("COM failed to use windows API, maybe you don't have that many monitors?");
                 e.printStackTrace();
             } finally {
                 wallpaper.Release();

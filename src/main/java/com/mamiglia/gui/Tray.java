@@ -13,7 +13,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Tray {
 	private static Tray uniqueInstance;
@@ -28,7 +29,7 @@ public class Tray {
 	private final TrayIcon trayIcon;
 	private final SystemTray systemTray;
 
-	private final Logger log = DisplayLogger.getInstance("Tray");
+	private final Logger log = LoggerFactory.getLogger("Tray");
 
 	public static Tray getInstance() {
 		if (uniqueInstance == null) throw new RuntimeException("Tray isn't initialized!");
@@ -54,7 +55,7 @@ public class Tray {
 	public void startTray() {
 		if(!SystemTray.isSupported()){
 			//checking for support
-			log.log(Level.SEVERE, "System tray is not supported !!!");
+			log.error("System tray is not supported !!!");
 			return ;
 		}
 
@@ -63,7 +64,7 @@ public class Tray {
 		try{
 			systemTray.add(trayIcon);
 		}catch(AWTException awtException){
-			log.log(Level.SEVERE, "Cannot set the system tray");
+			log.error("Cannot set the system tray");
 		}
 	}
 
@@ -104,7 +105,7 @@ public class Tray {
 						dest.updateNext();
 						backThread.interrupt(); //interrupting it makes it wake up and load new wallpaper
 					} else {
-						log.log(Level.INFO, "\"Ban wallpaper\" button was pressed too early, still occupied changing wallpaper from the last time");
+						log.info("\"Ban wallpaper\" button was pressed too early, still occupied changing wallpaper from the last time");
 					}
 				});
 				trayPopupMenu.add(banItem);
@@ -116,7 +117,7 @@ public class Tray {
 					dest.updateNext();
 					backThread.interrupt(); //interrupting it makes it wake up and load new wallpaper
 				} else {
-					log.log(Level.INFO, "\"Change\" button was pressed too early, still occupied changing wallpaper from the last time");
+					log.info("\"Change\" button was pressed too early, still occupied changing wallpaper from the last time");
 				}
 				//interrupting the thread means waking it up. When it's awake it will automatically start searching for a new Wallpaper
 			});

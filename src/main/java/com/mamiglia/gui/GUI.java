@@ -3,10 +3,10 @@ package com.mamiglia.gui;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import com.mamiglia.db.WallpaperDAO;
 import com.mamiglia.settings.*;
 import com.mamiglia.utils.DisplayLogger;
 import com.formdev.flatlaf.FlatDarkLaf;
-import com.mamiglia.utils.WallpaperDAO;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -19,7 +19,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
 public class GUI extends JFrame {
@@ -46,7 +47,7 @@ public class GUI extends JFrame {
 	private JPanel associationPane;
 	private JButton refreshButton;
 	private JScrollPane associationScrollPane;
-	static final Logger log = DisplayLogger.getInstance("GUI");
+	static final Logger log = LoggerFactory.getLogger("GUI");
 	private final Thread backThread;
 
 	public GUI(Thread backThread) {
@@ -58,7 +59,7 @@ public class GUI extends JFrame {
 
 		setupUI();
 		loadSettings();
-		log.log(Level.FINER, "GUI started");
+		log.debug("GUI started");
 
 		//setResizable(false);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -90,7 +91,7 @@ public class GUI extends JFrame {
 		if (backThread.getState() == Thread.State.TIMED_WAITING) {
 			backThread.interrupt(); //interrupting it makes it wake up and load new wallpaper
 		} else {
-			log.log(Level.INFO, "Change button was pressed too early, still occupied changing wallpaper from the last time");
+			log.info("Change button was pressed too early, still occupied changing wallpaper from the last time");
 		}
 		//interrupting the thread means waking it up. When it's awake it will automatically start searching for a new Wallpaper
 
@@ -105,7 +106,7 @@ public class GUI extends JFrame {
 		try {
 			Desktop.getDesktop().open(new File(Settings.INSTANCE.getWallpaperPath()));
 		} catch (IOException e) {
-			log.log(Level.WARNING, e.getMessage());
+			log.warn(e.getMessage());
 		}
 	}
 
@@ -121,14 +122,14 @@ public class GUI extends JFrame {
 			if (wallpaperFolder.isDirectory() && !Settings.INSTANCE.getKeepWallpapers()) {
 				for (File walp : Objects.requireNonNull(wallpaperFolder.listFiles())) {
 					if (walp.delete()) {
-						log.log(Level.FINE, () -> walp + " deleted.");
+						log.debug(walp + " deleted.");
 					}
 				}
-				log.log(Level.FINE, () -> "Wallpapers successfully purged.");
+				log.debug("Wallpapers successfully purged.");
 			} else if (Settings.INSTANCE.getKeepWallpapers()) {
-				log.log(Level.FINE, () -> "Wallpapers have not been removed by preference.");
+				log.debug("Wallpapers have not been removed by preference.");
 			} else {
-				log.log(Level.FINE, () -> "Wallpapers directory is missing.");
+				log.debug("Wallpapers directory is missing.");
 			}
 		}
 	}

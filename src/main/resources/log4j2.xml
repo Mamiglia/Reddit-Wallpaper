@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+    <Properties>
+        <Property name="LOG_PATTERN">%-5p: %m%n</Property>
+        <Property name="HEAVY_LOG">%d{HH:mm:ss} %-5p %c{1} [%t] - %m%n</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${HEAVY_LOG}"/>
+        </Console>
+        <File name="easyLogFile" fileName="utility/log.txt" append="false">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </File>
+        <Async name="easyLog">
+            <AppenderRef ref="easyLogFile"/>
+        </Async>
+
+        <File name="hardLogFile" fileName="utility/extended_log.txt" append="false">
+            <PatternLayout pattern="${HEAVY_LOG}"/>
+        </File>
+        <Async name="hardLog">
+            <AppenderRef ref="hardLogFile"/>
+        </Async>
+    </Appenders>
+
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="hardLog" level="debug"/>
+            <AppenderRef ref="easyLog" level="info"/>
+        </Root>
+    </Loggers>
+</Configuration>

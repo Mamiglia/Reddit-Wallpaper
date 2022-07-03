@@ -1,28 +1,27 @@
 package com.mamiglia.utils;
 
+import com.mamiglia.db.WallpaperDAO;
 import com.mamiglia.settings.Destination;
 import com.mamiglia.settings.Settings;
 import com.mamiglia.wallpaper.Wallpaper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.sql.*;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 class Selector implements Runnable{
-    private static final Logger log = DisplayLogger.getInstance("Selector");
+    private static final Logger log = LoggerFactory.getLogger(Selector.class);
     private boolean executed = false;
     private Wallpaper result = null;
-    private final WallpaperDAO db = new WallpaperDAO();
+    private WallpaperDAO db = null;
     private final Set<Wallpaper> proposal;
     private final Destination dest;
 
     public Selector(Set<Wallpaper> proposal, Destination dest) throws IOException {
         this.proposal = proposal;
         this.dest = dest;
-
     }
 
     //TODO Add image title to image bottom left (possibly restrict to certain subreddits?)
@@ -32,7 +31,7 @@ class Selector implements Runnable{
         if (executed || proposal == null) return;
         executed = true;
 
-        if (!db.open()) return;
+        db = new WallpaperDAO();
 
         List<String> oldID = db.getAllId();
         var newWp = proposal.stream()
@@ -45,7 +44,7 @@ class Selector implements Runnable{
                 db.removeWp(wp.getID());
                 continue;
             }
-            log.log(Level.FINE, "Selected new wallpaper from those proposed");
+            log.debug("Selected new wallpaper from those proposed");
             db.insert(wp);
             db.close();
             this.result = wp;
@@ -53,9 +52,9 @@ class Selector implements Runnable{
         }
 		
         if (proposal.isEmpty()) {
-            log.log(Level.WARNING, "Not enough new wallpapers were proposed, setting from recent wallpapers. Maybe your query is too restrictive?");
+            log.warn("Not enough new wallpapers were proposed, setting from recent wallpapers. Maybe your query is too restrictive?");
         } else if (newWp.isEmpty()) {
-            log.log(Level.INFO, "No unused or fitting wallpapers were found, setting from the oldest of those found");
+            log.info("No unused or fitting wallpapers were found, setting from the oldest of those found");
         }
 
         // OR Not enough unused wallpapers are found //select oldest used wallpapers in the list
@@ -69,18 +68,17 @@ class Selector implements Runnable{
             }
         }
         if (result == null) {
-            log.log(Level.WARNING, "Database is void, no wallpaper can be set.");
+            log.warn("Database is void, no wallpaper can be set.");
         }
-        System.out.println(db.show());
         db.close();
 
     }
 
     public Wallpaper getResult() {
         if (!executed) {
-            log.log(Level.INFO, "Result was requested but the functor was never executed");
+            log.info("Result was requested but the functor was never executed");
 		} else if (result == null) {
-            log.log(Level.INFO, "Selector didn't select any wallpapers");
+            log.info("Selector didn't select any wallpapers");
         }
         return result;
     }

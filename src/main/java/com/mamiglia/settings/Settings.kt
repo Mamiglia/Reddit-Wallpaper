@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.mamiglia.settings
 
 import com.mamiglia.utils.DisplayLogger
@@ -6,6 +8,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.slf4j.LoggerFactory
 import java.awt.GraphicsDevice
 import java.awt.GraphicsEnvironment
 import java.awt.HeadlessException
@@ -25,7 +28,7 @@ object Settings {
     var wallpaperPath = "Saved-Wallpapers" // path to wallpaper folder
 
     private val bannedList: MutableSet<String> = mutableSetOf() // the bannedList is kept until the pc is turned off, then it gets resetted
-    private val log = DisplayLogger.getInstance("Settings")
+    private val log = LoggerFactory.getLogger("Settings")
     val sources: MutableList<Source>  = mutableListOf()
     val dests: MutableList<Destination> = mutableListOf()
 
@@ -36,7 +39,7 @@ object Settings {
         get() = try {
             GraphicsEnvironment.getLocalGraphicsEnvironment().screenDevices
         } catch (e: HeadlessException) {
-            log.log(Level.SEVERE, "Could not get screens: " + e.message)
+            log.error("Could not get screens: " + e.message)
             arrayOf()
         }
     val monitorsNumber
@@ -48,11 +51,11 @@ object Settings {
 
 
     init {
-        log.log(Level.INFO, "Setting singleton invoked")
+        log.info("Setting singleton invoked")
         try {
             readSettings()
         } catch (e: Exception) { // I would like to use a more specific exception, but i cannot find JsonDecodingException
-            log.log(Level.WARNING, "Settings file is corrupted, cannot read it, starting with default settings: $e")
+            log.warn("Settings file is corrupted, cannot read it, starting with default settings: $e")
         }
         if (sources.isEmpty()) {
             sources.add(Source()) //add default source
@@ -78,7 +81,7 @@ object Settings {
         file.writeText(Json.encodeToString(keepWallpapers) + '\n')
         file.appendText(Json.encodeToString(keepBlacklist)+ '\n')
         file.appendText(Json.encodeToString(maxDatabaseSize)+ '\n')
-        log.log(Level.INFO, "Settings saved")
+        log.info("Settings saved")
     }
 
     fun readSettings() {
@@ -98,16 +101,16 @@ object Settings {
         for (d in dests) {
             d.sources = d.sources.intersect(sources) as MutableSet<Source>
         }
-        log.log(Level.INFO, "Setting read from files")
+        log.info("Setting read from files")
     }
 
     fun banWallpaper(wallpaper: Wallpaper) {
         bannedList.add(wallpaper.id)
         if (!keepBlacklist) {
             if (wallpaper.delete()) {
-                log.log(Level.INFO, "Banned ${wallpaper.id} image removed.")
+                log.info("Banned ${wallpaper.id} image removed.")
             } else {
-                log.log(Level.INFO, "Banned ${wallpaper.id} image was not removed.")
+                log.info("Banned ${wallpaper.id} image was not removed.")
             }
         }
     }

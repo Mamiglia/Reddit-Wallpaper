@@ -32,7 +32,7 @@ class Act implements ActionListener {
 				frame.folderPicker();
 				break;
 			default:
-				GUI.log.log(Level.SEVERE, "Unrecognised button");
+				GUI.log.error("Unrecognised button");
 
 		}
 	}

@@ -59,7 +59,7 @@ class SourceGUI extends Collapsible {
 		sortSelection.setSelectedItem(src.getSearchBy());
 		scoreField.setValue(src.getMinScore());
 		nsfwSlider.setValue(src.getNsfwLevel().getValue());
-		GUI.log.log(Level.FINE, () -> "Source " + src.getName() + " loaded");
+		GUI.log.debug("Source {}", src.getName() + " loaded");
 
 	}
 
@@ -80,7 +80,7 @@ class SourceGUI extends Collapsible {
 		src.setSearchBy((SEARCH_BY) sortSelection.getSelectedItem());
 		src.setMinScore((Integer) scoreField.getValue());
 		src.setNsfwLevel(NSFW_LEVEL.valueOf(nsfwSlider.getValue()));
-		GUI.log.log(Level.FINE, () -> "Source " + src.getName() + " saved");
+		GUI.log.debug("Source {}", src.getName() + " saved");
 	}
 
 	private void createUIComponents() {
