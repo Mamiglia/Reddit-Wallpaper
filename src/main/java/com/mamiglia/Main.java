@@ -13,7 +13,6 @@ public class Main {
 
 	public static void main(String []args) {
 		System.out.println("Main Thread started");
-		Settings s = Settings.INSTANCE;
 
 		Background b = Background.getInstance();
 		Thread bThread = new Thread(b);
