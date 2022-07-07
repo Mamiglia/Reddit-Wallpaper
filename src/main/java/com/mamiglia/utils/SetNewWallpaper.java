@@ -51,6 +51,7 @@ public class SetNewWallpaper implements Runnable {
                 wp.download();
             } catch (IOException e) {
                 log.error("Couldn't download file");
+                return;
             }
         }
         String wpPath = wp.getPath().toAbsolutePath().toString();
@@ -116,8 +117,10 @@ public class SetNewWallpaper implements Runnable {
 //            case 11: // NetBSD
             default: //
                 log.warn("Can't recognize OS: {}", os);
+                return;
         }
         log.info("Wallpaper set: \n{}", wp);
+        System.gc();
     }
 
     public static String identifyDE() {
