@@ -30,7 +30,7 @@ Saved-Wallpapers/
 out/
 wallpapers/
 utility/
-META-INF/
+src/main/java/META-INF/
 
 *.iml
 Test.java
