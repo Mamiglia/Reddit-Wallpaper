@@ -8,8 +8,10 @@ import com.mamiglia.wallpaper.Wallpaper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.HashSet;
@@ -40,21 +42,25 @@ class Searcher {
 		//Query now builds a multireddit out of listed subreddits, this should prevent issues with very large lists of subs
 		strQuery.append(String.join("+", src.getSubreddits()).replaceAll(REG_WS, ""));
 
-		strQuery.append("/search.json?q=(");
+		strQuery.append("/search.json?q=");
 
 		// Subreddit selection is made through the multireddit build
 
+		var insideQuery = new StringBuilder("(");
+
 		if (!src.getTitles().isEmpty()) {
-			strQuery.append("title:(\"")
+			insideQuery.append("title:(\"")
 					.append(String.join("\" OR \"", src.getTitles()))
 					.append("\")");
 		}
 
 		if (!src.getFlairs().isEmpty()) {
-			strQuery.append("flair:(\"")
+			insideQuery.append(" flair:(\"")
 					.append(String.join("\" OR \"", src.getFlairs()))
 					.append("\")");
 		}
+		insideQuery.append(")");
+		strQuery.append(encodeValue(insideQuery.toString()));
 
 		strQuery.append(")&self:no" //this means no text-only posts
 				+ "&sort=").append(src.getSearchBy().getValue() //how to sort them (hot, new ...)
@@ -256,4 +262,12 @@ class Searcher {
 		return false;
 	}
 
+
+	private static String encodeValue(String value) {
+		try {
+			return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
+		} catch (UnsupportedEncodingException ex) {
+			throw new RuntimeException(ex.getCause());
+		}
+	}
 }

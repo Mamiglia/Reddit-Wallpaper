@@ -38,6 +38,7 @@ public class GetNewWallpaper implements Runnable {
 			wallpapers = s.getSearchResults();
 		} catch (IOException e) {
 			log.warn("Couldn't download the object, Internet error or Invalid input");
+			log.debug("{}", e.getMessage());
 		}
 
 		//SELECTOR
