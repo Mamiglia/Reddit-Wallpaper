@@ -15,6 +15,8 @@ import java.nio.file.StandardCopyOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.mamiglia.settings.SettingsKt.HOURS_TO_MILLIS;
+
 public class Tray {
 	private static Tray uniqueInstance;
 	public static final String PATH_TO_TRAY_ICON = "tray_icon.png";
@@ -96,6 +98,12 @@ public class Tray {
 					}
 				});
 				trayPopupMenu.add(saveItem);
+
+				MenuItem pinItem = new MenuItem("Pin wallpaper");
+				pinItem.addActionListener(e -> {
+					dest.setResidualTime((long) (Settings.INSTANCE.getPinTime() * HOURS_TO_MILLIS));
+				});
+				trayPopupMenu.add(pinItem);
 
 				MenuItem banItem = new MenuItem("Ban wallpaper");
 				banItem.addActionListener(e -> {

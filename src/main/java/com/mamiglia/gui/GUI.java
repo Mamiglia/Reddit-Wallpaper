@@ -26,6 +26,7 @@ public class GUI extends JFrame {
 	private JTextArea logArea;
 	private JButton changeNowButton;
 	private JSpinner dbSizeField;
+	private JSpinner pinTimeField;
 	private JCheckBox keepCheckBox;
 	private JCheckBox blacklistCheckBox;
 	private JPanel logTab;
@@ -74,6 +75,7 @@ public class GUI extends JFrame {
 		blacklistCheckBox.setSelected(Settings.INSTANCE.getKeepBlacklist());
 		notificationsCheckBox.setSelected(Settings.INSTANCE.getDisplayNotification());
 		dbSizeField.setValue(Settings.INSTANCE.getMaxDatabaseSize());
+		pinTimeField.setValue(Settings.INSTANCE.getPinTime());
 		wallpaperPathText.setText(Settings.INSTANCE.getWallpaperPath());
 	}
 
@@ -161,6 +163,7 @@ public class GUI extends JFrame {
 				Settings.INSTANCE.setDisplayNotification(notificationsCheckBox.isSelected()));
 
 		dbSizeField.addChangeListener(e -> Settings.INSTANCE.setMaxDatabaseSize((Integer) dbSizeField.getValue()));
+		pinTimeField.addChangeListener(e -> Settings.INSTANCE.setPinTime((Double) pinTimeField.getValue()));
 
 		destScrollBar.getVerticalScrollBar().setUnitIncrement(14);
 		srcScrollBar.getVerticalScrollBar().setUnitIncrement(14);
@@ -267,6 +270,8 @@ public class GUI extends JFrame {
 		// custom create
 		SpinnerNumberModel s = new SpinnerNumberModel(50, 5, 10000, 1);
 		dbSizeField = new JSpinner(s);
+		s = new SpinnerNumberModel(24.0, -1.0, 1000.0, 1.0);
+		pinTimeField = new JSpinner(s);
 	}
 
 	private void showLog() {
@@ -412,7 +417,7 @@ public class GUI extends JFrame {
 		final Spacer spacer1 = new Spacer();
 		panel4.add(spacer1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 		final JPanel panel5 = new JPanel();
-		panel5.setLayout(new GridLayoutManager(6, 1, new Insets(0, 0, 0, 0), -1, -1));
+		panel5.setLayout(new GridLayoutManager(7, 1, new Insets(0, 0, 0, 0), -1, -1));
 		tabbedPane.addTab("Settings", panel5);
 		final JPanel panel6 = new JPanel();
 		panel6.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
@@ -430,7 +435,7 @@ public class GUI extends JFrame {
 		resetButton.setToolTipText("Safely erases database file and all the wallpapers in the folder unless above box is checked");
 		panel6.add(resetButton);
 		final Spacer spacer2 = new Spacer();
-		panel5.add(spacer2, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		panel5.add(spacer2, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 		final JPanel panel7 = new JPanel();
 		panel7.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		panel7.setToolTipText("If checked wallpapers will be kept indefinetely. Pay attention to your disk space!");
@@ -469,11 +474,26 @@ public class GUI extends JFrame {
 		panel9.add(changeDirectoryButton);
 		final JPanel panel10 = new JPanel();
 		panel10.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		panel10.setToolTipText("you'll be notified for each wallpaper change");
 		panel5.add(panel10, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		notificationsCheckBox = new JCheckBox();
 		notificationsCheckBox.setText("Display notifications");
 		notificationsCheckBox.setToolTipText("you'll be notified for each wallpaper change");
 		panel10.add(notificationsCheckBox);
+		final JPanel panel11 = new JPanel();
+		panel11.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		panel11.setToolTipText("Set the time for the wallpaper to remain the same after being pinned. A value of -1 means until \"change\" button is voluntarly pressed");
+		panel5.add(panel11, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		final JLabel label3 = new JLabel();
+		label3.setText("Pinned time");
+		label3.setToolTipText("Wallpapers may occupy much disk space. So only a certain number of wallpapers are kept, those exceeding will be eliminated");
+		panel11.add(label3);
+		pinTimeField.setInheritsPopupMenu(true);
+		pinTimeField.setToolTipText("Set the time for the wallpaper to remain the same after being pinned. A value of -1 means until \"change\" button is voluntarly pressed");
+		panel11.add(pinTimeField);
+		final JLabel label4 = new JLabel();
+		label4.setText("hours");
+		panel11.add(label4);
 		logTab = new JPanel();
 		logTab.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
 		tabbedPane.addTab("Log", logTab);

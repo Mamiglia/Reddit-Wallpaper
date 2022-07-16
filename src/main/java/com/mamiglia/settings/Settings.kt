@@ -19,6 +19,7 @@ private const val DESTS_SAVEFILE = "destinations.json"
 private const val SRCS_SAVEFILE = "sources.json"
 private const val SETTINGS_SAVEFILE = "settings.json"
 const val MIN_TO_MILLIS = 60000L
+const val HOURS_TO_MILLIS = 60 * MIN_TO_MILLIS
 
 @Serializable
 object Settings {
@@ -36,6 +37,7 @@ object Settings {
     var keepWallpapers = false //keep wallpapers after eliminating them from db?
     var keepBlacklist : Boolean = false
     var displayNotification : Boolean = true
+    var pinTime : Double = 24.0 // hours
     var maxDatabaseSize = 50
     val monitors: Array<GraphicsDevice>
         get() = try {

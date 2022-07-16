@@ -141,7 +141,7 @@
               </vspacer>
             </children>
           </grid>
-          <grid id="74f67" layout-manager="GridLayoutManager" row-count="6" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="74f67" layout-manager="GridLayoutManager" row-count="7" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
               <tabbedpane title="Settings"/>
@@ -183,7 +183,7 @@
               </grid>
               <vspacer id="8252d">
                 <constraints>
-                  <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                  <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
                 </constraints>
               </vspacer>
               <grid id="b6c8b" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
@@ -266,7 +266,9 @@
                 <constraints>
                   <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
-                <properties/>
+                <properties>
+                  <toolTipText value="you'll be notified for each wallpaper change"/>
+                </properties>
                 <border type="none"/>
                 <children>
                   <component id="544f7" class="javax.swing.JCheckBox" binding="notificationsCheckBox">
@@ -274,6 +276,37 @@
                     <properties>
                       <text value="Display notifications"/>
                       <toolTipText value="you'll be notified for each wallpaper change"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+              <grid id="954ce" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+                <constraints>
+                  <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <toolTipText value="Set the time for the wallpaper to remain the same after being pinned. A value of -1 means until &quot;change&quot; button is voluntarly pressed"/>
+                </properties>
+                <border type="none"/>
+                <children>
+                  <component id="b7c31" class="javax.swing.JLabel">
+                    <constraints/>
+                    <properties>
+                      <text value="Pinned time"/>
+                      <toolTipText value="Wallpapers may occupy much disk space. So only a certain number of wallpapers are kept, those exceeding will be eliminated"/>
+                    </properties>
+                  </component>
+                  <component id="fcb2f" class="javax.swing.JSpinner" binding="pinTimeField" custom-create="true">
+                    <constraints/>
+                    <properties>
+                      <inheritsPopupMenu value="true"/>
+                      <toolTipText value="Set the time for the wallpaper to remain the same after being pinned. A value of -1 means until &quot;change&quot; button is voluntarly pressed"/>
+                    </properties>
+                  </component>
+                  <component id="cabe0" class="javax.swing.JLabel">
+                    <constraints/>
+                    <properties>
+                      <text value="hours"/>
                     </properties>
                   </component>
                 </children>

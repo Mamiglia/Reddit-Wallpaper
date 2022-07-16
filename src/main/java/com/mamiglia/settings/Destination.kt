@@ -17,8 +17,15 @@ data class Destination(
     var sources : MutableSet<Source> = mutableSetOf(),
     @Transient var current: Wallpaper? = null
 ) {
-    val residualTime :Long
-        get() = - Instant.now().toEpochMilli() + lastChange + period* MIN_TO_MILLIS
+    var residualTime :Long
+        get() = - Instant.now().toEpochMilli() + lastChange + period*MIN_TO_MILLIS
+        set(value) {
+            lastChange = if (value>0)
+                Instant.now().toEpochMilli() + value- period*MIN_TO_MILLIS
+            else
+                Long.MAX_VALUE
+        }
+
 
     val isTimeElapsed :Boolean
         get() = residualTime < 1 * MIN_TO_MILLIS
