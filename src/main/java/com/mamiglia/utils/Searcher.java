@@ -62,7 +62,7 @@ class Searcher {
 		insideQuery.append(")");
 		strQuery.append(encodeValue(insideQuery.toString()));
 
-		strQuery.append(")&self:no" //this means no text-only posts
+		strQuery.append("&self:no" //this means no text-only posts
 				+ "&sort=").append(src.getSearchBy().getValue() //how to sort them (hot, new ...)
 		).append("&limit=").append(QUERY_SIZE //how many posts
 		).append("&t=").append(src.getMaxOldness().getValue() //how old can a post be at most
