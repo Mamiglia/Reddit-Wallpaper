@@ -1,6 +1,5 @@
 package com.mamiglia.gui;
 
-import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.FlatLaf;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -45,6 +44,7 @@ public class GUI extends JFrame {
 	private JPanel associationPane;
 	private JButton refreshButton;
 	private JScrollPane associationScrollPane;
+	private JCheckBox notificationsCheckBox;
 	static final Logger log = LoggerFactory.getLogger("GUI");
 	private final Thread backThread;
 
@@ -72,6 +72,7 @@ public class GUI extends JFrame {
 	void loadSettings() {
 		keepCheckBox.setSelected(Settings.INSTANCE.getKeepWallpapers());
 		blacklistCheckBox.setSelected(Settings.INSTANCE.getKeepBlacklist());
+		notificationsCheckBox.setSelected(Settings.INSTANCE.getDisplayNotification());
 		dbSizeField.setValue(Settings.INSTANCE.getMaxDatabaseSize());
 		wallpaperPathText.setText(Settings.INSTANCE.getWallpaperPath());
 	}
@@ -156,6 +157,9 @@ public class GUI extends JFrame {
 				Settings.INSTANCE.setKeepWallpapers(keepCheckBox.isSelected()));
 		blacklistCheckBox.addActionListener(e ->
 				Settings.INSTANCE.setKeepBlacklist(blacklistCheckBox.isSelected()));
+		notificationsCheckBox.addActionListener(e ->
+				Settings.INSTANCE.setDisplayNotification(notificationsCheckBox.isSelected()));
+
 		dbSizeField.addChangeListener(e -> Settings.INSTANCE.setMaxDatabaseSize((Integer) dbSizeField.getValue()));
 
 		destScrollBar.getVerticalScrollBar().setUnitIncrement(14);
@@ -408,7 +412,7 @@ public class GUI extends JFrame {
 		final Spacer spacer1 = new Spacer();
 		panel4.add(spacer1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 		final JPanel panel5 = new JPanel();
-		panel5.setLayout(new GridLayoutManager(5, 1, new Insets(0, 0, 0, 0), -1, -1));
+		panel5.setLayout(new GridLayoutManager(6, 1, new Insets(0, 0, 0, 0), -1, -1));
 		tabbedPane.addTab("Settings", panel5);
 		final JPanel panel6 = new JPanel();
 		panel6.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
@@ -426,7 +430,7 @@ public class GUI extends JFrame {
 		resetButton.setToolTipText("Safely erases database file and all the wallpapers in the folder unless above box is checked");
 		panel6.add(resetButton);
 		final Spacer spacer2 = new Spacer();
-		panel5.add(spacer2, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		panel5.add(spacer2, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 		final JPanel panel7 = new JPanel();
 		panel7.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		panel7.setToolTipText("If checked wallpapers will be kept indefinetely. Pay attention to your disk space!");
@@ -463,6 +467,13 @@ public class GUI extends JFrame {
 		changeDirectoryButton.setText("Change");
 		changeDirectoryButton.setToolTipText("Changes the folder");
 		panel9.add(changeDirectoryButton);
+		final JPanel panel10 = new JPanel();
+		panel10.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		panel5.add(panel10, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		notificationsCheckBox = new JCheckBox();
+		notificationsCheckBox.setText("Display notifications");
+		notificationsCheckBox.setToolTipText("you'll be notified for each wallpaper change");
+		panel10.add(notificationsCheckBox);
 		logTab = new JPanel();
 		logTab.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
 		tabbedPane.addTab("Log", logTab);

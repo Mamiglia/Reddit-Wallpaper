@@ -141,7 +141,7 @@
               </vspacer>
             </children>
           </grid>
-          <grid id="74f67" layout-manager="GridLayoutManager" row-count="5" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="74f67" layout-manager="GridLayoutManager" row-count="6" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
               <tabbedpane title="Settings"/>
@@ -183,7 +183,7 @@
               </grid>
               <vspacer id="8252d">
                 <constraints>
-                  <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                  <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
                 </constraints>
               </vspacer>
               <grid id="b6c8b" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
@@ -258,6 +258,22 @@
                     <properties>
                       <text value="Change"/>
                       <toolTipText value="Changes the folder"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+              <grid id="f51da" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+                <constraints>
+                  <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="544f7" class="javax.swing.JCheckBox" binding="notificationsCheckBox">
+                    <constraints/>
+                    <properties>
+                      <text value="Display notifications"/>
+                      <toolTipText value="you'll be notified for each wallpaper change"/>
                     </properties>
                   </component>
                 </children>

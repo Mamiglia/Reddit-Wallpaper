@@ -151,6 +151,15 @@ public class Tray {
 		trayIcon.setImageAutoSize(true);
 	}
 
+	public void notify(String title, String message) {
+		this.notify(title,message, TrayIcon.MessageType.INFO);
+	}
+
+	public void notify(String title, String message, TrayIcon.MessageType type) {
+		if (Settings.INSTANCE.getDisplayNotification())
+			trayIcon.displayMessage(title, message, type);
+	}
+
 	public static void openWebpage(String urlString) {
 		try {
 			Desktop.getDesktop().browse(new URL(urlString).toURI());

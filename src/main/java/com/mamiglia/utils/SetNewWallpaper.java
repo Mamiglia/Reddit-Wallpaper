@@ -1,5 +1,6 @@
 package com.mamiglia.utils;
 
+import com.mamiglia.gui.Tray;
 import com.mamiglia.settings.Destination;
 import com.mamiglia.settings.Settings;
 import com.mamiglia.wallpaper.Wallpaper;
@@ -120,6 +121,9 @@ public class SetNewWallpaper implements Runnable {
                 return;
         }
         log.info("Wallpaper set: \n{}", wp);
+        Tray.getInstance().notify(null, String.format("%s\nr/%s", wp.getTitle(), wp.getSubreddit()));
+        // computation ended, call to garbage collector
+        // I know that this is generally a bad practice, but at the end of the process I alwaus want to call the gc, plus I've tested and it effectively improves memory usage
         System.gc();
     }
 

@@ -35,6 +35,7 @@ object Settings {
 
     var keepWallpapers = false //keep wallpapers after eliminating them from db?
     var keepBlacklist : Boolean = false
+    var displayNotification : Boolean = true
     var maxDatabaseSize = 50
     val monitors: Array<GraphicsDevice>
         get() = try {
@@ -81,6 +82,7 @@ object Settings {
 
         file.writeText(Json.encodeToString(keepWallpapers) + '\n')
         file.appendText(Json.encodeToString(keepBlacklist)+ '\n')
+        file.appendText(Json.encodeToString(displayNotification)+ '\n')
         file.appendText(Json.encodeToString(maxDatabaseSize)+ '\n')
         log.info("Settings saved")
     }
@@ -95,7 +97,8 @@ object Settings {
         }
         keepBlacklist = Json.decodeFromString(lines[0]) //TODO find a better way to do this
         keepWallpapers = Json.decodeFromString(lines[1])  //FIX what happens if file is void? if there's no line there?
-        maxDatabaseSize = Json.decodeFromString(lines[2])
+        displayNotification = Json.decodeFromString(lines[2])  //FIX what happens if file is void? if there's no line there?
+        maxDatabaseSize = Json.decodeFromString(lines[3])
         sources.addAll(format.decodeFromString(File(PATH_TO_SAVEFOLDER+ SRCS_SAVEFILE).readText()))
         dests.addAll(format.decodeFromString(File(PATH_TO_SAVEFOLDER+ DESTS_SAVEFILE).readText()))
 
