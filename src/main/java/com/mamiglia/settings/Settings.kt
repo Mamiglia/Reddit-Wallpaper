@@ -128,6 +128,9 @@ object Settings {
     fun newSource() : Source {
         val new = Source()
         sources[new.id] = new
+        if (dests.size == 1) {
+            dests.iterator().next().addSource(new)
+        }
         return new
     }
 

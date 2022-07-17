@@ -79,7 +79,6 @@ data class Destination(
 
     }
 
-
     companion object {
         fun monitorName(g : GraphicsDevice) : String {
             return "${g.iDstring[g.iDstring.lastIndex]}_${g.displayMode.width}x${g.displayMode.height}"

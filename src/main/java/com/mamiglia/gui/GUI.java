@@ -176,6 +176,10 @@ public class GUI extends JFrame {
 			Settings.INSTANCE.newDest();
 			refreshListDest();
 		});
+		if (Settings.INSTANCE.getMonitorsNumber() == 1) {
+			addDestBtn.setEnabled(false);
+			addDestBtn.setToolTipText("Disabled since you possess only one monitor");
+		}
 		refreshGridAssociations();
 
 		this.setPreferredSize(new Dimension(this.getPreferredSize().width, this.getPreferredSize().height + SourceGUI.STANDARD_HEIGHT));
