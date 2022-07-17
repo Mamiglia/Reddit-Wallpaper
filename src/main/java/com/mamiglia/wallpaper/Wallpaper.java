@@ -13,7 +13,7 @@ import java.util.Objects;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public class Wallpaper implements Serializable {
-    private static final int MAX_TITLE_SIZE = 100;
+    private static final int MAX_TITLE_SIZE = 30;
     private final String id;
     private final File file;
     private final String title;
@@ -68,7 +68,12 @@ public class Wallpaper implements Serializable {
         return file.toPath();
     }
     public String getTitle() {
-        return title.split(",")[0];
+        var str = title.split(",")[0]
+                .replace('_', ' ')
+                .replaceAll("[^ \\w]", "")
+                .replaceAll("[0-9]{3,4} ?. ?[0-9]{3,4}", ""); // removes resolution infos
+
+        return str.substring(0, Math.min(MAX_TITLE_SIZE, str.length()));
     }
     public String getCompleteTitle() { return title;}
     public String getUrl() {
@@ -117,7 +122,7 @@ public class Wallpaper implements Serializable {
 
     public static String cleanTitle(String title) {
         title = title.replace(' ', '_')
-                .replaceAll("[\\W]", "");
+                .replaceAll("[^_\\w]", "");
         title = title.substring(0, Math.min(MAX_TITLE_SIZE, title.length()));
         return title;
     }
