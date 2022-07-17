@@ -1,13 +1,12 @@
 package com.mamiglia.settings
 
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import java.util.*
 
 @Serializable
 data class Source(
-    @Transient val id: UUID = UUID.randomUUID(),
+    val id: String = UUID.randomUUID().toString(),
     var titles: Set<String> = setOf(),
     var flairs: Set<String> = setOf(),
     var subreddits: Set<String> = setOf("wallpaper", "wallpapers"),

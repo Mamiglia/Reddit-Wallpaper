@@ -14,7 +14,7 @@ data class Destination(
     var screens: Set<Int> = setOf(),
     var ratioLimit: RATIO_LIMIT = RATIO_LIMIT.RELAXED,
     private var lastChange: Long = 0,  // TODO Should I use Date, Instant or some other time-specific class instead of millis from epoch?
-    var sources : MutableSet<Source> = mutableSetOf(),
+    var sourcesId : MutableSet<String> = mutableSetOf(),
     @Transient var current: Wallpaper? = null
 ) {
     var residualTime :Long
@@ -46,12 +46,18 @@ data class Destination(
     }
 
     fun addSource(src: Source) {
-        if (Settings.sources.contains(src))
-            sources.add(src)
+        if (Settings.sources.keys.contains(src.id))
+            sourcesId.add(src.id)
     }
 
     fun removeSource(src: Source) {
-        sources.remove(src)
+        sourcesId.remove(src.id)
+    }
+
+    fun getSources(): Set<Source>{
+        return HashSet<Source>(
+            Settings.sources.filterKeys { sourcesId.contains(it) }
+                .values)
     }
 
     var name :String = ""

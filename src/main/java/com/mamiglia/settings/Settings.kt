@@ -30,7 +30,7 @@ object Settings {
 
     private val bannedList: MutableSet<String> = mutableSetOf() // the bannedList is kept until the pc is turned off, then it gets resetted
     private val log = LoggerFactory.getLogger("Settings")
-    val sources: MutableList<Source>  = mutableListOf()
+    val sources: MutableMap<String,Source>  = mutableMapOf()
     val dests: MutableList<Destination> = mutableListOf()
 
     var keepWallpapers = false //keep wallpapers after eliminating them from db?
@@ -61,7 +61,8 @@ object Settings {
             log.warn("Settings file is corrupted, cannot read it, starting with default settings: $e")
         }
         if (sources.isEmpty()) {
-            sources.add(Source()) //add default source
+            val src = Source()
+            sources[src.id] = src //add default source
         }
         if (dests.isEmpty()) {
             dests.add(Destination()) // add default destination
@@ -100,12 +101,12 @@ object Settings {
         keepWallpapers = Json.decodeFromString(lines[1])  //FIX what happens if file is void? if there's no line there?
         displayNotification = Json.decodeFromString(lines[2])  //FIX what happens if file is void? if there's no line there?
         maxDatabaseSize = Json.decodeFromString(lines[3])
-        sources.addAll(format.decodeFromString(File(PATH_TO_SAVEFOLDER+ SRCS_SAVEFILE).readText()))
+        sources.putAll(format.decodeFromString(File(PATH_TO_SAVEFOLDER+ SRCS_SAVEFILE).readText()))
         dests.addAll(format.decodeFromString(File(PATH_TO_SAVEFOLDER+ DESTS_SAVEFILE).readText()))
 
-        for (d in dests) {
-            d.sources = d.sources.intersect(sources) as MutableSet<Source>
-        }
+//        for (d in dests) {
+//            d.sources = d.sources.intersect(sources) as MutableSet<Source>
+//        }
         log.info("Setting read from files")
     }
 
@@ -126,7 +127,7 @@ object Settings {
 
     fun newSource() : Source {
         val new = Source()
-        sources.add(new)
+        sources[new.id] = new
         return new
     }
 
@@ -137,9 +138,9 @@ object Settings {
     }
 
     fun removeSource(src: Source) {
-        sources.remove(src)
+        sources.remove(src.id)
         for (dest in dests) {
-            dest.sources.remove(src)
+            dest.sourcesId.remove(src.id)
         }
     }
 

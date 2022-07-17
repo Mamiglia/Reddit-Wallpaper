@@ -33,7 +33,7 @@ public class Background implements Runnable {
 	/* Changes wallpaper to a single destination (remember that a single destination could contain multiple monitors */
 	public void changeWallpaper(Destination dest) {
 		log.info("Changing wallpaper for destination {}", dest.getName());
-		if (dest.getScreens().isEmpty() || dest.getSources().isEmpty()) {
+		if (dest.getScreens().isEmpty() || dest.getSourcesId().isEmpty()) {
 			log.warn("Wallpaper not changed for destination {}", dest.getName() + " because it has no sources or monitors associated");
 			dest.updateLastChange();
 			return;

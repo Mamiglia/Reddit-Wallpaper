@@ -184,7 +184,7 @@ public class GUI extends JFrame {
 	private void refreshListSrc() {
 		generateList(
 				sourcesPane,
-				Settings.INSTANCE.getSources().stream().map(src -> new SourceGUI(src)).collect(Collectors.toList()),
+				Settings.INSTANCE.getSources().values().stream().map(src -> new SourceGUI(src)).collect(Collectors.toList()),
 				sourcesButtonsPane);
 	}
 
@@ -201,13 +201,13 @@ public class GUI extends JFrame {
 		int destNumber = Settings.INSTANCE.getDests().size();
 		int srcNumber = Settings.INSTANCE.getSources().size();
 		var tableData = new Object[srcNumber][destNumber + 1];
-		Iterator<Source> it = Settings.INSTANCE.getSources().iterator();
+		Iterator<Source> it = Settings.INSTANCE.getSources().values().iterator();
 
 		for (int i = 0; i < srcNumber; i++) {
 			Source src = it.next();
 			tableData[i][0] = src;
 			for (int j = 0; j < destNumber; j++) {
-				tableData[i][j + 1] = Settings.INSTANCE.getDests().get(j).getSources().contains(src);
+				tableData[i][j + 1] = Settings.INSTANCE.getDests().get(j).getSourcesId().contains(src);
 			}
 		}
 
