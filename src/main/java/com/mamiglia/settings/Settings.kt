@@ -13,7 +13,6 @@ import java.awt.GraphicsEnvironment
 import java.awt.HeadlessException
 import java.io.File
 import java.nio.file.Files
-import java.util.logging.Level
 
 private const val DESTS_SAVEFILE = "destinations.json"
 private const val SRCS_SAVEFILE = "sources.json"

@@ -74,7 +74,7 @@ class Searcher {
 		//or "flair:() "? Will it just break the program? Is this some sort of hijackable thing?
 		//I don't know for I myself am too dumb - Don't be so hard on yourself <3 - Thanks bro <3
 
-		log.info("Search Query for source {}", src.getName() + " is: "+ strQuery);
+		log.info("Search Query for source {} is: {}", src.getName(), strQuery);
 		return strQuery.toString();
 	}
 
@@ -136,9 +136,9 @@ class Searcher {
 			child = children.getJSONObject(i).getJSONObject("data");
 
 			// If the post isn't an image, we don't want it
-			if (child.keySet().contains("post_hint")) { // gallaries don't have a post hint
+			if (child.keySet().contains("post_hint")) { // it appears that galleries don't have a post hint
 				if (!child.getString("post_hint").equals("image")) {
-					log.debug("This post isn't a valid wallpaper. Skipping.");
+					log.debug("This post {} isn't a valid wallpaper. Skipping.", child.getString("permalink"));
 					continue;
 				}
 			}

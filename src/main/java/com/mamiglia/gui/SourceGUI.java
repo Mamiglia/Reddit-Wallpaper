@@ -9,7 +9,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.logging.Level;
 
 class SourceGUI extends Collapsible {
 	public static final int STANDARD_HEIGHT = 200; // this is just a rough estimate of the height in pixels
@@ -81,7 +80,8 @@ class SourceGUI extends Collapsible {
 		src.setSearchBy((SEARCH_BY) sortSelection.getSelectedItem());
 		src.setMinScore((Integer) scoreField.getValue());
 		src.setNsfwLevel(NSFW_LEVEL.valueOf(nsfwSlider.getValue()));
-		GUI.log.debug("Source {}", src.getName() + " saved");
+		GUI.log.debug("Source {} saved", src.getName());
+		loadData();
 	}
 
 	private void createUIComponents() {

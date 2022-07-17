@@ -123,7 +123,7 @@ public class GUI extends JFrame {
 			if (wallpaperFolder.isDirectory() && !Settings.INSTANCE.getKeepWallpapers()) {
 				for (File walp : Objects.requireNonNull(wallpaperFolder.listFiles())) {
 					if (walp.delete()) {
-						log.debug(walp + " deleted.");
+						log.debug("{} deleted.", walp);
 					}
 				}
 				log.debug("Wallpapers successfully purged.");
@@ -136,12 +136,10 @@ public class GUI extends JFrame {
 	}
 
 	private void setupUI() {
-		Act act = new Act(this);
-		//applyButton.addActionListener(act);
-		folderButton.addActionListener(act);
-		resetButton.addActionListener(act);
-		changeNowButton.addActionListener(act);
-		changeDirectoryButton.addActionListener(act);
+		folderButton.addActionListener(e -> displayFolder());
+		resetButton.addActionListener(e -> resetDB());
+		changeNowButton.addActionListener(e -> changeWallpaper(null));
+		changeDirectoryButton.addActionListener(e -> folderPicker());
 		tabbedPane.addChangeListener(changeEvent -> {
 			JTabbedPane src = (JTabbedPane) changeEvent.getSource();
 			int index = src.getSelectedIndex();
