@@ -207,7 +207,7 @@ public class GUI extends JFrame {
 			Source src = it.next();
 			tableData[i][0] = src;
 			for (int j = 0; j < destNumber; j++) {
-				tableData[i][j + 1] = Settings.INSTANCE.getDests().get(j).getSourcesId().contains(src);
+				tableData[i][j + 1] = Settings.INSTANCE.getDests().get(j).getSourcesId().contains(src.getId());
 			}
 		}
 
