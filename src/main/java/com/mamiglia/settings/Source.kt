@@ -12,7 +12,7 @@ data class Source(
     var subreddits: Set<String> = setOf("wallpaper", "wallpapers"),
     var searchBy: SEARCH_BY = SEARCH_BY.HOT,
     var nsfwLevel: NSFW_LEVEL = NSFW_LEVEL.ALLOW,
-    var minScore: Int = 15,
+    var minScore: Int = 30,
     var maxOldness:TIME = TIME.DAY,
 ) {
     @Transient

@@ -11,7 +11,7 @@ data class Destination(
     var height: Int = 1080,
     var width: Int = 1920,
     var period: Int = 15, //mins
-    var screens: Set<Int> = setOf(),
+    var screens: Set<Int> = setOf(0),
     var ratioLimit: RATIO_LIMIT = RATIO_LIMIT.RELAXED,
     private var lastChange: Long = 0,  // TODO Should I use Date, Instant or some other time-specific class instead of millis from epoch?
     var sourcesId : MutableSet<String> = mutableSetOf(),
