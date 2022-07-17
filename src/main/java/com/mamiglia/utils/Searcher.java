@@ -27,7 +27,7 @@ class Searcher {
 	private final Set<Source> sources;
 	private Set<Wallpaper> proposed;
 	private static final Logger log = LoggerFactory.getLogger("Searcher");
-	private static final int QUERY_SIZE = 50;
+	private static final int QUERY_SIZE = 100;
 
 	public Searcher(Set<Source> sources) {
 		this.sources = sources;
