@@ -1,7 +1,6 @@
 package com.mamiglia.wallpaper;
 
 import com.mamiglia.settings.Settings;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,17 +13,22 @@ import java.util.Objects;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public class Wallpaper implements Serializable {
-    private static final int MAX_TITLE_SIZE = 100;
+    private static final int MAX_TITLE_SIZE = 30;
     private final String id;
     private final File file;
     private final String title;
     private final String url;
     private final String postUrl;
+    private final int width;
+    private final int height;
 
 
-    public Wallpaper(String id, String title, String url, String postUrl) {
+
+    public Wallpaper(String id, String title, String url, String postUrl, int width, int height) {
         this.id = id;
         this.title = title;
+        this.width = width;
+        this.height = height;
         String format = url.replaceAll("^.*(?=\\.\\w+$)", "");
         file = new File(getWallpaperDirectory() + cleanTitle(title) + format);
         this.url = url;
@@ -40,22 +44,22 @@ public class Wallpaper implements Serializable {
     }
 
     public boolean isDownloaded() {
-        return !file.exists();
+        return file.exists();
     }
 
 
     // GETTERS
-//    public double getRatio() {
-//        return (double) getWidth() / (double) getHeight();
-//    }
-//
-//    public int getWidth() {
-//        return image.getWidth(null);
-//    }
-//
-//    public int getHeight() {
-//        return image.getHeight(null);
-//    }
+    public double getRatio() {
+        return (double) getWidth() / (double) getHeight();
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
 
     /**
         @return the absolute path of the wallpaper
@@ -64,10 +68,20 @@ public class Wallpaper implements Serializable {
         return file.toPath();
     }
     public String getTitle() {
-        return title;
+        var str = title.split(",")[0]
+                .replace('_', ' ')
+                .replaceAll("[^ \\w]", "")
+                .replaceAll("[0-9]{3,4} ?. ?[0-9]{3,4}", ""); // removes resolution infos
+
+        return str.substring(0, Math.min(MAX_TITLE_SIZE, str.length()));
     }
+    public String getCompleteTitle() { return title;}
     public String getUrl() {
         return url;
+    }
+    public String getSubreddit() {
+        return postUrl.split("/")[4];
+        //https://www.reddit.com/r/SUBREDDIT_NAME/comments/ID/POST_NAME/
     }
     public String getPostUrl() {
         return postUrl;
@@ -82,6 +96,9 @@ public class Wallpaper implements Serializable {
 //    }
     public String getID() {
         return id;
+    }
+    public Boolean isLandscape() {
+        return this.getRatio() > 1;
     }
 
     @Override
@@ -100,12 +117,12 @@ public class Wallpaper implements Serializable {
     }
 
     private static String getWallpaperDirectory() {
-        return Settings.getWallpaperPath() + File.separator;
+        return Settings.INSTANCE.getWallpaperPath() + File.separator;
     }
 
     public static String cleanTitle(String title) {
         title = title.replace(' ', '_')
-                .replaceAll("[\\W]", "");
+                .replaceAll("[^_\\w]", "");
         title = title.substring(0, Math.min(MAX_TITLE_SIZE, title.length()));
         return title;
     }

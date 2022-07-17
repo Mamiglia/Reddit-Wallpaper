@@ -18,6 +18,7 @@
 *.zip
 *.tar.gz
 *.rar
+*.exe
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
@@ -30,7 +31,7 @@ Saved-Wallpapers/
 out/
 wallpapers/
 utility/
-META-INF/
+src/main/java/META-INF/
 
 *.iml
 Test.java
@@ -41,3 +42,7 @@ autostartRW.bat
 
 /.gradle/
 /build/
+
+
+/.tmp.driveupload
+/.tmp.drivedownload

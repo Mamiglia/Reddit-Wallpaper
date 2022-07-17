@@ -4,18 +4,15 @@ import com.mamiglia.gui.Background;
 import com.mamiglia.gui.GUI;
 import com.mamiglia.gui.Tray;
 import com.mamiglia.settings.Settings;
-import com.mamiglia.utils.DisplayLogger;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Main {
-	private static final Logger log = DisplayLogger.getInstance("Main");
+	private static final Logger log = LoggerFactory.getLogger("Main");
 
 	public static void main(String []args) {
 		System.out.println("Main Thread started");
-		Settings s = Settings.getInstance();
-		s.readSettings();
 
 		Background b = Background.getInstance();
 		Thread bThread = new Thread(b);
@@ -26,6 +23,6 @@ public class Main {
 		tray.startTray();
 
 
-		log.log(Level.FINER, "End of Main");
+		log.debug("End of Main");
 	}
 }

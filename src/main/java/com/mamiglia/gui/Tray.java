@@ -1,6 +1,7 @@
 package com.mamiglia.gui;
 
-import com.mamiglia.utils.DisplayLogger;
+import com.mamiglia.settings.Destination;
+import com.mamiglia.settings.Settings;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,8 +11,11 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static com.mamiglia.settings.SettingsKt.HOURS_TO_MILLIS;
 
 public class Tray {
 	private static Tray uniqueInstance;
@@ -26,7 +30,7 @@ public class Tray {
 	private final TrayIcon trayIcon;
 	private final SystemTray systemTray;
 
-	private final Logger log = DisplayLogger.getInstance("Tray");
+	private final Logger log = LoggerFactory.getLogger("Tray");
 
 	public static Tray getInstance() {
 		if (uniqueInstance == null) throw new RuntimeException("Tray isn't initialized!");
@@ -52,70 +56,82 @@ public class Tray {
 	public void startTray() {
 		if(!SystemTray.isSupported()){
 			//checking for support
-			log.log(Level.SEVERE, "System tray is not supported !!!");
+			log.error("System tray is not supported !!!");
 			return ;
 		}
 
-		populateTray(null);
+		populateTray();
 
 		try{
 			systemTray.add(trayIcon);
 		}catch(AWTException awtException){
-			log.log(Level.SEVERE, "Cannot set the system tray");
+			log.error("Cannot set the system tray");
 		}
 	}
 
-	public void populateTray(String title){
+	public void populateTray(){
 		PopupMenu trayPopupMenu = new PopupMenu("Reddit Wallpaper");
 
-		if (title != null) {
-			MenuItem titleItem = new MenuItem(title);
-			titleItem.addActionListener(e -> openWebpage(background.getCurrent().getPostUrl()));
-			trayPopupMenu.add(titleItem);
+		for (Destination dest : Settings.INSTANCE.getDests()) {
+			trayPopupMenu.add(new MenuItem(dest.getName())); //title
 
-			MenuItem saveItem = new MenuItem("Save Wallpaper");
-			saveItem.addActionListener(e -> {
-				JFileChooser chooser = new JFileChooser();
-				chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-				chooser.setSelectedFile(background.getCurrent().getPath().toFile());
-				chooser.setDialogTitle("Select where to save wallpaper");
-				chooser.setAcceptAllFileFilterUsed(false);
-				int ret = chooser.showSaveDialog(null);
-				if (ret == JFileChooser.APPROVE_OPTION) {
-					Path path = chooser.getSelectedFile().toPath();
-					try {
-						Files.copy(background.getCurrent().getPath(), path, StandardCopyOption.REPLACE_EXISTING);
-					} catch (IOException ioException) {
-						ioException.printStackTrace();
+			if (dest.getCurrent() != null) {
+				MenuItem titleItem = new MenuItem(dest.getCurrent().getTitle());
+				titleItem.addActionListener(e -> openWebpage(dest.getCurrent().getPostUrl()));
+				trayPopupMenu.add(titleItem);
+
+				MenuItem saveItem = new MenuItem("Save Wallpaper");
+				saveItem.addActionListener(e -> {
+					JFileChooser chooser = new JFileChooser();
+					chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+					chooser.setSelectedFile(dest.getCurrent().getPath().toFile());
+					chooser.setDialogTitle("Select where to save wallpaper");
+					chooser.setAcceptAllFileFilterUsed(false);
+					int ret = chooser.showSaveDialog(null);
+					if (ret == JFileChooser.APPROVE_OPTION) {
+						Path path = chooser.getSelectedFile().toPath();
+						try {
+							Files.copy(dest.getCurrent().getPath(), path, StandardCopyOption.REPLACE_EXISTING);
+						} catch (IOException ioException) {
+							ioException.printStackTrace();
+						}
 					}
-				}
-			});
-			trayPopupMenu.add(saveItem);
+				});
+				trayPopupMenu.add(saveItem);
 
-			MenuItem banItem = new MenuItem("Blacklist Wallpaper");
-			banItem.addActionListener( e -> {
+				MenuItem pinItem = new MenuItem("Pin wallpaper");
+				pinItem.addActionListener(e -> {
+					dest.setResidualTime((long) (Settings.INSTANCE.getPinTime() * HOURS_TO_MILLIS));
+				});
+				trayPopupMenu.add(pinItem);
+
+				MenuItem banItem = new MenuItem("Ban wallpaper");
+				banItem.addActionListener(e -> {
+					if (backThread.getState() == Thread.State.TIMED_WAITING) {
+						Settings.INSTANCE.banWallpaper(dest.getCurrent());
+						dest.updateNext();
+						backThread.interrupt(); //interrupting it makes it wake up and load new wallpaper
+					} else {
+						log.info("\"Ban wallpaper\" button was pressed too early, still occupied changing wallpaper from the last time");
+					}
+				});
+				trayPopupMenu.add(banItem);
+			}
+
+			MenuItem changeItem = new MenuItem("Change Wallpaper");
+			changeItem.addActionListener(e -> {
 				if (backThread.getState() == Thread.State.TIMED_WAITING) {
-					background.banWallpaper();
+					dest.updateNext();
 					backThread.interrupt(); //interrupting it makes it wake up and load new wallpaper
 				} else {
-					log.log(Level.INFO, "Blacklist button was pressed too early, still occupied changing wallpaper from the last time");
+					log.info("\"Change\" button was pressed too early, still occupied changing wallpaper from the last time");
 				}
+				//interrupting the thread means waking it up. When it's awake it will automatically start searching for a new Wallpaper
 			});
-			trayPopupMenu.add(banItem);
+			trayPopupMenu.add(changeItem);
 
 			trayPopupMenu.addSeparator();
 		}
-
-		MenuItem changeItem = new MenuItem("Change Wallpaper");
-		changeItem.addActionListener(e -> {
-			if (backThread.getState() == Thread.State.TIMED_WAITING) {
-				backThread.interrupt(); //interrupting it makes it wake up and load new wallpaper
-			} else {
-				log.log(Level.INFO, "Change button was pressed too early, still occupied changing wallpaper from the last time");
-			}
-			//interrupting the thread means waking it up. When it's awake it will automatically start searching for a new Wallpaper
-		});
-		trayPopupMenu.add(changeItem);
 
 		MenuItem guiItem = new MenuItem("Settings");
 		guiItem.addActionListener(e -> new GUI(backThread));
@@ -141,6 +157,15 @@ public class Tray {
 
 		//adjust to default size as per system recommendation
 		trayIcon.setImageAutoSize(true);
+	}
+
+	public void notify(String title, String message) {
+		this.notify(title,message, TrayIcon.MessageType.INFO);
+	}
+
+	public void notify(String title, String message, TrayIcon.MessageType type) {
+		if (Settings.INSTANCE.getDisplayNotification())
+			trayIcon.displayMessage(title, message, type);
 	}
 
 	public static void openWebpage(String urlString) {

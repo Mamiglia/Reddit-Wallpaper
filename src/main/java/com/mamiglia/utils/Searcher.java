@@ -1,80 +1,81 @@
 package com.mamiglia.utils;
 
-import com.mamiglia.settings.Settings;
+import com.mamiglia.settings.Destination;
+import com.mamiglia.settings.NSFW_LEVEL;
+import com.mamiglia.settings.RATIO_LIMIT;
+import com.mamiglia.settings.Source;
 import com.mamiglia.wallpaper.Wallpaper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static com.mamiglia.settings.SettingsKt.REG_WS;
 
 class Searcher {
-	private final Settings settings;
-	private String searchQuery = "";
+	private final Set<Source> sources;
 	private Set<Wallpaper> proposed;
-	private static final Logger log = DisplayLogger.getInstance("Searcher");
+	private static final Logger log = LoggerFactory.getLogger("Searcher");
 	private static final int QUERY_SIZE = 50;
 
-	public Searcher(Settings settings) {
-		this.settings = settings;
+	public Searcher(Set<Source> sources) {
+		this.sources = sources;
 	}
 
 	/**
 	 * It generates a search query for reddit query API
 	 */
-	void generateSearchQuery() {
-		String temp; //temporary holder for title or flair portion of query
-		String test = ""; // populated to test if the temp field has anything added from getTitles() or getFlair()
+	String generateSearchQuery(Source src) {
+		StringBuilder strQuery = new StringBuilder("https://reddit.com/r/");
 
- 		searchQuery =
-		//Query now builds a multisub out of listed subreddits, this should prevent issues with very large lists of subs
-				"https://reddit.com/r/";
+		//Query now builds a multireddit out of listed subreddits, this should prevent issues with very large lists of subs
+		strQuery.append(String.join("+", src.getSubreddits()).replaceAll(REG_WS, ""));
 
-		// it feels redundant calling the same if check 3 times
-		temp = String.join("+", settings.getSubreddits()).replaceAll(settings.getRegWS(), "");
-		if (!temp.equals(test)) {
-			searchQuery += temp + "/";
-		}
-		searchQuery += "search.json?q=";
+		strQuery.append("/search.json?q=");
 
-		// build temp string with title data
-		temp = String.join("\" OR \"", settings.getTitles()).replaceAll(settings.getRegWS(), "");
-		if (!temp.equals(test)) {
-			searchQuery += "title:(\"" + temp + "\")&";
+		// Subreddit selection is made through the multireddit build
+
+		var insideQuery = new StringBuilder("(");
+
+		if (!src.getTitles().isEmpty()) {
+			insideQuery.append("title:(\"")
+					.append(String.join("\" OR \"", src.getTitles()))
+					.append("\")");
 		}
 
-		// build temp string with flair data
-		temp = String.join("\" OR \"", settings.getFlair()).replaceAll(settings.getRegWS(), "");
-		if (!temp.equals(test)) {
-		// Flair string is delimited by commas and automatically wrapped in quotation marks to handle multi-word flairs
-			searchQuery += "flair:(\"" + temp + "\")&";
+		if (!src.getFlairs().isEmpty()) {
+			insideQuery.append(" flair:(\"")
+					.append(String.join("\" OR \"", src.getFlairs()))
+					.append("\")");
 		}
+		insideQuery.append(")");
+		strQuery.append(encodeValue(insideQuery.toString()));
 
-		searchQuery +=
-			"self:no" //this means no text-only posts
-				+ "&sort=" + settings.getSearchBy().value //how to sort them (hot, new ...)
-				+ "&limit=" + QUERY_SIZE //how many posts
-				+ "&t=" + settings.getMaxOldness().value //how old can a post be at most
-				+ "&type=t3" //only link type posts, no text-only
-				+ "&restrict_sr=true" //restrict results to defined subreddits (leave on true)
-				+ settings.getNsfwLevel().query
-				+ "&rawjson=1"
-		;
-		
-		searchQuery = searchQuery.replace("flair:()&", "");
-		searchQuery = searchQuery.replace("title:()&", "");
+		strQuery.append("&self:no" //this means no text-only posts
+				+ "&sort=").append(src.getSearchBy().getValue() //how to sort them (hot, new ...)
+		).append("&limit=").append(QUERY_SIZE //how many posts
+		).append("&t=").append(src.getMaxOldness().getValue() //how old can a post be at most
+		).append("&type=t3" //only link type posts, no text-only
+		).append("&restrict_sr=true" //restrict results to defined subreddits (leave on true)
+		).append(src.getNsfwLevel().getQuery()).append("&rawjson=1");
 		//Removes title and flair field if they are void and somehow made it in
 		//What happens if some dumbhead tries to put as keyword to search "title:() "
 		//or "flair:() "? Will it just break the program? Is this some sort of hijackable thing?
-		//I don't know for I myself am too dumb - Don't be so hard on yourself <3
+		//I don't know for I myself am too dumb - Don't be so hard on yourself <3 - Thanks bro <3
 
-		log.log(Level.INFO, () -> "Search Query is: "+ searchQuery);
+		log.info("Search Query for source {} is: {}", src.getName(), strQuery);
+		return strQuery.toString();
 	}
 
 	/**
@@ -84,14 +85,21 @@ class Searcher {
 	 */
 	public Set<Wallpaper> getSearchResults() throws IOException {
 		if (proposed == null) {
-			URLConnection connect = initializeConnection();
-			String rawData = getRawData(connect);
-			proposed =  refineData(rawData);
+			proposed= new HashSet<>();
+			if (sources.isEmpty()) {
+				log.error("Sources list is void");
+				return null;
+			}
+			for (Source src: sources) {
+				URLConnection connect = initializeConnection(generateSearchQuery(src));
+				String rawData = getRawData(connect);
+				proposed.addAll(refineData(rawData, src));
+			}
 		}
 		return proposed;
 	}
 
-	private URLConnection initializeConnection() throws IOException {
+	private URLConnection initializeConnection(String searchQuery) throws IOException {
 		URLConnection connection = new URL(searchQuery).openConnection();
 		connection.setRequestProperty("User-Agent", "Reddit-Wallpaper bot");
 		connection.setRequestProperty("Accept-Charset", StandardCharsets.UTF_8.name());
@@ -104,7 +112,7 @@ class Searcher {
 		return s.hasNext() ? s.next() : "";
 	}
 
-	private Set<Wallpaper> refineData(String rawData) {
+	private Set<Wallpaper> refineData(String rawData, Source src) {
 		// converts the String JSON into a HashMap JSON, then selects the only things
 		// we are interested in: the ID and the photo link
 		Set<Wallpaper> res = new HashSet<>();
@@ -117,9 +125,9 @@ class Searcher {
 		int score;
 		boolean is_over_18;
 
-		if (rawData.contains("error")) {
-			log.log(Level.WARNING, "Reddit returned an error:\n" + rawData);
-			return null;
+		if (rawData.contains("error")) { // FIX What happens if someone puts "error" in the title of their post?
+			log.warn("Reddit returned an error:\n{}", rawData);
+			return res; // res is void at this stage
 		}
 
 		JSONArray children = new JSONObject(rawData).getJSONObject("data").getJSONArray("children");
@@ -128,9 +136,9 @@ class Searcher {
 			child = children.getJSONObject(i).getJSONObject("data");
 
 			// If the post isn't an image, we don't want it
-			if (child.keySet().contains("post_hint")) { // gallaries don't have a post hint
+			if (child.keySet().contains("post_hint")) { // it appears that galleries don't have a post hint
 				if (!child.getString("post_hint").equals("image")) {
-					log.log(Level.FINER, "This post isn't a valid wallpaper. Skipping.");
+					log.debug("This post {} isn't a valid wallpaper. Skipping.", child.getString("permalink"));
 					continue;
 				}
 			}
@@ -138,7 +146,7 @@ class Searcher {
 			score = child.getInt("score"); // # of upvotes
 			is_over_18 = child.getBoolean("over_18");
 
-			if (score < settings.getScore() || (!is_over_18 && settings.getNsfwLevel() == Settings.NSFW_LEVEL.ONLY)) {
+			if (score < src.getMinScore() || (!is_over_18 && src.getNsfwLevel() == NSFW_LEVEL.ONLY)) {
 				// when a post has too few upvotes it's skipped
 				// or if only over_18 content is allowed - no need to check in the other sense, because the query excludes them
 				continue;
@@ -174,14 +182,14 @@ class Searcher {
 
 			// if the url doesn't have a file extension (a web page)
 			if (!(url.matches("(.*)\\.\\w+"))) {
-				log.log(Level.FINER, "This post isn't a valid wallpaper. Skipping.");
+				log.debug("This post isn't a valid wallpaper. Skipping.");
 				continue;
 			}
 
 			// preview keyword is required for the rest of the json handling. If preview is missing the program will
 			// throw an error. Easiest just to exclude these results
 			if (!child.keySet().contains("preview")) {
-				log.log(Level.FINER, "This entry is problematic. Skipping.");
+				log.debug("This entry is problematic. Skipping.");
 				continue;
 			}
 
@@ -191,12 +199,13 @@ class Searcher {
 					.getJSONObject(0)
 					.getJSONObject("source");
 
-			if (imageSize(child.getInt("width"), child.getInt("height"), url)) {
-				// if image doesn't meet minimum size, restart loop
-				continue;
-			}
+//			if (imageSize(, , url)) {
+//				// if image doesn't meet minimum size, restart loop
+//				continue;
+//			}
+			// TODO move this check in selector
 
-			wallpaper = new Wallpaper(id, title, url, permalink);
+			wallpaper = new Wallpaper(id, title, url, permalink, child.getInt("width"), child.getInt("height"));
 			res.add(wallpaper);
 		}
 		return res;
@@ -220,12 +229,8 @@ class Searcher {
 			type = type.replace("image/", "");
 			url = "https://i.redd.it/" + id + "." + type;
 
-			if (imageSize(width, height, url)) {
-				continue;
-			}
-
 			titleGallery = title + " " + id;
-			wallpaper = new Wallpaper(id, titleGallery, url, permalink);
+			wallpaper = new Wallpaper(id, titleGallery, url, permalink, width, height);
 			res.add(wallpaper);
 		}
 		return res;
@@ -238,21 +243,18 @@ class Searcher {
 	 * It seems a bit backwards but it prevents using a negative modifier on every portion that I've used it
 	 * URL is required for output to the log
 	 */
-	private boolean imageSize(int x, int y, String url) {
-		int width = settings.getWidth();
-		int height = settings.getHeight();
+	private boolean imageSize(int x, int y, String url, Destination dest) {
+		int width = dest.getWidth();
+		int height = dest.getHeight();
 		float ratio = (float) width/height;
 		if ((width > x || height > y) || // image doesn't meet resolution
-				(ratio != (float) x/y && settings.getRatioLimit().equals("Strict")) || // image doesn't meet exact screen ratio
-				(((ratio > 1 && 1 > (float) x/y) || (ratio < 1 && 1 < (float) x/y)) && settings.getRatioLimit().equals("Relaxed"))) { // image isn't somewhere between screen ratio and square
-			log.log(Level.FINE, () ->
-				"Detected wallpaper not compatible with screen dimensions: "
-					+ x + "x" + y + " ratio: " + x/y
-					+  " Instead of "
-					+ width + "x" + height + " ratio: " + ratio
-					+ ". Searching for another..."
+				(ratio != (float) x/y && dest.getRatioLimit() == RATIO_LIMIT.STRICT) || // image doesn't meet exact screen ratio
+				(((ratio > 1 && 1 > (float) x/y) || (ratio < 1 && 1 < (float) x/y)) && dest.getRatioLimit() == RATIO_LIMIT.RELAXED)) { // image isn't somewhere between screen ratio and square
+			log.debug(
+					"Detected wallpaper not compatible with screen dimensions: {}x{} ratio: {} Instead of {}x{} ratio: {}. Searching for another...",
+					x, y, x / y, width, height, ratio
 				);
-			log.log(Level.FINER, () -> "Wallpaper rejected was: " + url);
+			log.debug("Wallpaper rejected was: {}", url);
 			// if the image is rejected
 			return true;
 		}
@@ -260,4 +262,12 @@ class Searcher {
 		return false;
 	}
 
+
+	private static String encodeValue(String value) {
+		try {
+			return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
+		} catch (UnsupportedEncodingException ex) {
+			throw new RuntimeException(ex.getCause());
+		}
+	}
 }

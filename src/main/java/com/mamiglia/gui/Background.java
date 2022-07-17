@@ -1,13 +1,12 @@
 package com.mamiglia.gui;
 
+import com.mamiglia.settings.Destination;
 import com.mamiglia.settings.Settings;
-import com.mamiglia.utils.DisplayLogger;
 import com.mamiglia.utils.GetNewWallpaper;
 import com.mamiglia.utils.SetNewWallpaper;
-import com.mamiglia.wallpaper.Wallpaper;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Background implements Runnable {
 	//Singleton class
@@ -16,11 +15,9 @@ public class Background implements Runnable {
 	// 2 - Sleep X time
 	// 3 - repeat
 	// until program is stopped
-	private static final Logger log = DisplayLogger.getInstance("Background service");
+	private static final Logger log = LoggerFactory.getLogger("Background service");
 	private static final Background uniqueInstance = new Background();
-	private final Settings settings = Settings.getInstance();
 	private boolean stopped = false;
-	private Wallpaper current = null;
 
 	private Background() {
 	}
@@ -33,70 +30,80 @@ public class Background implements Runnable {
 		stopped = true;
 	}
 
-	public void banWallpaper() {
-		settings.addBanned(current.getID());
-		if (!settings.keepBlacklist) {
-			if (current.delete()) {
-				log.log(Level.INFO, "Blacklisted image removed.");
-			} else {
-				log.log(Level.INFO, "Blacklisted image was not removed.");
-			}
+	/* Changes wallpaper to a single destination (remember that a single destination could contain multiple monitors */
+	public void changeWallpaper(Destination dest) {
+		log.info("Changing wallpaper for destination {}", dest.getName());
+		if (dest.getScreens().isEmpty() || dest.getSourcesId().isEmpty()) {
+			log.warn("Wallpaper not changed for destination {}", dest.getName() + " because it has no sources or monitors associated");
+			dest.updateLastChange();
+			return;
 		}
-	}
-
-	public void changeWallpaper() {
-		int screens = settings.getScreens();
-		boolean diff = settings.getDiffWallpapers();
-		GetNewWallpaper g = new GetNewWallpaper(settings, screens, diff);
+		GetNewWallpaper g = new GetNewWallpaper(dest.getSources(), dest);
 		Thread t1 = new Thread(g);
 		t1.start();
 		try {
 			t1.join();
 		} catch (InterruptedException e) {
-			log.log(Level.SEVERE, "Thread GetNewWallpaper was interrupted by unknown error");
+			log.error("Thread GetNewWallpaper was interrupted by unknown error");
 		}
+		dest.setCurrent(g.getResult());
 
-		if (screens > 1 && diff) {
-			int i = 0;
-			for (Wallpaper c : g.getResult(screens)) {
-				SetNewWallpaper set = new SetNewWallpaper(c, screens);
-				Thread t2 = new Thread(set);
-				t2.start();
-				settings.updateDate();
-				Tray.getInstance().populateTray(cosmetifyTitle(c.getTitle()));
-				log.log(Level.INFO, () -> "Wallpaper is successfully set to:\n" + c);
-				i++;
-				if (i == screens) break;
-			}
-		} else {
-			current = g.getResult();
-			SetNewWallpaper set = new SetNewWallpaper(current, diff);
-			Thread t2 = new Thread(set);
-			t2.start();
-			settings.updateDate();
-			Tray.getInstance().populateTray(cosmetifyTitle(current.getTitle()));
-			log.log(Level.INFO, () -> "Wallpaper is successfully set to:\n" + current);
+		SetNewWallpaper set = new SetNewWallpaper(g.getResult(), dest);
+		Thread t2 = new Thread(set);
+		t2.start();
+		try {
+			t2.join();
+		} catch (InterruptedException e) {
+			log.error("Thread SetNewWallpaper was interrupted by unknown error");
 		}
+		dest.updateLastChange();
+
+		Tray.getInstance().populateTray();
+
 	}
 
 	@Override
 	public void run() {
-		long residualTime = settings.getLastTimeWallpaperChanged() + settings.getPeriod() * 60000L - System.currentTimeMillis();
-		if (residualTime <= 60000L) { //if residualTime is under a minute I change the wallpaper anyway
-			changeWallpaper();
-			residualTime = settings.getPeriod() * 60000L;
+		while (!stopped) {
+			Long residualTime = getShortestTimer();
+			try {
+				Thread.sleep(residualTime);
+			} catch (InterruptedException e) {
+				log.info("Sleep is interrupted");
+			}
+			Settings.INSTANCE.writeSettings();
+			if (!stopped) {
+				changeWallpapers();
+			}
+
+		}
+		log.info("Background Service has been stopped as requested");
+	}
+
+	private Long getShortestTimer() {
+		long shortest = Long.MAX_VALUE;
+
+		for (Destination dest : Settings.INSTANCE.getDests()) {
+			shortest = Long.min(shortest, dest.getResidualTime());
 		}
 
-		while (!stopped) {
-			try {
-				Thread.sleep(residualTime); //
-			} catch (InterruptedException e) {
-				log.log(Level.INFO, "Sleep is interrupted");
-			}
-			residualTime = settings.getPeriod() * 60000L;
-			changeWallpaper();
+		return Long.max(shortest, 0);
+	}
+
+	private void changeWallpapers() {
+		for (Destination dest : Settings.INSTANCE.getDests()) {
+			log.debug("Destination {} has still {} milliseconds left", dest.getName(), dest.getResidualTime());
+			if (dest.isTimeElapsed())
+				changeWallpaper(dest);
 		}
-		log.log(Level.INFO, "Background Service has been stopped as requested");
+	}
+
+	// GETTER & SETTER
+	public boolean isStopped() {
+		return stopped;
+	}
+	public static Thread getThread() {
+		return Thread.currentThread();
 	}
 
 	private static String cosmetifyTitle (String title) {
@@ -110,19 +117,5 @@ public class Background implements Runnable {
 			temp += "...";
 		}
 		return temp;
-
-
-	}
-
-	// GETTER & SETTER
-
-	public Wallpaper getCurrent() {
-		return current;
-	}
-	public boolean isStopped() {
-		return stopped;
-	}
-	public static Thread getThread() {
-		return Thread.currentThread();
 	}
 }

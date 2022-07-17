@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.mamiglia.gui.SourceGUI">
+  <grid id="27dc6" binding="root" layout-manager="GridLayoutManager" row-count="7" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="0" left="0" bottom="0" right="0"/>
+    <constraints>
+      <xy x="20" y="20" width="450" height="349"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <grid id="1333f" layout-manager="GridLayoutManager" row-count="1" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <toolTipText value="A keyword you want to be in the title of the wallpaper. You probably want to leave this blank"/>
+        </properties>
+        <border type="none"/>
+        <children>
+          <component id="5f99d" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Titles"/>
+            </properties>
+          </component>
+          <component id="a90c0" class="javax.swing.JTextField" binding="titleField">
+            <constraints>
+              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <columns value="30"/>
+              <inheritsPopupMenu value="true"/>
+              <text value=""/>
+              <toolTipText value="A keyword you want to be in the title of the wallpaper. You probably want to leave this blank"/>
+            </properties>
+          </component>
+          <hspacer id="86b2a">
+            <constraints>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+          </hspacer>
+          <hspacer id="f3e79">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+          </hspacer>
+        </children>
+      </grid>
+      <grid id="eec9e" layout-manager="GridLayoutManager" row-count="1" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <toolTipText value="The subreddits where the wallpaper is searched"/>
+        </properties>
+        <border type="none"/>
+        <children>
+          <component id="2577a" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <opaque value="true"/>
+              <text value="Subreddits"/>
+              <toolTipText value="The subreddits where the wallpaper is searched"/>
+              <verticalAlignment value="0"/>
+            </properties>
+          </component>
+          <component id="1347e" class="javax.swing.JTextField" binding="subredditField">
+            <constraints>
+              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <columns value="30"/>
+              <inheritsPopupMenu value="false"/>
+              <text value="wallpaper, wallpapers"/>
+              <toolTipText value="Format: sub1, sub2, sub3"/>
+            </properties>
+          </component>
+          <hspacer id="14fdd">
+            <constraints>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+          </hspacer>
+          <hspacer id="b6a86">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+          </hspacer>
+        </children>
+      </grid>
+      <grid id="db29" layout-manager="GridLayoutManager" row-count="1" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <toolTipText value="The flair on the wallpaper you want"/>
+        </properties>
+        <border type="none"/>
+        <children>
+          <component id="3e1de" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Flairs"/>
+              <toolTipText value="The flair on the wallpaper you want"/>
+            </properties>
+          </component>
+          <component id="53f23" class="javax.swing.JTextField" binding="flairField">
+            <constraints>
+              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <columns value="30"/>
+              <editable value="true"/>
+              <inheritsPopupMenu value="false"/>
+              <text value=""/>
+              <toolTipText value="Format: OC, I made this, 1080"/>
+            </properties>
+          </component>
+          <hspacer id="a1fdf">
+            <constraints>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+          </hspacer>
+          <hspacer id="58bdc">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+          </hspacer>
+        </children>
+      </grid>
+      <grid id="f3733" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="8ec20" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <text value="Posts are at most 1"/>
+            </properties>
+          </component>
+          <component id="8ec5b" class="javax.swing.JComboBox" binding="timeSelection" custom-create="true">
+            <constraints/>
+            <properties/>
+          </component>
+          <component id="1fab4" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <text value="old"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+      <grid id="f2384" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="35e91" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <text value="Sort by"/>
+            </properties>
+          </component>
+          <component id="5c5dc" class="javax.swing.JComboBox" binding="sortSelection" custom-create="true">
+            <constraints/>
+            <properties/>
+          </component>
+          <component id="dfc11" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <text value="With minimum score"/>
+            </properties>
+          </component>
+          <component id="8473" class="javax.swing.JSpinner" binding="scoreField" custom-create="true">
+            <constraints/>
+            <properties>
+              <inheritsPopupMenu value="true"/>
+              <toolTipText value="Minimum upvotes to select post. Default: 15"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+      <grid id="55c95" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+        <constraints>
+          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <toolTipText value="Never: no NSFW wallpaper will ever be shown&#10;Allow: NSFW Wallpapers might be shown&#10;Only: only NSFW will be shown, warning: Horny!"/>
+          <visible value="true"/>
+        </properties>
+        <border type="none"/>
+        <children>
+          <component id="a4f21" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <text value="NSFW:"/>
+            </properties>
+          </component>
+          <component id="ebd1" class="javax.swing.JSlider" binding="nsfwSlider">
+            <constraints/>
+            <properties>
+              <maximum value="1"/>
+              <minimum value="-1"/>
+              <paintLabels value="true"/>
+              <paintTicks value="false"/>
+              <paintTrack value="true"/>
+              <snapToTicks value="true"/>
+              <toolTipText value="NEVER: no nsfw wallpaper will ever be shown&#10;ALLOW: nsfw wallpapers might be shown&#10;ONLY: only nsfw will be shown, warning: Horny!"/>
+              <value value="0"/>
+              <visible value="true"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+      <grid id="be209" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+        <constraints>
+          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="916ef" class="javax.swing.JButton" binding="saveSrcBtn">
+            <constraints/>
+            <properties>
+              <text value="Save"/>
+            </properties>
+          </component>
+          <component id="c6615" class="javax.swing.JButton" binding="removeSrcBtn">
+            <constraints/>
+            <properties>
+              <text value="Remove"/>
+            </properties>
+          </component>
+          <component id="5d54d" class="javax.swing.JButton" binding="renameSrcBtn">
+            <constraints/>
+            <properties>
+              <text value="Rename"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+    </children>
+  </grid>
+</form>

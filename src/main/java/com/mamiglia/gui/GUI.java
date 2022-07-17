@@ -1,144 +1,98 @@
 package com.mamiglia.gui;
 
-import com.mamiglia.settings.Settings;
-import com.mamiglia.settings.Settings.TIME;
-import com.mamiglia.settings.Settings.SEARCH_BY;
-import com.mamiglia.utils.DisplayLogger;
+import com.formdev.flatlaf.FlatLaf;
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.uiDesigner.core.Spacer;
+import com.mamiglia.db.WallpaperDAO;
+import com.mamiglia.settings.*;
 import com.formdev.flatlaf.FlatDarkLaf;
 
 import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.*;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.stream.Collectors;
 
-public class GUI extends JFrame{
+public class GUI extends JFrame {
 	private JPanel rootPane;
 	private JTabbedPane tabbedPane;
-	private JPanel settingPane;
-	private JPanel titlePane;
-	private JPanel subredditPane;
-	private JPanel flairPane;
-	private JTextField subredditField;
-	private JTextField flairField;
-	private JComboBox<SEARCH_BY> sortSelection;
 	private JTextArea logArea;
-	private JButton applyButton;
 	private JButton changeNowButton;
-	private JCheckBox logCheckBox;
-	private JSpinner heightField;
-	private JSpinner periodField;
-	private JSpinner widthField;
 	private JSpinner dbSizeField;
-	private JSpinner scoreField;
+	private JSpinner pinTimeField;
 	private JCheckBox keepCheckBox;
 	private JCheckBox blacklistCheckBox;
-	private JComboBox<TIME> oldSelection;
-	private JTextField titleField;
 	private JPanel logTab;
 	private JButton folderButton;
 	private JButton resetButton;
-	private JScrollPane scrollPane;
-	private JTextField wallpaperPathText;
 	private JButton changeDirectoryButton;
-	private JSlider nsfwSlider;
-	private JComboBox<String> ratio;
-	static final Logger log = DisplayLogger.getInstance("GUI");
-	private final Settings settings = Settings.getInstance();
+	private JTextField wallpaperPathText;
+	private JPanel sourcesPane;
+	private JButton addSrcBtn;
+	private JPanel sourcesButtonsPane;
+	private JPanel destsPane;
+	private JButton addDestBtn;
+	private JPanel destButtonPane;
+	private JScrollPane destScrollBar;
+	private JScrollPane srcScrollBar;
+	private JPanel associationPane;
+	private JButton refreshButton;
+	private JScrollPane associationScrollPane;
+	private JCheckBox notificationsCheckBox;
+	static final Logger log = LoggerFactory.getLogger("GUI");
 	private final Thread backThread;
 
 	public GUI(Thread backThread) {
 		super("Reddit Wallpaper Downloader");
+		$$$setupUI$$$();
 		this.setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getClassLoader().getResource(Tray.PATH_TO_TRAY_ICON)));/* icon by https://www.freepik.com */
 		this.backThread = backThread;
-		add(rootPane);
-		Act act = new Act(this);
-		applyButton.addActionListener(act);
-		folderButton.addActionListener(act);
-		resetButton.addActionListener(act);
-		changeNowButton.addActionListener(act);
-		changeDirectoryButton.addActionListener(act);
-		scrollPane.setPreferredSize(new Dimension(-1, 3));
-		nsfwSlider.setLabelTable(new Hashtable<Integer, JLabel>() {{
-			put(-1, new JLabel("Never"));
-			put(0, new JLabel("Allow"));
-			put(1, new JLabel("Only"));
-		}});
+		this.add(rootPane);
 
-		// TODO was useless!
-		logCheckBox.setVisible(false);
-
-		tabbedPane.addChangeListener(changeEvent -> {
-			JTabbedPane src = (JTabbedPane) changeEvent.getSource();
-			int index = src.getSelectedIndex();
-			if (src.getComponentAt(index).equals(logTab)) {
-				showLog();
-			}
-		});
-
+		setupUI();
 		loadSettings();
-		log.log(Level.FINER, "GUI started");
+		log.debug("GUI started");
 
-		setResizable(false);
+		//setResizable(false);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		pack();
 		setVisible(true);
 	}
 
 	void saveSettings() {
-		// Settings.regWS holds the whitespace regex string as it's accessible from both places I currnetly have it
-		// Selects any extra space before or after a string with comma delimitation
-		// Selects any extra space (any more than one) between words
-		settings.setTitles(titleField.getText().replaceAll(settings.getRegWS(), "").split(","));
-		settings.setSubreddits(subredditField.getText().replaceAll(settings.getRegWS(), "").split(","));
-		settings.setFlair(flairField.getText().replaceAll(settings.getRegWS(), "").split(","));
-		settings.setNsfwLevel(nsfwSlider.getValue());
-		settings.setHeight((int) heightField.getValue());
-		settings.setWidth((int) widthField.getValue());
-		settings.setScore((int) scoreField.getValue());
-		settings.setMaxOldness((TIME) oldSelection.getSelectedItem());
-		settings.setPeriod((int) periodField.getValue());
-		settings.setSearchBy((SEARCH_BY) sortSelection.getSelectedItem());
-		settings.setKeepWallpapers(keepCheckBox.isSelected());
-		settings.setKeepBlacklist(blacklistCheckBox.isSelected());
-		settings.setMaxDatabaseSize((int) dbSizeField.getValue());
-		settings.setRatioLimit(ratio.getSelectedItem());
-
-		settings.writeSettings();
+		Settings.INSTANCE.writeSettings();
 	}
 
 	void loadSettings() {
-		// Settings.regSB holds the regex string for removing square brackets
-		titleField.setText(Arrays.toString(settings.getTitles()).replaceAll(settings.getRegSB(), ""));
-		subredditField.setText(Arrays.toString(settings.getSubreddits()).replaceAll(settings.getRegSB(), ""));
-		flairField.setText(Arrays.toString(settings.getFlair()).replaceAll(settings.getRegSB(), ""));
-		sortSelection.setSelectedItem(settings.getSearchBy());
-		heightField.setValue(settings.getHeight());
-		widthField.setValue(settings.getWidth());
-		scoreField.setValue(settings.getScore());
-		periodField.setValue(settings.getPeriod());
-		oldSelection.setSelectedItem(settings.getMaxOldness());
-		dbSizeField.setValue(settings.getMaxDatabaseSize());
-		keepCheckBox.setSelected(settings.getKeepWallpapers());
-		blacklistCheckBox.setSelected(settings.getKeepBlacklist());
-		wallpaperPathText.setText(Settings.getWallpaperPath());
-		nsfwSlider.setValue(settings.getNsfwLevel().value);
-		ratio.setSelectedItem(settings.getRatioLimit());
+		keepCheckBox.setSelected(Settings.INSTANCE.getKeepWallpapers());
+		blacklistCheckBox.setSelected(Settings.INSTANCE.getKeepBlacklist());
+		notificationsCheckBox.setSelected(Settings.INSTANCE.getDisplayNotification());
+		dbSizeField.setValue(Settings.INSTANCE.getMaxDatabaseSize());
+		pinTimeField.setValue(Settings.INSTANCE.getPinTime());
+		wallpaperPathText.setText(Settings.INSTANCE.getWallpaperPath());
 	}
 
-	void changeWallpaper() {
+	void changeWallpaper(Destination dest) {
 		saveSettings();
 		showLog();
 
+		if (dest == null) { // if dest == null then change them all
+			for (Destination d : Settings.INSTANCE.getDests())
+				d.updateNext();
+		} else {
+			dest.updateNext();
+		}
 		if (backThread.getState() == Thread.State.TIMED_WAITING) {
 			backThread.interrupt(); //interrupting it makes it wake up and load new wallpaper
 		} else {
-			log.log(Level.INFO, "Change button was pressed too early, still occupied changing wallpaper from the last time");
+			log.info("Change button was pressed too early, still occupied changing wallpaper from the last time");
 		}
 		//interrupting the thread means waking it up. When it's awake it will automatically start searching for a new Wallpaper
 
@@ -151,9 +105,9 @@ public class GUI extends JFrame{
 	 */
 	void displayFolder() {
 		try {
-			Desktop.getDesktop().open(new File(Settings.getWallpaperPath()));
+			Desktop.getDesktop().open(new File(Settings.INSTANCE.getWallpaperPath()));
 		} catch (IOException e) {
-			log.log(Level.WARNING, e.getMessage());
+			log.warn(e.getMessage());
 		}
 	}
 
@@ -162,47 +116,168 @@ public class GUI extends JFrame{
 
 		if (selectedOption == JOptionPane.OK_OPTION) {
 
-			File wallpaperFolder = new File(Settings.getWallpaperPath());
-			Settings.eraseDB();
+			File wallpaperFolder = new File(Settings.INSTANCE.getWallpaperPath());
+			new WallpaperDAO().erase();
 
 			// Requires the directory exists and wallpapers should not be kept
-			if (wallpaperFolder.isDirectory() && !settings.getKeepWallpapers()) {
+			if (wallpaperFolder.isDirectory() && !Settings.INSTANCE.getKeepWallpapers()) {
 				for (File walp : Objects.requireNonNull(wallpaperFolder.listFiles())) {
 					if (walp.delete()) {
-						log.log(Level.FINE, () -> walp + " deleted.");
+						log.debug("{} deleted.", walp);
 					}
 				}
-				log.log(Level.FINE, () -> "Wallpapers successfully purged.");
-			}
-			else if (settings.getKeepWallpapers()) {
-				log.log(Level.FINE, () -> "Wallpapers have not been removed by preference.");
-			}
-			else {
-				log.log(Level.FINE, () -> "Wallpapers directory is missing.");
+				log.debug("Wallpapers successfully purged.");
+			} else if (Settings.INSTANCE.getKeepWallpapers()) {
+				log.debug("Wallpapers have not been removed by preference.");
+			} else {
+				log.debug("Wallpapers directory is missing.");
 			}
 		}
 	}
 
+	private void setupUI() {
+		folderButton.addActionListener(e -> displayFolder());
+		resetButton.addActionListener(e -> resetDB());
+		changeNowButton.addActionListener(e -> changeWallpaper(null));
+		changeDirectoryButton.addActionListener(e -> folderPicker());
+		tabbedPane.addChangeListener(changeEvent -> {
+			JTabbedPane src = (JTabbedPane) changeEvent.getSource();
+			int index = src.getSelectedIndex();
+			if (src.getComponentAt(index).equals(logTab)) {
+				showLog();
+			}
+		});
+		refreshButton.addActionListener(e -> {
+			refreshListDest();
+			refreshListSrc();
+			refreshGridAssociations();
+			loadSettings();
+		});
+		keepCheckBox.addActionListener(e ->
+				Settings.INSTANCE.setKeepWallpapers(keepCheckBox.isSelected()));
+		blacklistCheckBox.addActionListener(e ->
+				Settings.INSTANCE.setKeepBlacklist(blacklistCheckBox.isSelected()));
+		notificationsCheckBox.addActionListener(e ->
+				Settings.INSTANCE.setDisplayNotification(notificationsCheckBox.isSelected()));
+
+		dbSizeField.addChangeListener(e -> Settings.INSTANCE.setMaxDatabaseSize((Integer) dbSizeField.getValue()));
+		pinTimeField.addChangeListener(e -> Settings.INSTANCE.setPinTime((Double) pinTimeField.getValue()));
+
+		destScrollBar.getVerticalScrollBar().setUnitIncrement(14);
+		srcScrollBar.getVerticalScrollBar().setUnitIncrement(14);
+
+		refreshListSrc();
+		refreshListDest();
+		addSrcBtn.addActionListener(e -> {
+			Settings.INSTANCE.newSource();
+			refreshListSrc();
+		});
+		addDestBtn.addActionListener(e -> {
+			Settings.INSTANCE.newDest();
+			refreshListDest();
+		});
+		refreshGridAssociations();
+
+		this.setPreferredSize(new Dimension(this.getPreferredSize().width, this.getPreferredSize().height + SourceGUI.STANDARD_HEIGHT));
+	}
+
+	private void refreshListSrc() {
+		generateList(
+				sourcesPane,
+				Settings.INSTANCE.getSources().values().stream().map(src -> new SourceGUI(src)).collect(Collectors.toList()),
+				sourcesButtonsPane);
+	}
+
+	private void refreshListDest() {
+		generateList(
+				destsPane,
+				Settings.INSTANCE.getDests().stream().map(d -> new DestGUI(d, this)).collect(Collectors.toList()),
+				destButtonPane
+		);
+	}
+
+	private void refreshGridAssociations() {
+		associationPane.removeAll();
+		int destNumber = Settings.INSTANCE.getDests().size();
+		int srcNumber = Settings.INSTANCE.getSources().size();
+		var tableData = new Object[srcNumber][destNumber + 1];
+		Iterator<Source> it = Settings.INSTANCE.getSources().values().iterator();
+
+		for (int i = 0; i < srcNumber; i++) {
+			Source src = it.next();
+			tableData[i][0] = src;
+			for (int j = 0; j < destNumber; j++) {
+				tableData[i][j + 1] = Settings.INSTANCE.getDests().get(j).getSourcesId().contains(src.getId());
+			}
+		}
+
+		var columns = new ArrayList<>(Settings.INSTANCE.getDests());
+		columns.add(0, null);
+
+		JTable t = new JTable(new AbstractTableModel() {
+			private final ArrayList<Destination> columnNames = columns;
+			private final Object[][] data = tableData;
+
+			@Override
+			public String getColumnName(int col) {
+				return col > 0 ? columnNames.get(col).getName() : "";
+			}
+
+			@Override
+			public Class getColumnClass(int c) {
+				return c >= 1 ? Boolean.class : String.class;
+			}
+
+			@Override
+			public boolean isCellEditable(int row, int col) {
+				return col >= 1;
+			}
+
+			@Override
+			public int getRowCount() {
+				return data.length;
+			}
+
+			@Override
+			public int getColumnCount() {
+				return columnNames.size();
+			}
+
+			@Override
+			public Object getValueAt(int row, int col) {
+				return data[row][col];
+			}
+
+			@Override
+			public void setValueAt(Object value, int row, int col) {
+				data[row][col] = value;
+				var dest = columnNames.get(col);
+				var src = (Source) data[row][0];
+
+				if ((boolean) value) {
+					dest.addSource(src);
+				} else {
+					dest.removeSource(src);
+				}
+			}
+		});
+		associationPane.add(t, BorderLayout.NORTH);
+		associationScrollPane.setColumnHeaderView(t.getTableHeader());
+	}
+
 	private void createUIComponents() {
-		SpinnerNumberModel s = new SpinnerNumberModel(15, 0, 1000000, 1);
-		periodField = new JSpinner(s);
-		s = new SpinnerNumberModel(1080, 0, 10000, 1);
-		heightField = new JSpinner(s);
-		s = new SpinnerNumberModel(1920, 0, 10000, 1);
-		widthField = new JSpinner(s);
-		s = new SpinnerNumberModel(15, 0, 10000, 1);
-		scoreField = new JSpinner(s);
-		s = new SpinnerNumberModel(50, 5, 10000, 1);
+		// custom create
+		SpinnerNumberModel s = new SpinnerNumberModel(50, 5, 10000, 1);
 		dbSizeField = new JSpinner(s);
-		oldSelection = new JComboBox<>(TIME.values());
-		sortSelection = new JComboBox<>(SEARCH_BY.values());
+		s = new SpinnerNumberModel(24.0, -1.0, 1000.0, 1.0);
+		pinTimeField = new JSpinner(s);
 	}
 
 	private void showLog() {
 		FileReader reader;
 		try {
-			reader = new FileReader(DisplayLogger.LOG_PATH);
-			logArea.read(reader, DisplayLogger.LOG_PATH);
+			reader = new FileReader(Settings.LOG_PATH);
+			logArea.read(reader, Settings.LOG_PATH);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -215,13 +290,39 @@ public class GUI extends JFrame{
 		chooser.setAcceptAllFileFilterUsed(false);
 		chooser.showOpenDialog(this);
 		File directory = chooser.getSelectedFile();
-		settings.setWallpaperPath(directory.toString() + File.separator);
+		Settings.INSTANCE.setWallpaperPath(directory.toString() + File.separator);
 		loadSettings();
+	}
+
+	private static void generateList(JPanel pane, List<JPanel> elements, JPanel ending) {
+		pane.removeAll();
+		pane.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridy = 0;
+		c.weightx = 1;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		for (JPanel el : elements) {
+			pane.add(el, c);
+			c.gridy++;
+		}
+		c.weighty = 1;
+		pane.add(new JPanel(), c); // makes everything align at top
+		c.weighty = 0;
+		c.gridy++;
+		pane.add(ending, c);
 	}
 
 	public static void setLookFeel() {
 		try {
-			UIManager.setLookAndFeel( new FlatDarkLaf() );
+			UIManager.put("Button.arc", 999);
+			UIManager.put("Component.arc", 5);
+			UIManager.put("ScrollBar.showButtons", false);
+			UIManager.put("Panel.border", null);
+			var fl = new FlatDarkLaf();
+			fl.setExtraDefaults(Collections.singletonMap("@accentColor", "#FF9B49"));
+			FlatLaf.setup(fl);
+			UIManager.setLookAndFeel(fl);
+
 			// Set System L&F
 //			UIManager.setLookAndFeel(
 //					UIManager.getSystemLookAndFeelClassName());
@@ -229,8 +330,7 @@ public class GUI extends JFrame{
 //			UIManager.setLookAndFeel(
 //					"javax.swing.plaf.nimbus.NimbusLookAndFeel"
 //					);
-		}
-		catch (UnsupportedLookAndFeelException e) {
+		} catch (UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
 //		catch (ClassNotFoundException e) {
@@ -249,4 +349,165 @@ public class GUI extends JFrame{
 		setLookFeel();
 		new GUI(null);
 	}
+
+	/**
+	 * Method generated by IntelliJ IDEA GUI Designer
+	 * >>> IMPORTANT!! <<<
+	 * DO NOT edit this method OR call it in your code!
+	 *
+	 * @noinspection ALL
+	 */
+	private void $$$setupUI$$$() {
+		createUIComponents();
+		rootPane = new JPanel();
+		rootPane.setLayout(new BorderLayout(0, 0));
+		final JPanel panel1 = new JPanel();
+		panel1.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
+		rootPane.add(panel1, BorderLayout.SOUTH);
+		refreshButton = new JButton();
+		refreshButton.setText("Refresh");
+		panel1.add(refreshButton);
+		changeNowButton = new JButton();
+		changeNowButton.setText("Change Now");
+		panel1.add(changeNowButton);
+		tabbedPane = new JTabbedPane();
+		tabbedPane.setVisible(true);
+		rootPane.add(tabbedPane, BorderLayout.CENTER);
+		final JPanel panel2 = new JPanel();
+		panel2.setLayout(new BorderLayout(0, 0));
+		tabbedPane.addTab("Sources", panel2);
+		srcScrollBar = new JScrollPane();
+		srcScrollBar.setHorizontalScrollBarPolicy(31);
+		srcScrollBar.setVerticalScrollBarPolicy(22);
+		panel2.add(srcScrollBar, BorderLayout.CENTER);
+		sourcesPane = new JPanel();
+		sourcesPane.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		srcScrollBar.setViewportView(sourcesPane);
+		sourcesButtonsPane = new JPanel();
+		sourcesButtonsPane.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		sourcesPane.add(sourcesButtonsPane);
+		addSrcBtn = new JButton();
+		addSrcBtn.setText("+");
+		sourcesButtonsPane.add(addSrcBtn);
+		final JPanel panel3 = new JPanel();
+		panel3.setLayout(new BorderLayout(0, 0));
+		tabbedPane.addTab("Destinations", panel3);
+		destScrollBar = new JScrollPane();
+		destScrollBar.setHorizontalScrollBarPolicy(31);
+		destScrollBar.setVerticalScrollBarPolicy(22);
+		panel3.add(destScrollBar, BorderLayout.CENTER);
+		destsPane = new JPanel();
+		destsPane.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		destScrollBar.setViewportView(destsPane);
+		destButtonPane = new JPanel();
+		destButtonPane.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		destsPane.add(destButtonPane);
+		addDestBtn = new JButton();
+		addDestBtn.setText("+");
+		destButtonPane.add(addDestBtn);
+		final JPanel panel4 = new JPanel();
+		panel4.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+		tabbedPane.addTab("Associations", panel4);
+		associationScrollPane = new JScrollPane();
+		panel4.add(associationScrollPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		associationPane = new JPanel();
+		associationPane.setLayout(new BorderLayout(0, 0));
+		associationScrollPane.setViewportView(associationPane);
+		final Spacer spacer1 = new Spacer();
+		panel4.add(spacer1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		final JPanel panel5 = new JPanel();
+		panel5.setLayout(new GridLayoutManager(7, 1, new Insets(0, 0, 0, 0), -1, -1));
+		tabbedPane.addTab("Settings", panel5);
+		final JPanel panel6 = new JPanel();
+		panel6.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		panel6.setToolTipText("Wallpapers may occupy much disk space. So only a certain number of wallpapers are kept, those exceeding will be eliminated");
+		panel5.add(panel6, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		final JLabel label1 = new JLabel();
+		label1.setText("Maximum Size of Database");
+		label1.setToolTipText("Wallpapers may occupy much disk space. So only a certain number of wallpapers are kept, those exceeding will be eliminated");
+		panel6.add(label1);
+		dbSizeField.setInheritsPopupMenu(true);
+		dbSizeField.setToolTipText("Wallpapers may occupy much disk space. So only a certain number of wallpapers are kept, those exceeding will be eliminated");
+		panel6.add(dbSizeField);
+		resetButton = new JButton();
+		resetButton.setText("Erase Database");
+		resetButton.setToolTipText("Safely erases database file and all the wallpapers in the folder unless above box is checked");
+		panel6.add(resetButton);
+		final Spacer spacer2 = new Spacer();
+		panel5.add(spacer2, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		final JPanel panel7 = new JPanel();
+		panel7.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		panel7.setToolTipText("If checked wallpapers will be kept indefinetely. Pay attention to your disk space!");
+		panel5.add(panel7, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		blacklistCheckBox = new JCheckBox();
+		blacklistCheckBox.setText("Keep wallpapers even after they have been banned?");
+		blacklistCheckBox.setToolTipText("If checked, images will be kept when they are blacklisted");
+		panel7.add(blacklistCheckBox);
+		final JPanel panel8 = new JPanel();
+		panel8.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+		panel5.add(panel8, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		keepCheckBox = new JCheckBox();
+		keepCheckBox.setInheritsPopupMenu(true);
+		keepCheckBox.setText("Keep wallpapers even after RW won't use them anymore?");
+		keepCheckBox.setToolTipText("If checked wallpapers will be kept indefinetely. Pay attention to your disk space!");
+		panel8.add(keepCheckBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		final JPanel panel9 = new JPanel();
+		panel9.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		panel5.add(panel9, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		final JLabel label2 = new JLabel();
+		label2.setText("Wallpaper Directory:");
+		panel9.add(label2);
+		wallpaperPathText = new JTextField();
+		wallpaperPathText.setEditable(false);
+		wallpaperPathText.setHorizontalAlignment(0);
+		wallpaperPathText.setText("C:/your/path/to/wallpapers");
+		wallpaperPathText.setToolTipText("The folder in which your wallpapers are saved");
+		panel9.add(wallpaperPathText);
+		folderButton = new JButton();
+		folderButton.setText("Open Directory");
+		folderButton.setToolTipText("Opens the folder");
+		panel9.add(folderButton);
+		changeDirectoryButton = new JButton();
+		changeDirectoryButton.setText("Change");
+		changeDirectoryButton.setToolTipText("Changes the folder");
+		panel9.add(changeDirectoryButton);
+		final JPanel panel10 = new JPanel();
+		panel10.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		panel10.setToolTipText("you'll be notified for each wallpaper change");
+		panel5.add(panel10, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		notificationsCheckBox = new JCheckBox();
+		notificationsCheckBox.setText("Display notifications");
+		notificationsCheckBox.setToolTipText("you'll be notified for each wallpaper change");
+		panel10.add(notificationsCheckBox);
+		final JPanel panel11 = new JPanel();
+		panel11.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		panel11.setToolTipText("Set the time for the wallpaper to remain the same after being pinned. A value of -1 means until \"change\" button is voluntarly pressed");
+		panel5.add(panel11, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		final JLabel label3 = new JLabel();
+		label3.setText("Pinned time");
+		label3.setToolTipText("Wallpapers may occupy much disk space. So only a certain number of wallpapers are kept, those exceeding will be eliminated");
+		panel11.add(label3);
+		pinTimeField.setInheritsPopupMenu(true);
+		pinTimeField.setToolTipText("Set the time for the wallpaper to remain the same after being pinned. A value of -1 means until \"change\" button is voluntarly pressed");
+		panel11.add(pinTimeField);
+		final JLabel label4 = new JLabel();
+		label4.setText("hours");
+		panel11.add(label4);
+		logTab = new JPanel();
+		logTab.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+		tabbedPane.addTab("Log", logTab);
+		final JScrollPane scrollPane1 = new JScrollPane();
+		logTab.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		logArea = new JTextArea();
+		logArea.setEditable(false);
+		scrollPane1.setViewportView(logArea);
+	}
+
+	/**
+	 * @noinspection ALL
+	 */
+	public JComponent $$$getRootComponent$$$() {
+		return rootPane;
+	}
+
 }
