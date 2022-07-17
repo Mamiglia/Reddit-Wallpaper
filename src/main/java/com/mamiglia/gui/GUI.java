@@ -148,10 +148,7 @@ public class GUI extends JFrame {
 			}
 		});
 		refreshButton.addActionListener(e -> {
-			refreshListDest();
-			refreshListSrc();
-			refreshGridAssociations();
-			loadSettings();
+			refreshUI();
 		});
 		keepCheckBox.addActionListener(e ->
 				Settings.INSTANCE.setKeepWallpapers(keepCheckBox.isSelected()));
@@ -182,7 +179,14 @@ public class GUI extends JFrame {
 		}
 		refreshGridAssociations();
 
-		this.setPreferredSize(new Dimension(this.getPreferredSize().width, this.getPreferredSize().height + SourceGUI.STANDARD_HEIGHT));
+		this.setPreferredSize(new Dimension(this.getPreferredSize().width + 100, this.getPreferredSize().height + SourceGUI.STANDARD_HEIGHT));
+	}
+
+	protected void refreshUI() {
+		refreshListDest();
+		refreshListSrc();
+		refreshGridAssociations();
+		loadSettings();
 	}
 
 	private void refreshListSrc() {
@@ -423,7 +427,7 @@ public class GUI extends JFrame {
 		panel5.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		panel4.add(panel5, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		final JLabel label1 = new JLabel();
-		label1.setText("<html>Associating a source with a destination means that<br >wallpapers from that source will go into the monitors assigned to the destination</html>");
+		label1.setText("<html>Associating a source with a destination means that<br >wallpapers from that source will go into the monitors<br>assigned to the destination</html>");
 		panel5.add(label1);
 		final JPanel panel6 = new JPanel();
 		panel6.setLayout(new GridLayoutManager(7, 1, new Insets(0, 0, 0, 0), -1, -1));

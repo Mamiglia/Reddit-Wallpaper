@@ -21,7 +21,7 @@ public class DestGUI extends Collapsible {
 	private JSpinner widthField;
 	private JSpinner heightField;
 	private JComboBox<RATIO_LIMIT> ratioSelection;
-	private JLabel wallpaperName;
+	private JTextArea wallpaperName;
 	private JLabel wallpaperSubreddit;
 	private JLabel wallpaperLink;
 	private JSpinner periodField;
@@ -53,6 +53,7 @@ public class DestGUI extends Collapsible {
 		removeBtn.addActionListener(e -> {
 			Settings.INSTANCE.removeDestination(dest);
 			this.removeAll();
+			gui.refreshUI();
 		});
 		renameBtn.addActionListener(e -> {
 			dest.setName(JOptionPane.showInputDialog(this, "Insert new name"));
@@ -83,7 +84,7 @@ public class DestGUI extends Collapsible {
 		for (int i = 0; i < monitorList.length; i++) {
 			monitorList[i].setSelected(dest.getScreens().contains(i));
 		}
-		GUI.log.debug("Destination{}", dest.getName() + "loaded");
+		GUI.log.debug("Destination {} ", dest.getName() + "loaded");
 	}
 
 	private void saveData() {
@@ -99,6 +100,8 @@ public class DestGUI extends Collapsible {
 		}
 		dest.optimizeDimension();
 		GUI.log.debug("Destination {}", dest.getName() + " Saved");
+
+		loadData();
 	}
 
 	private void createUIComponents() {
@@ -163,23 +166,28 @@ public class DestGUI extends Collapsible {
 		final Spacer spacer1 = new Spacer();
 		panel1.add(spacer1, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
 		final JPanel panel2 = new JPanel();
-		panel2.setLayout(new GridLayoutManager(5, 1, new Insets(0, 0, 0, 0), -1, -1));
+		panel2.setLayout(new GridLayoutManager(6, 1, new Insets(0, 0, 0, 0), -1, -1));
 		root.add(panel2, new GridConstraints(0, 0, 4, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		wallpaperLink = new JLabel();
 		wallpaperLink.setText("Post Link");
-		panel2.add(wallpaperLink, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		panel2.add(wallpaperLink, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 1, false));
 		wallpaperSubreddit = new JLabel();
 		wallpaperSubreddit.setText("Subreddit");
-		panel2.add(wallpaperSubreddit, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-		wallpaperName = new JLabel();
-		wallpaperName.setText("Name");
-		panel2.add(wallpaperName, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		panel2.add(wallpaperSubreddit, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 1, false));
 		monitorPanel = new JPanel();
 		monitorPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		panel2.add(monitorPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(10, 84), null, 0, false));
 		monitorPanel.setBorder(BorderFactory.createTitledBorder(null, "monitors:", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
 		final Spacer spacer2 = new Spacer();
 		panel2.add(spacer2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		wallpaperName = new JTextArea();
+		wallpaperName.setEditable(false);
+		wallpaperName.setLineWrap(true);
+		wallpaperName.setText("Name");
+		wallpaperName.setWrapStyleWord(true);
+		panel2.add(wallpaperName, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(11, -1), null, 0, false));
+		final Spacer spacer3 = new Spacer();
+		panel2.add(spacer3, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(-1, 1), null, 0, false));
 		final JPanel panel3 = new JPanel();
 		panel3.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
 		panel3.setToolTipText("Strict: Exact match to chosen resolution ratio\nRelaxed: From chosen resolution to square\nNone: Any ratio");
@@ -228,4 +236,5 @@ public class DestGUI extends Collapsible {
 	public JComponent $$$getRootComponent$$$() {
 		return root;
 	}
+
 }
