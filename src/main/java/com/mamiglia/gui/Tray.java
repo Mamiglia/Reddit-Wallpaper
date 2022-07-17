@@ -73,12 +73,13 @@ public class Tray {
 		PopupMenu trayPopupMenu = new PopupMenu("Reddit Wallpaper");
 
 		for (Destination dest : Settings.INSTANCE.getDests()) {
-			trayPopupMenu.add(new MenuItem(dest.getName())); //title
+			var subMenuDest = new Menu(dest.getName());
 
 			if (dest.getCurrent() != null) {
 				MenuItem titleItem = new MenuItem(dest.getCurrent().getTitle());
 				titleItem.addActionListener(e -> openWebpage(dest.getCurrent().getPostUrl()));
-				trayPopupMenu.add(titleItem);
+				subMenuDest.add(titleItem);
+				subMenuDest.addSeparator();
 
 				MenuItem saveItem = new MenuItem("Save Wallpaper");
 				saveItem.addActionListener(e -> {
@@ -97,13 +98,13 @@ public class Tray {
 						}
 					}
 				});
-				trayPopupMenu.add(saveItem);
+				subMenuDest.add(saveItem);
 
 				MenuItem pinItem = new MenuItem("Pin wallpaper");
 				pinItem.addActionListener(e -> {
 					dest.setResidualTime((long) (Settings.INSTANCE.getPinTime() * HOURS_TO_MILLIS));
 				});
-				trayPopupMenu.add(pinItem);
+				subMenuDest.add(pinItem);
 
 				MenuItem banItem = new MenuItem("Ban wallpaper");
 				banItem.addActionListener(e -> {
@@ -115,7 +116,7 @@ public class Tray {
 						log.info("\"Ban wallpaper\" button was pressed too early, still occupied changing wallpaper from the last time");
 					}
 				});
-				trayPopupMenu.add(banItem);
+				subMenuDest.add(banItem);
 			}
 
 			MenuItem changeItem = new MenuItem("Change Wallpaper");
@@ -128,7 +129,8 @@ public class Tray {
 				}
 				//interrupting the thread means waking it up. When it's awake it will automatically start searching for a new Wallpaper
 			});
-			trayPopupMenu.add(changeItem);
+			subMenuDest.add(changeItem);
+			trayPopupMenu.add(subMenuDest);
 
 			trayPopupMenu.addSeparator();
 		}
