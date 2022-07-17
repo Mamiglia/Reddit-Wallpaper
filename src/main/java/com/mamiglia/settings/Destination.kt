@@ -65,10 +65,26 @@ data class Destination(
         }
     }
 
+    fun optimizeDimension() {
+        if (screens.size != 1) return
+        val monitor = Settings.monitors[screens.iterator().next()]
+        width = monitor.displayMode.width
+        height = monitor.displayMode.height
+
+    }
+
 
     companion object {
         fun monitorName(g : GraphicsDevice) : String {
             return "${g.iDstring[g.iDstring.lastIndex]}_${g.displayMode.width}x${g.displayMode.height}"
+        }
+
+        fun monitorWidth(g : GraphicsDevice) : Int {
+            return g.displayMode.width
+        }
+
+        fun monitorHeight(g: GraphicsDevice) : Int {
+            return g.displayMode.height
         }
     }
 }

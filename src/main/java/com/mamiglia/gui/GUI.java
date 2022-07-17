@@ -251,13 +251,14 @@ public class GUI extends JFrame {
 			@Override
 			public void setValueAt(Object value, int row, int col) {
 				data[row][col] = value;
+				var dest = columnNames.get(col);
+				var src = (Source) data[row][0];
 
 				if ((boolean) value) {
-					columnNames.get(col).addSource((Source) data[row][0]);
+					dest.addSource(src);
 				} else {
-					columnNames.get(col).removeSource((Source) data[row][0]);
+					dest.removeSource(src);
 				}
-
 			}
 		});
 		associationPane.add(t, BorderLayout.NORTH);

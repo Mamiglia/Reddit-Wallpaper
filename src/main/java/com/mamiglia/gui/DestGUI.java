@@ -97,6 +97,7 @@ public class DestGUI extends Collapsible {
 				dest.getScreens().add(i);
 			}
 		}
+		dest.optimizeDimension();
 		GUI.log.debug("Destination {}", dest.getName() + " Saved");
 	}
 
