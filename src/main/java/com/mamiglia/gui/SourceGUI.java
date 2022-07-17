@@ -64,18 +64,19 @@ class SourceGUI extends Collapsible {
 	}
 
 	private void saveData() {
-		if (!titleField.getText().equals(""))
-			src.setTitles(new HashSet<>(List.of(titleField.getText().replace(" ", "").split(","))));
+		if (!titleField.getText().isBlank())
+			src.setTitles(new HashSet<>(List.of(titleField.getText().split(" *, *"))));
 		else
 			src.setTitles(new HashSet<>());
-		if (!subredditField.getText().equals(""))
-			src.setSubreddits(new HashSet<>(List.of(subredditField.getText().replace(" ", "").split(","))));
+		if (!subredditField.getText().isBlank())
+			src.setSubreddits(new HashSet<>(List.of(subredditField.getText().replace(" ", "").split(" *, *"))));
 		else
-			src.setTitles(new HashSet<>());
-		if (!flairField.getText().equals(""))
-			src.setFlairs(new HashSet<>(List.of(flairField.getText().replace(" ", "").split(","))));
+			src.setSubreddits(new HashSet<>());
+		if (!flairField.getText().isBlank())
+			src.setFlairs(new HashSet<>(List.of(flairField.getText().split(" *, *"))));
 		else
-			src.setTitles(new HashSet<>());
+			src.setFlairs(new HashSet<>());
+
 		src.setMaxOldness((TIME) Objects.requireNonNull(timeSelection.getSelectedItem()));
 		src.setSearchBy((SEARCH_BY) sortSelection.getSelectedItem());
 		src.setMinScore((Integer) scoreField.getValue());
