@@ -1,6 +1,23 @@
-[1.1.1 - 27/09/2021]
- - Fix: GUI limiting period selector
- - Fix: nsfwSlider doesn't stay in position 
+[1.3.0 - 18/08/2022]
+This update is a major one, as it introduces many new features and drastically change the UI and the internal behaviour of the program.
+ - Enhancement: Support for multiscreen differential wallpapers
+ - Enhancement: Support for multisource queries
+ - Enhancement: Notification on wallpaper change (can be turned off)
+ - Enhancement: Like a wallpaper? Pin it for an extended period of time
+ - Enhancement: Memory usage improved
+ - Fix: DB Query Error
+ - Fix: Various errors regarding the download of the JSON from reddit
+ - Dev Enhancement: Heavily improved log system
+ - Dev Enhancement: Standardized project structure
+ - Dev Enhancement: Gradle usage
+
+[1.2.1 - 22/12/2021]
+ - Fix: Breaking bug involving an infinite loop and null pointers related to multiscreen handling
+ - Enhancement: Added option to filter by aspect ratio.
+   - Strict: Rejects any image that doesn't exactly match your chosen resolution's ratio
+   - Relaxed: Allows images that are the same orientation as your chosen resolution (landscape or portait)
+   - None: No ratio filtering
+
 [1.2.0 - 21/12/2021]
  - Change: RW now queries a multireddit. This makes it more stable for large lists of subreddits (Go wild!)
  - Enhancement: Added option for searching flairs
@@ -9,9 +26,7 @@
  - Enhancement: Added option for setting the minimum post score (default 15)
  - Fix: Check that the database has the right data types
  - Fix: Erase database button functions as intended
-[1.2.1 - 22/12/2021]
- - Fix: Breaking bug involving an infinite loop and null pointers related to multiscreen handling
- - Enhancement: Added option to filter by aspect ratio.
-   - Strict: Rejects any image that doesn't exactly match your chosen resolution's ratio
-   - Relaxed: Allows images that are the same orientation as your chosen resolution (landscape or portait)
-   - None: No ratio filtering
+
+[1.1.1 - 27/09/2021]
+ - Fix: GUI limiting period selector
+ - Fix: nsfwSlider doesn't stay in position
