@@ -60,12 +60,15 @@ object Settings {
         } catch (e: Exception) { // I would like to use a more specific exception, but i cannot find JsonDecodingException
             log.warn("Settings file is corrupted, cannot read it, starting with default settings: $e")
         }
-        if (sources.isEmpty()) {
-            val src = Source()
-            sources[src.id] = src //add default source
-        }
+        if (sources.isEmpty())
+            generateDefaultSources()
+
         if (dests.isEmpty()) {
-            dests.add(Destination()) // add default destination
+            val dest = Destination()
+            dests.add(dest) // add default destination
+            sources.values.forEach {
+                dest.addSource(it)
+            }
         }
     }
 
@@ -89,7 +92,7 @@ object Settings {
         log.info("Settings saved")
     }
 
-    fun readSettings() {
+    private fun readSettings() {
         val file = File(PATH_TO_SAVEFOLDER + SETTINGS_SAVEFILE)
         val lines : List<String>
         if (file.exists()) {
@@ -156,6 +159,24 @@ object Settings {
         return dest.screens.size == monitorsNumber // TODO is this correct?
         // what happens if the number of monitors changes?
     }
+
+    private fun generateDefaultSources() {
+        var src = Source() // wallpaper, wallpapers
+        sources[src.id] = src
+
+        src = Source(
+            titles = setOf("pixel", "digital", "pencil", "3D", "ink", "graphite"),
+            subreddits = setOf("art")
+        )
+        sources[src.id] = src
+
+        src = Source(
+            titles = setOf("lake"),
+            subreddits = setOf("earthporn"),
+            maxOldness = TIME.MONTH
+        )
+        sources[src.id] = src
+    }
 }
 
 val format = Json { ignoreUnknownKeys = true }
@@ -181,7 +202,7 @@ enum class NSFW_LEVEL(val value: Int, val query: String) {
                 -1 -> NEVER
                 0 -> ALLOW
                 1 -> ONLY
-                else -> ALLOW //If not recongnized it will be considered as ALLOW
+                else -> ALLOW //If not recognized it will be considered as ALLOW
             }
         }
     }
