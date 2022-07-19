@@ -7,6 +7,7 @@ This update is a major one, as it introduces many new features and drastically c
  - Enhancement: Memory usage improved
  - Fix: DB Query Error
  - Fix: Various errors regarding the download of the JSON from reddit
+ - Fix: Wallpaper change on closure
  - Dev Enhancement: Heavily improved log system
  - Dev Enhancement: Standardized project structure
  - Dev Enhancement: Gradle usage
