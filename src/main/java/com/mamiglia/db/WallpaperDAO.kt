@@ -14,18 +14,34 @@ import java.sql.Statement
 private val dbUrl = ("jdbc:h2:file:" + System.getProperty("user.dir")
         + File.separator + PATH_TO_DATABASE)
 
-class WallpaperDAO {
+class WallpaperDAO @Throws(SQLException::class) constructor() {
     private val log = LoggerFactory.getLogger("DAO")
-    private val conn: Connection = DriverManager.getConnection(dbUrl, "rw", "")
-    private val db: Statement = conn.createStatement()
+    private val conn: Connection
+    private val db: Statement
     private val maxDbSize : Int
         get() = Settings.maxDatabaseSize
     private val keepWallpapers : Boolean
         get() = Settings.keepWallpapers
 
     init {
+        try {
+            val t = DriverManager.getConnection(dbUrl, "rw", "")
+            t.close()
+        } catch (e : SQLException) {
+            log.info("Error while connecting to the DB, deleting old DB")
+            log.debug("{}", e.message)
+            if (!File("$PATH_TO_DATABASE.mv.db").delete()) {
+                log.error("Failed to delete")
+                throw e
+            }
+        } finally {
+            conn = DriverManager.getConnection(dbUrl, "rw", "")
+            db = conn.createStatement()
+        }
+
         this.open()
     }
+
 
     private fun open() : WallpaperDAO? {
         try {

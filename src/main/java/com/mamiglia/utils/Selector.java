@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,7 +32,13 @@ class Selector implements Runnable{
         if (executed || proposal == null) return;
         executed = true;
 
-        db = new WallpaperDAO();
+        try {
+            db = new WallpaperDAO();
+        } catch (SQLException e) {
+            log.warn("Cannot use DB, selecting a random wallpaper");
+            result = proposal.iterator().next();
+            return;
+        }
 
         List<String> oldID = db.getAllId();
         var newWp = proposal.stream()

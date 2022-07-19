@@ -14,6 +14,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
 import org.slf4j.Logger;
@@ -112,12 +113,17 @@ public class GUI extends JFrame {
 	}
 
 	void resetDB() {
-		int selectedOption = JOptionPane.showConfirmDialog(this, "You are going to remove your wallpaper database", "Alert", JOptionPane.OK_CANCEL_OPTION);
+		int selectedOption = JOptionPane.showConfirmDialog(this, "You are going to remove your wallpaper database", "DB erase", JOptionPane.OK_CANCEL_OPTION);
 
 		if (selectedOption == JOptionPane.OK_OPTION) {
 
 			File wallpaperFolder = new File(Settings.INSTANCE.getWallpaperPath());
-			new WallpaperDAO().erase();
+			try {
+				new WallpaperDAO().erase();
+			} catch (SQLException e) {
+				log.warn("Cannot erase database");
+				JOptionPane.showMessageDialog(this, "Failed to erase database", "DB erase", JOptionPane.ERROR_MESSAGE);
+			}
 
 			// Requires the directory exists and wallpapers should not be kept
 			if (wallpaperFolder.isDirectory() && !Settings.INSTANCE.getKeepWallpapers()) {
