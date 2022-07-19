@@ -13,7 +13,6 @@ It allows you to decide the period of time after you get bored by a wallpaper an
 Best thing of all, it applies wallpapers using a non-repetitive pattern - meaning that it's unlikely that you will ever see the same wallpaper twice.
 And it has so many more settings to customize!
 
-Work in progress! But it does work and is stable!
 
 **Main Features:**
 - [Easy install and update](https://github.com/Mamiglia/Reddit-Wallpaper/blob/main/Installer/Installation.md)
@@ -37,13 +36,12 @@ I need help, I need feedbacks, I need people to tell me that they like this/disl
 - <del>NSFW queries fail</del>
 
 **ToDo:**
-- [ ] Add a way to check for updates
+- [x] Add a way to check for updates
 - [x] Improve memory usage (was ca. 200MB) -> improved to 150MB
 - [ ] Add Linux support!
 - [x] Add an option to search from single subreddits with specific flairs
 - [x] Feature request: add "save" button that saves the wallpapers you like in a specific folder
-- [ ] Feature request: add option to apply different wallpapers for different monitors
-- [ ] Consider turning the application in a service
+- [x] Feature request: add option to apply different wallpapers for different monitors
 - [x] Feature request: add the title of the post to the image (somewhere)
 - [x] Feature request: add blacklist option for wallpapers
 
