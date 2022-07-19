@@ -23,7 +23,7 @@
 hs_err_pid*
 .idea/
 .build/Install4j/RW_windows-x64_*.exe.test
-.build/Install4j/RW_windows-x64_*-beta*.exe
+.build/Install4j/RW_*-beta*.*
 .build/Install4j/md5sums
 .build/Install4j/output.txt
 .build/Install4j/sha256sums
